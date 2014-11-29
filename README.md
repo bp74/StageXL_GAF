@@ -1,4 +1,6 @@
 StageXL_GAF
 ===========
 
-The GAF runtime for the StageXL library.
+The future home of the GAF runtime for StageXL.
+
+http://gafmedia.com/
