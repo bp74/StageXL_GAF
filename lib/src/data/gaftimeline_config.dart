@@ -34,11 +34,11 @@ class GAFTimelineConfig {
   List<GAFDebugInformation> _debugRegions;
 
   List<String> _warnings;
-  int _framesCount;
+  int _framesCount = 0;
   Rectangle _bounds;
   Point _pivot;
   Map _sounds;
-  bool _disposed;
+  bool _disposed = false;
 
   //--------------------------------------------------------------------------
   //

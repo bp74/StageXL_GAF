@@ -50,23 +50,23 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   bool _loop = true;
   bool _skipFrames = true;
-  bool _reseted;
-  bool _masked;
-  bool _inPlay;
-  bool _hidden;
-  bool _reverse;
-  bool _started;
-  bool _disposed;
-  bool _hasFilter;
-  bool _useClipping;
-  bool _alphaLessMax;
+  bool _reseted = false;
+  bool _masked = false;
+  bool _inPlay = false;
+  bool _hidden = false;
+  bool _reverse = false;
+  bool _started = false;
+  bool _disposed = false;
+  bool _hasFilter = false;
+  bool _useClipping = false;
+  bool _alphaLessMax = false;
 
-  num _scale;
-  num _contentScaleFactor;
-  num _currentTime = 0;
+  num _scale = 0.0;
+  num _contentScaleFactor = 0.0;
+  num _currentTime = 0.0;
   // Hold the current time spent animating
-  num _lastFrameTime = 0;
-  num _frameDuration;
+  num _lastFrameTime = 0.0;
+  num _frameDuration = 0.0;
 
   int _nextFrame;
   int _startFrame;
