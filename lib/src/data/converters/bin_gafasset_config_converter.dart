@@ -236,7 +236,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
               }
               sHelperRectangle.copyFrom(maskTimeline.bounds);
             } else if (animationObject.type == CAnimationObject.TYPE_TEXTFIELD) {
-              CTextFieldObject textField = timeline.textFields.textFieldObjectsMap[animationObject.regionID];
+              CTextFieldObject textField = timeline.textFields.getTextFieldObject(animationObject.regionID);
               sHelperRectangle.setTo(-textField.pivotPoint.x, -textField.pivotPoint.y, textField.width, textField.height);
             }
 
@@ -393,7 +393,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
                 case BinGAFAssetConfigConverter.FILTER_BLUR:
                   warning = readBlurFilter(filter);
-                  blurFilter = filter.filterConfigs[filter.filterConfigs.length - 1] as CBlurFilterData;
+                  blurFilter = filter.filterDatas.last as CBlurFilterData;
                   if (blurFilter.blurX >= 2 && blurFilter.blurY >= 2) {
                     if (!blurFilters.containsKey(stateID)) {
                       blurFilters[stateID] = blurFilter;
@@ -443,22 +443,24 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
         for (int a = 0, count = _bytes.readUnsignedInt(); a < count; a++) {
 
-          CFrameAction action = new CFrameAction();
-          action.type = _bytes.readUnsignedInt();
-          action.scope = _bytes.readUTF();
+          var type = _bytes.readUnsignedInt();
+          var scope = _bytes.readUTF();
+          var params = new List<String>();
 
           int paramsLength = _bytes.readUnsignedInt();
           int paramsOffset = _bytes.position;
+
           while (_bytes.position < paramsOffset + paramsLength) {
-            action.params.add(_bytes.readUTF());
+            params.add(_bytes.readUTF());
           }
 
-          if (action.type == CFrameAction.DISPATCH_EVENT &&
-              action.params[0] == CSound.GAF_PLAY_SOUND &&
-              action.params.length > 3) {
-            if (_ignoreSounds) {
-              continue; //do not add sound events if they're ignored
-            }
+          var action = new CFrameAction(type, scope, params);
+
+          if (type == CFrameAction.DISPATCH_EVENT &&
+              params[0] == CSound.GAF_PLAY_SOUND &&
+              params.length > 3) {
+
+            if (_ignoreSounds) continue; //do not add sound events if they're ignored
             Map data = JSON.decode(action.params[3]);
             timelineConfig.addSound(data, frameNumber);
           }
@@ -628,8 +630,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     }
 
     if (textureAtlasScale == null) {
-      textureAtlasScale = new CTextureAtlasScale();
-      textureAtlasScale.scale = scale;
+      textureAtlasScale = new CTextureAtlasScale(scale);
       textureAtlasScales.add(textureAtlasScale);
     }
 
@@ -654,8 +655,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     CTextureAtlasSource textureAtlasSource;
     List<CTextureAtlasSource> textureAtlasSources = textureAtlasCSF.sources;
 
-    int l = textureAtlasSources.length;
-    for (int i = 0; i < l; i++) {
+    for (int i = 0; i < textureAtlasSources.length; i++) {
       if (textureAtlasSources[i].id == atlasID) {
         textureAtlasSource = textureAtlasSources[i];
         break;
@@ -697,12 +697,11 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   //--------------------------------------------------------------------------
 
   void readStageConfig(GAFAssetConfig config) {
-    CStage stageConfig = new CStage();
-    stageConfig.fps = _bytes.readByte();
-    stageConfig.color = _bytes.readInt();
-    stageConfig.width = _bytes.readUnsignedShort();
-    stageConfig.height = _bytes.readUnsignedShort();
-    config.stageConfig = stageConfig;
+    var fps = _bytes.readByte();
+    var color = _bytes.readInt();
+    var width = _bytes.readUnsignedShort();
+    var height = _bytes.readUnsignedShort();
+    config.stageConfig = new CStage(fps, color, width, height);
   }
 
   String readDropShadowFilter(CFilter filter) {

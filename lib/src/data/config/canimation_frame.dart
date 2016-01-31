@@ -2,123 +2,58 @@ part of stagexl_gaf;
 
 class CAnimationFrame {
 
-  // --------------------------------------------------------------------------
-  //
-  // PUBLIC VARIABLES
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // PRIVATE VARIABLES
-  //
-  // --------------------------------------------------------------------------
+  final Map<String, CAnimationFrameInstance> _instancesMap;
+  final List<CAnimationFrameInstance> _instances;
+  final List<CFrameAction> _actions;
+  final int frameNumber;
 
-  Map _instancesMap;
-  List<CAnimationFrameInstance> _instances;
-  List<CFrameAction> _actions;
-  int _frameNumber;
+  CAnimationFrame(this.frameNumber)
+      : _instancesMap = new Map<String, CAnimationFrameInstance>(),
+        _instances = new List<CAnimationFrameInstance>(),
+        _actions = new List<CFrameAction>();
 
-  // --------------------------------------------------------------------------
-  //
-  // CONSTRUCTOR
-  //
-  // --------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
-  CAnimationFrame(int frameNumber) {
-    _frameNumber = frameNumber;
-    _instancesMap = {};
-    _instances = new List<CAnimationFrameInstance>();
-  }
+  Iterable<CAnimationFrameInstance> get instances => _instances;
+  Iterable<CFrameAction> get actions  => _actions;
 
-  // --------------------------------------------------------------------------
-  //
-  // PUBLIC METHODS
-  //
-  // --------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   CAnimationFrame clone(int frameNumber) {
-
     CAnimationFrame result = new CAnimationFrame(frameNumber);
-
-    for (CAnimationFrameInstance instance in _instances) {
-      result.addInstance(instance);
-    }
-
+    _instances.forEach((instance) =>  result.addInstance(instance));
     return result;
   }
 
   void addInstance(CAnimationFrameInstance instance) {
-
-    if (_instancesMap.containsKey(instance.id)) {
-
-      if (instance.alpha > 0) {
-        _instances[_instances.indexOf(_instancesMap[instance.id])] = instance;
-        _instancesMap[instance.id] = instance;
-      } else {
-        // Poping the last element and set it as the removed element
-        int index = _instances.indexOf(_instancesMap[instance.id]);
-        // If index is last element, just pop
-        if (index == (_instances.length - 1)) {
-          _instances.removeLast();
-        } else {
-          _instances[index] = _instances.removeLast();
-        }
-
-        _instancesMap.remove(instance.id);
-      }
-    } else {
+    if (_instancesMap.containsKey(instance.id) == false) {
       _instances.add(instance);
       _instancesMap[instance.id] = instance;
+    } else if (instance.alpha > 0) {
+      int index = _instances.indexOf(_instancesMap[instance.id]);
+      _instances[index] = instance;
+      _instancesMap[instance.id] = instance;
+    } else {
+      int index = _instances.indexOf(_instancesMap[instance.id]);
+      _instances.removeAt(index);
+      _instancesMap.remove(instance.id);
     }
   }
 
   void addAction(CFrameAction action) {
-    _actions = _actions ?? new List<CFrameAction>();
     _actions.add(action);
   }
 
   void sortInstances() {
-    _instances.sort(_sortByZIndex);
+    _instances.sort((instance1, instance2) {
+      if (instance1.zIndex < instance2.zIndex) return -1;
+      if (instance1.zIndex > instance2.zIndex) return 1;
+      return 0;
+    });
   }
 
   CAnimationFrameInstance getInstanceByID(String id) {
     return _instancesMap[id];
   }
-
-  // --------------------------------------------------------------------------
-  //
-  // PRIVATE METHODS
-  //
-  // --------------------------------------------------------------------------
-
-  num _sortByZIndex(CAnimationFrameInstance instance1, CAnimationFrameInstance instance2) {
-    if (instance1.zIndex < instance2.zIndex) {
-      return -1;
-    } else if (instance1.zIndex > instance2.zIndex) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // EVENT HANDLERS
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // GETTERS AND SETTERS
-  //
-  // --------------------------------------------------------------------------
-
-  List<CAnimationFrameInstance> get instances => _instances;
-  List<CFrameAction> get actions  => _actions;
-  int get frameNumber =>  _frameNumber;
 
 }

@@ -826,7 +826,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
           break;
 
         case CAnimationObject.TYPE_TEXTFIELD:
-          CTextFieldObject tfObj = this._config.textFields.textFieldObjectsMap[animationObjectConfig.regionID];
+          CTextFieldObject tfObj = _config.textFields.getTextFieldObject(animationObjectConfig.regionID);
           displayObject = new GAFTextField(tfObj, _scale, _contentScaleFactor);
           break;
 

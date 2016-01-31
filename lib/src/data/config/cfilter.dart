@@ -2,54 +2,38 @@ part of stagexl_gaf;
 
 class CFilter {
 
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
+  final List<CFilterData> _filterDatas = new List<CFilterData>();
 
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
-  List<CFilterData> _filterConfigs = new List<CFilterData>();
-
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
-  //--------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
   CFilter clone() {
-
     CFilter result = new CFilter();
-
-    for (CFilterData filterData in _filterConfigs) {
-      result.filterConfigs.add(filterData.clone());
-    }
-
+    filterDatas.forEach((f) => result.addFilter(f.clone()));
     return result;
   }
 
-  String addBlurFilter(num blurX, num blurY) {
+  //---------------------------------------------------------------------------
+
+  Iterable<CFilterData> get filterDatas => _filterDatas;
+
+  void addFilter(CFilterData filterData) {
+    _filterDatas.add(filterData);
+  }
+
+  //---------------------------------------------------------------------------
+
+  void addBlurFilter(num blurX, num blurY) {
     CBlurFilterData filterData = new CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
     filterData.color = -1;
-    _filterConfigs.add(filterData);
-    return "";
+    addFilter(filterData);
   }
 
-  String addGlowFilter(num blurX, num blurY, int color, num alpha,
+  void addGlowFilter(
+      num blurX, num blurY, int color, num alpha,
       [num strength = 1, bool inner = false, bool knockout = false]) {
+
     CBlurFilterData filterData = new CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
@@ -58,15 +42,13 @@ class CFilter {
     filterData.strength = strength;
     filterData.inner = inner;
     filterData.knockout = knockout;
-
-    _filterConfigs.add(filterData);
-
-    return "";
+    addFilter(filterData);
   }
 
-  String addDropShadowFilter(
+  void addDropShadowFilter(
       num blurX, num blurY, int color, num alpha, num angle, num distance,
       [num strength = 1, bool inner = false, bool knockout = false]) {
+
     CBlurFilterData filterData = new CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
@@ -77,86 +59,60 @@ class CFilter {
     filterData.strength = strength;
     filterData.inner = inner;
     filterData.knockout = knockout;
-
-    _filterConfigs.add(filterData);
-
-    return "";
+    addFilter(filterData);
   }
 
   void addColorTransform(List<num> params) {
+    if (_filterDatas.any((f) => f is CColorMatrixFilterData)) return;
+    var filterData = new CColorMatrixFilterData();
+    filterData.matrix[00] = params[1]; // R scale
+    filterData.matrix[04] = params[2]; // R offset
+    filterData.matrix[06] = params[3]; // G scale
+    filterData.matrix[09] = params[4]; // G offset
+    filterData.matrix[12] = params[5]; // B scale
+    filterData.matrix[14] = params[6]; // B offset
+    addFilter(filterData);
+  }
 
-    if (_getColorMatrixFilter() != null) return;
-
+  void addColorMatrixFilter(List<num> params) {
     CColorMatrixFilterData filterData = new CColorMatrixFilterData();
-
-    ListUtility.fillMatrix(
-        filterData.matrix,
-        params[1], 0, 0, 0, params[2],
-        0, params[3], 0, 0, params[4],
-        0, 0, params[5], 0, params[6],
-        0, 0, 0, 1, 0);
-
-    _filterConfigs.add(filterData);
+    filterData.matrix[00] = params[00];
+    filterData.matrix[01] = params[01];
+    filterData.matrix[02] = params[02];
+    filterData.matrix[03] = params[03];
+    filterData.matrix[04] = params[04] / 255;
+    filterData.matrix[05] = params[05];
+    filterData.matrix[06] = params[06];
+    filterData.matrix[07] = params[07];
+    filterData.matrix[08] = params[08];
+    filterData.matrix[09] = params[09] / 255;
+    filterData.matrix[10] = params[10];
+    filterData.matrix[11] = params[11];
+    filterData.matrix[12] = params[12];
+    filterData.matrix[13] = params[13];
+    filterData.matrix[14] = params[14] / 255;
+    filterData.matrix[15] = params[15];
+    filterData.matrix[16] = params[16];
+    filterData.matrix[17] = params[17];
+    filterData.matrix[18] = params[18];
+    filterData.matrix[19] = params[19] / 255;
+    addFilter(filterData);
   }
 
-  String addColorMatrixFilter(List<num> params) {
-    int i;
-
-    for (i = 0; i < params.length; i++) {
-      if (i % 5 == 4) {
-        params[i] = params[i] / 255;
-      }
-    }
-
-    CColorMatrixFilterData colorMatrixFilterConfig = new CColorMatrixFilterData();
-    ListUtility.copyMatrix(colorMatrixFilterConfig.matrix, params);
-    _filterConfigs.add(colorMatrixFilterConfig);
-
-    return "";
-  }
+  //---------------------------------------------------------------------------
 
   CBlurFilterData getBlurFilter() {
-    for (CFilterData filterConfig in _filterConfigs) {
-      if (filterConfig is CBlurFilterData) {
-        return filterConfig;
-      }
+    for (var filterData in _filterDatas) {
+      if (filterData is CBlurFilterData) return filterData;
     }
     return null;
   }
 
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  CColorMatrixFilterData _getColorMatrixFilter() {
-    for (CFilterData filterConfig in _filterConfigs) {
-      if (filterConfig is CColorMatrixFilterData) {
-        return filterConfig;
-      }
+  CColorMatrixFilterData getColorMatrixFilter() {
+    for (var filterData in _filterDatas) {
+      if (filterData is CColorMatrixFilterData) return filterData;
     }
     return null;
   }
-
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  List<CFilterData> get filterConfigs => _filterConfigs;
 
 }

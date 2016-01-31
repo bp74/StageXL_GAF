@@ -87,8 +87,12 @@ class GAFTimelineConfig {
     return null;
   }
 
-  void addSound(Object data, int frame) {
-    _sounds[frame] = new CFrameSound(data);
+  void addSound(Map data, int frame) {
+    var soundID = data["id"];
+    var action = data["action"];
+    var repeatCount = data["repeat"] ?? 1;
+    var linkage = data["linkage"];
+    _sounds[frame] = new CFrameSound(soundID, action, repeatCount, linkage);
   }
 
   CFrameSound getSound(int frame) {

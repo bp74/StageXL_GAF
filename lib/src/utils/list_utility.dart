@@ -8,26 +8,10 @@ class ListUtility {
   //[Inline]
   static void fillMatrix(
       List<num> v,
-      num a00,
-      num a01,
-      num a02,
-      num a03,
-      num a04,
-      num a10,
-      num a11,
-      num a12,
-      num a13,
-      num a14,
-      a20,
-      num a21,
-      num a22,
-      num a23,
-      num a24,
-      a30,
-      num a31,
-      num a32,
-      num a33,
-      num a34) {
+      num a00, num a01, num a02, num a03, num a04,
+      num a10, num a11, num a12, num a13, num a14,
+      num a20, num a21, num a22, num a23, num a24,
+      num a30, num a31, num a32, num a33, num a34) {
     v[0] = a00;
     v[1] = a01;
     v[2] = a02;

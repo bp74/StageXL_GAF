@@ -6,22 +6,11 @@ class CFrameSound {
   static final int ACTION_START = 2;
   static final int ACTION_CONTINUE = 3;
 
-  int soundID;
-  int action;
-  int repeatCount; //0 and 1 means play sound once
-  String linkage;
+  final int soundID;
+  final int action;
+  final int repeatCount;
+  final String linkage;
 
-  CFrameSound(Map data) {
+  CFrameSound(this.soundID, this.action, this.repeatCount, this.linkage);
 
-    this.soundID = data["id"];
-    this.action = data["action"];
-
-    if (data.containsKey("linkage")) {
-      this.linkage = data["linkage"];
-    }
-
-    if (data.containsKey("repeat")) {
-      this.repeatCount = data["repeat"];
-    }
-  }
 }

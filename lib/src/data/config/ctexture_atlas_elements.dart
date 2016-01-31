@@ -2,45 +2,25 @@ part of stagexl_gaf;
 
 class CTextureAtlasElements {
 
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
-  List<CTextureAtlasElement> _elementsList;
+  List<CTextureAtlasElement> _elements;
   Map<String, CTextureAtlasElement> _elementsMap;
   Map<String, CTextureAtlasElement> _elementsByLinkage;
 
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
-  //--------------------------------------------------------------------------
-
-  CTextureAtlasElements() {
-    _elementsList = new List<CTextureAtlasElement>();
-    _elementsMap = new Map<String, CTextureAtlasElement>();
-    _elementsByLinkage = new Map<String, CTextureAtlasElement>();
-  }
+  CTextureAtlasElements()
+      : _elements = new List<CTextureAtlasElement>(),
+        _elementsMap = new Map<String, CTextureAtlasElement>(),
+        _elementsByLinkage = new Map<String, CTextureAtlasElement>();
 
   //--------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
+
+  Iterable<CTextureAtlasElement> get elements => _elements;
+
   //--------------------------------------------------------------------------
 
   void addElement(CTextureAtlasElement element) {
     if (!_elementsMap.containsKey(element.id)) {
       _elementsMap[element.id] = element;
-      _elementsList.add(element);
-
+      _elements.add(element);
       if (element.linkage != null) {
         _elementsByLinkage[element.linkage] = element;
       }
@@ -48,45 +28,11 @@ class CTextureAtlasElements {
   }
 
   CTextureAtlasElement getElement(String id) {
-    if (_elementsMap.containsKey(id)) {
-      return _elementsMap[id];
-    } else {
-      return null;
-    }
+    return _elementsMap[id];
   }
 
   CTextureAtlasElement getElementByLinkage(String linkage) {
-    if (_elementsByLinkage.containsKey(linkage)) {
-      return _elementsByLinkage[linkage];
-    } else {
-      return null;
-    }
+    return _elementsByLinkage[linkage];
   }
-
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  List<CTextureAtlasElement> get elementsList => _elementsList;
 
 }

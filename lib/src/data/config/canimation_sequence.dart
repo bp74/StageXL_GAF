@@ -2,83 +2,18 @@ part of stagexl_gaf;
 
 class CAnimationSequence {
 
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
+  final String id;
+  final int startFrameNo;
+  final int endFrameNo;
 
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
+  // first frame is "1" !!!
 
-  String _id;
-  int _startFrameNo;
-  int _endFrameNo;
+  CAnimationSequence(this.id, this.startFrameNo, this.endFrameNo);
 
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
-  //--------------------------------------------------------------------------
-
-  CAnimationSequence(String id, int startFrameNo, int endFrameNo) {
-    _id = id;
-    _startFrameNo = startFrameNo;
-    _endFrameNo = endFrameNo;
-  }
-
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
   //--------------------------------------------------------------------------
 
   bool isSequenceFrame(int frameNo) {
-    // first frame is "1" !!!
-    if (frameNo >= this._startFrameNo && frameNo <= this._endFrameNo) {
-      return true;
-    } else {
-      return false;
-    }
+    return frameNo >= startFrameNo && frameNo <= endFrameNo;
   }
-
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  /// Sequence ID
-
-  String get id => _id;
-
-  /// Sequence start frame number
-
-  int get startFrameNo  => _startFrameNo;
-
-  /// Sequence end frame number
-
-  int get endFrameNo =>  _endFrameNo;
 
 }

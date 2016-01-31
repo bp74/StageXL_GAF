@@ -2,74 +2,21 @@ part of stagexl_gaf;
 
 class CAnimationObjects {
 
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
+  final Map<String, CAnimationObject> animationObjectsMap;
 
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
+  CAnimationObjects()
+      : animationObjectsMap = new Map<String, CAnimationObject>();
 
-  Map<String, CAnimationObject> _animationObjectsMap;
-
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
-  //--------------------------------------------------------------------------
-
-  CAnimationObjects() {
-    _animationObjectsMap = new Map<String, CAnimationObject>();
-  }
-
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
   //--------------------------------------------------------------------------
 
   void addAnimationObject(CAnimationObject animationObject) {
-    if (!_animationObjectsMap.containsKey(animationObject.instanceID)) {
-      _animationObjectsMap[animationObject.instanceID] = animationObject;
+    if (animationObjectsMap.containsKey(animationObject.instanceID) == false) {
+      animationObjectsMap[animationObject.instanceID] = animationObject;
     }
   }
 
   CAnimationObject getAnimationObject(String instanceID) {
-    if (_animationObjectsMap.containsKey(instanceID)) {
-      return _animationObjectsMap[instanceID];
-    } else {
-      return null;
-    }
+    return animationObjectsMap[instanceID];
   }
-
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  Map get animationObjectsMap => _animationObjectsMap;
 
 }

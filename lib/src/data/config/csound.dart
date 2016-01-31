@@ -6,13 +6,14 @@ class CSound {
   static final int WAV = 0;
   static final int MP3 = 1;
 
-  int soundID;
-  String linkageName;
-  String source;
-  int format;
-  int rate;
-  int sampleSize;
-  int sampleCount;
-  bool stereo;
-  Sound sound;
+  int soundID = 0;
+  String linkageName = null;
+  String source = null;
+  int format = 0;
+  int rate = 0;
+  int sampleSize = 0;
+  int sampleCount = 0;
+  bool stereo = false;
+  Sound sound = null;
+
 }

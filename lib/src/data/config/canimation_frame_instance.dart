@@ -2,116 +2,61 @@ part of stagexl_gaf;
 
 class CAnimationFrameInstance {
 
-  // --------------------------------------------------------------------------
-  //
-  // PUBLIC VARIABLES
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // PRIVATE VARIABLES
-  //
-  // --------------------------------------------------------------------------
+  static final Matrix _tmpMatrix = new Matrix.fromIdentity();
 
-  String _id;
-  int _zIndex;
-  Matrix _matrix;
-  num _alpha;
-  String _maskID;
-  CFilter _filter;
+  final String id;
 
-  static num tx, ty;
+  Matrix _matrix = new Matrix.fromIdentity();
+  String _maskID = null;
+  CFilter _filter = null;
+  int _zIndex = 0;
+  num _alpha = 0.0;
 
-  // --------------------------------------------------------------------------
-  //
-  // CONSTRUCTOR
-  //
-  // --------------------------------------------------------------------------
+  CAnimationFrameInstance(this.id);
 
-  CAnimationFrameInstance(String id) {
-    _id = id;
-  }
+  //---------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
-  //
-  // PUBLIC METHODS
-  //
-  // --------------------------------------------------------------------------
+  Matrix get matrix => _matrix;
+  String get maskID => _maskID;
+  CFilter get filter => _filter;
+  int get zIndex  => _zIndex;
+  num get alpha => _alpha;
+
+  //---------------------------------------------------------------------------
 
   CAnimationFrameInstance clone() {
-    CAnimationFrameInstance result = new CAnimationFrameInstance(this._id);
-    CFilter filterCopy = _filter != null ? _filter.clone() : null;
-    result.update(_zIndex, _matrix.clone(), _alpha, _maskID, filterCopy);
+    var result = new CAnimationFrameInstance(this.id);
+    result.update(_zIndex, _matrix, _alpha, _maskID, _filter?.clone());
     return result;
   }
 
   void update(int zIndex, Matrix matrix, num alpha, String maskID, CFilter filter) {
+    _matrix.copyFrom(matrix);
     _zIndex = zIndex;
-    _matrix = matrix;
     _alpha = alpha;
     _maskID = maskID;
     _filter = filter;
   }
 
   Matrix getTransformMatrix(Matrix pivotMatrix, num scale) {
+    _tmpMatrix.copyFrom(_matrix);
+    _tmpMatrix.tx *= scale;
+    _tmpMatrix.ty *= scale;
     Matrix result = pivotMatrix.clone();
-    tx = _matrix.tx;
-    ty = _matrix.ty;
-    _matrix.tx *= scale;
-    _matrix.ty *= scale;
-    result.concat(this._matrix);
-    _matrix.tx = tx;
-    _matrix.ty = ty;
+    result.concat(_tmpMatrix);
     return result;
   }
 
   void applyTransformMatrix(Matrix transformationMatrix, Matrix pivotMatrix, num scale) {
-    transformationMatrix.copyFrom(pivotMatrix);
-    tx = _matrix.tx;
-    ty = _matrix.ty;
-    _matrix.tx *= scale;
-    _matrix.ty *= scale;
-    transformationMatrix.concat(_matrix);
-    _matrix.tx = tx;
-    _matrix.ty = ty;
+    _tmpMatrix.copyFrom(_matrix);
+    _tmpMatrix.tx *= scale;
+    _tmpMatrix.ty *= scale;
+    transformationMatrix.copyFromAndConcat(pivotMatrix, _tmpMatrix);
   }
 
   Matrix calculateTransformMatrix(Matrix transformationMatrix, Matrix pivotMatrix, num scale) {
     applyTransformMatrix(transformationMatrix, pivotMatrix, scale);
     return transformationMatrix;
   }
-
-  // --------------------------------------------------------------------------
-  //
-  // PRIVATE METHODS
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // EVENT HANDLERS
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  //
-  // GETTERS AND SETTERS
-  //
-  // --------------------------------------------------------------------------
-
-  String get id  => _id;
-
-  Matrix get matrix => _matrix;
-
-  num get alpha => _alpha;
-
-  String get maskID => _maskID;
-
-  CFilter get filter => _filter;
-
-  int get zIndex  => _zIndex;
 
 }

@@ -93,7 +93,7 @@ class GAFTimeline {
             _gafgfxData.createTextures(scaleConfig.scale, csfConfig.csf);
             textures = _gafgfxData.getTextures(scaleConfig.scale, csfConfig.csf);
             if (csfConfig.atlas == null && textures != null) {
-              csfConfig.atlas = CTextureAtlas.createFromTextures(textures, csfConfig);
+              csfConfig.atlas = new CTextureAtlas(textures, csfConfig);
             }
           }
         }
@@ -104,7 +104,7 @@ class GAFTimeline {
         if (csfConfig == null)  return;
 
         if (csfConfig.atlas == null && _gafgfxData.createTextures(this.scale, this.contentScaleFactor)) {
-          csfConfig.atlas = CTextureAtlas.createFromTextures(
+          csfConfig.atlas = new CTextureAtlas(
               _gafgfxData.getTextures(this.scale, this.contentScaleFactor),
               csfConfig);
         }
@@ -114,10 +114,8 @@ class GAFTimeline {
       case CONTENT_SPECIFY:
         csfConfig = this.getCSFConfig(scale, csf);
         if (csfConfig == null) return;
-
         if (csfConfig.atlas == null && _gafgfxData.createTextures(scale, csf)) {
-          csfConfig.atlas = CTextureAtlas.createFromTextures(
-              _gafgfxData.getTextures(scale, csf), csfConfig);
+          csfConfig.atlas = new CTextureAtlas(_gafgfxData.getTextures(scale, csf), csfConfig);
         }
         return;
     }
@@ -146,13 +144,13 @@ class GAFTimeline {
         return;
       case CONTENT_DEFAULT:
         _gafgfxData.disposeTextures(this.scale, this.contentScaleFactor);
-        _config.textureAtlas.contentScaleFactor.dispose();
+        //_config.textureAtlas.contentScaleFactor.dispose();
         return;
       case CONTENT_SPECIFY:
         csfConfig = this.getCSFConfig(scale, csf);
         if (csfConfig != null) {
           _gafgfxData.disposeTextures(scale, csf);
-          csfConfig.dispose();
+          //csfConfig.dispose();
         }
         return;
     }

@@ -2,31 +2,32 @@ part of stagexl_gaf;
 
 class CBlurFilterData implements CFilterData {
 
-  num blurX;
-  num blurY;
-  int color;
-  num angle = 0;
-  num distance = 0;
-  num strength = 0;
-  num alpha = 1;
-  bool inner;
-  bool knockout;
-  num resolution = 1;
+  num blurX = 0.0;
+  num blurY = 0.0;
+  num angle = 0.0;
+  num distance = 0.0;
+  num strength = 0.0;
+  num alpha = 1.0;
+  num resolution = 1.0;
+  int color = 0;
+  bool inner = false;
+  bool knockout = false;
+
+  //---------------------------------------------------------------------------
 
   CFilterData clone() {
-
-    CBlurFilterData copy = new CBlurFilterData();
-    copy.blurX = this.blurX;
-    copy.blurY = this.blurY;
-    copy.color = this.color;
-    copy.angle = this.angle;
-    copy.distance = this.distance;
-    copy.strength = this.strength;
-    copy.alpha = this.alpha;
-    copy.inner = this.inner;
-    copy.knockout = this.knockout;
-    copy.resolution = this.resolution;
-
-    return copy;
+    CBlurFilterData filterData = new CBlurFilterData();
+    filterData.blurX = this.blurX;
+    filterData.blurY = this.blurY;
+    filterData.angle = this.angle;
+    filterData.distance = this.distance;
+    filterData.strength = this.strength;
+    filterData.alpha = this.alpha;
+    filterData.resolution = this.resolution;
+    filterData.color = this.color;
+    filterData.inner = this.inner;
+    filterData.knockout = this.knockout;
+    return filterData;
   }
+
 }

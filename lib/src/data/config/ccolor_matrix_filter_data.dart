@@ -1,15 +1,22 @@
 part of stagexl_gaf;
 
-
 class CColorMatrixFilterData implements CFilterData {
 
-  List<num> matrix = new List<num>(20);
+  final List<num> matrix = new List<num>.filled(20, 0.0, growable: false);
+
+  CColorMatrixFilterData() {
+    matrix[00] = 1.0; // R scale
+    matrix[06] = 1.0; // G scale
+    matrix[12] = 1.0; // B scale
+    matrix[18] = 1.0; // A scale
+  }
+
+  //---------------------------------------------------------------------------
 
   CFilterData clone() {
-
-    CColorMatrixFilterData copy = new CColorMatrixFilterData();
-    ListUtility.copyMatrix(copy.matrix, this.matrix);
-
-    return copy;
+    var filterData = new CColorMatrixFilterData();
+    filterData.matrix.setAll(0, matrix);
+    return filterData;
   }
+
 }
