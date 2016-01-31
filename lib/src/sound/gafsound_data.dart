@@ -21,12 +21,4 @@ class GAFSoundData {
     return _sounds[swfName][soundID];
   }
 
-  void dispose() {
-    /*
-    for (Sound sound in this._sounds) {
-      sound.close();
-    }
-    */
-  }
-
 }

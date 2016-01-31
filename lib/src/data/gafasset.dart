@@ -45,16 +45,6 @@ class GAFAsset {
   //
   //--------------------------------------------------------------------------
 
-  /**
-		 * Disposes all assets in bundle
-		 */
-  void dispose() {
-    _timelines?.forEach((t) => t.dispose());
-    _timelines = null;
-    _config?.dispose();
-    _config = null;
-  }
-
   void addGAFTimeline(GAFTimeline timeline) {
     // use namespace gaf_internal;
     if (!_timelinesMap.containsKey(timeline.id)) {

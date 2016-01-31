@@ -33,15 +33,6 @@ class GAFAssetConfig {
     _sounds.add(soundData);
   }
 
-  void dispose() {
-    _allTextureAtlases = null;
-    _stageConfig = null;
-    _scaleValues = null;
-    _csfValues = null;
-    _timelines = null;
-    _sounds = null;
-  }
-
   int get compression => _compression;
 
   set compression(int value) {

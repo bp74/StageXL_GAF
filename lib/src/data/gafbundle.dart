@@ -40,20 +40,6 @@ class GAFBundle {
   //--------------------------------------------------------------------------
 
   /**
-		 * Disposes all assets in bundle
-		 */
-  void dispose() {
-    if (_gafAssets != null) {
-      GAFSoundManager.getInstance().stopAll();
-      _soundData.dispose();
-      _soundData = null;
-      _gafAssets?.forEach((ga) => ga..dispose());
-      _gafAssets = null;
-      _gafAssetsMap = null;
-    }
-  }
-
-  /**
 		 * Returns <code>GAFTimeline</code> from bundle by timelineID
 		 * @param swfName is the name of swf file, used to create gaf file
 		 * @return <code>GAFTimeline</code> on the stage of swf file

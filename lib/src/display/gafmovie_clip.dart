@@ -56,7 +56,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   bool _hidden = false;
   bool _reverse = false;
   bool _started = false;
-  bool _disposed = false;
   bool _hasFilter = false;
   bool _useClipping = false;
   bool _alphaLessMax = false;
@@ -335,14 +334,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   bool advanceTime(num passedTime) {
 
-    if (_disposed) {
-      print("WARNING: GAFMovieClip is disposed but is not removed from the Juggler");
-      return false;
-    } else if (this._config.disposed) {
-      this.dispose();
-      return false;
-    }
-
     if (_inPlay && _frameDuration != double.INFINITY) {
 
       _currentTime += passedTime;
@@ -355,8 +346,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
           if (_inPlay) {
             _changeCurrentFrame((i + 1) != framesToPlay);
           } else {
-            //if a playback was interrupted by some action or an event
-            if (!this._disposed) _draw();
+            _draw();
             break;
           }
         }
@@ -648,8 +638,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     if (_currentFrame != frame - 1) {
       _currentFrame = frame - 1;
       _runActions();
-      //actions may interrupt playback and lead to content disposition
-      if (!_disposed) _draw();
     }
   }
 
@@ -984,34 +972,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     return super.getChildByName(name);
   }
 
-  /// Disposes all resources of the display object instance.
-
-  void dispose() {
-
-    if (_disposed) return;
-    this.stop();
-
-    for (int i = 0; i < _displayObjectsList.length; i++) {
-      //_displayObjectsList[i].dispose();
-    }
-
-    for (int i = 0; i < _pixelMasksList.length; i++) {
-      //_pixelMasksList[i].dispose();
-    }
-
-    _displayObjectsMap = null;
-    _pixelMasksMap = null;
-    _displayObjectsList= null;
-    _pixelMasksList= null;
-    _imagesList= null;
-    _gafTimeline = null;
-    _movieClipList= null;
-    _config = null;
-
-    this.removeFromParent();
-    _disposed = true;
-  }
-
   //--------------------------------------------------------------------------
   //
   //  EVENT HANDLERS
@@ -1038,15 +998,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     }
 
     _runActions();
-
-    //actions may interrupt playback and lead to content disposition
-
-    if (_disposed) {
-      return;
-    } else if (_config.disposed) {
-      this.dispose();
-      return;
-    }
 
     if(isSkipping == false) {
       // Draw will trigger events if any

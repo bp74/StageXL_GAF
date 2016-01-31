@@ -135,7 +135,6 @@ class GAFTimelinesManager {
     for (String swfName in _bundlesBySwfName) {
       bundle = _bundlesBySwfName[swfName];
       if (name == null || bundle.name == name) {
-        bundle.dispose();
         _bundlesBySwfName.remove(swfName);
       }
     }

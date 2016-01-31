@@ -58,17 +58,7 @@ class GAFTimeline {
     return null;
   }
 
-  /// Disposes the underlying GAF timeline config
-
-  void dispose() {
-    _config?.dispose();
-    _config = null;
-    _gafAsset = null;
-    _gafgfxData = null;
-    _gafSoundData = null;
-  }
-
- /// Load all graphical data connected with this asset in device GPU memory.
+  /// Load all graphical data connected with this asset in device GPU memory.
   /// Used in case of manual control of GPU memory usage.
   /// Works only in case when all graphical data stored in RAM
   /// (<code>Starling.handleLostContext</code> should be set to <code>true</code>

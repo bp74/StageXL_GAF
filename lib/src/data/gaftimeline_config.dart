@@ -38,7 +38,6 @@ class GAFTimelineConfig {
   Rectangle _bounds;
   Point _pivot;
   Map _sounds;
-  bool _disposed = false;
 
   //--------------------------------------------------------------------------
   //
@@ -60,22 +59,6 @@ class GAFTimelineConfig {
   //  PUBLIC METHODS
   //
   //--------------------------------------------------------------------------
-
-  void dispose() {
-    _allTextureAtlases?.forEach((ta) => ta.dispose());
-    _allTextureAtlases = null;
-    _animationConfigFrames = null;
-    _animationSequences = null;
-    _animationObjects = null;
-    _textureAtlas = null;
-    _textFields = null;
-    _namedParts = null;
-    _warnings = null;
-    _bounds = null;
-    _sounds = null;
-    _pivot = null;
-    _disposed = true;
-  }
 
   CTextureAtlasScale getTextureAtlasForScale(num scale) {
     for (CTextureAtlasScale cTextureAtlas in _allTextureAtlases) {
@@ -232,6 +215,4 @@ class GAFTimelineConfig {
   set pivot(Point value) {
     _pivot = value;
   }
-
-  bool get disposed => _disposed;
 }
