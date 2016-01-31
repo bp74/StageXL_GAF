@@ -58,8 +58,7 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
   /// @param newTexture the new <code>IGAFTexture</code> which will be used to replace existing one.
 
   void changeTexture(IGAFTexture newTexture) {
-    this.texture = newTexture.texture;
-    this.readjustSize();
+    this.bitmapData = newTexture.texture;
     _assetTexture.copyFrom(newTexture);
   }
 

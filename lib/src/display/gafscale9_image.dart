@@ -37,6 +37,10 @@ part of stagexl_gaf;
 
 class GAFScale9Image extends Sprite {
   // TODO: Implement or replace GAFScale9Image
+
+	GAFScale9Image(GAFScale9Texture textures, [num textureScale = 1]) : super() {
+
+	}
 }
 
 /*

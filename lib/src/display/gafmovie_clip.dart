@@ -38,7 +38,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   List<IGAFDisplayObject> _displayObjectsList;
   List<IGAFImage> _imagesList;
-  List<GAFMovieClip> _mcVector;
+  List<GAFMovieClip> _movieClipList;
   List<GAFPixelMaskDisplayObject> _pixelMasksList;
 
   CAnimationSequence _playingSequence;
@@ -270,8 +270,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _started = true;
 
-    for (int i = 0; applyToAllChildren && i < _mcVector.length; i++) {
-      _mcVector[i]._started = true;
+    for (int i = 0; applyToAllChildren && i < _movieClipList.length; i++) {
+      _movieClipList[i]._started = true;
     }
 
     _play(applyToAllChildren, true);
@@ -290,8 +290,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _started = false;
 
-    for (int i = 0; applyToAllChildren && i < _mcVector.length; i++) {
-      _mcVector[i]._started = false;
+    for (int i = 0; applyToAllChildren && i < _movieClipList.length; i++) {
+      _movieClipList[i]._started = false;
     }
 
     _stop(applyToAllChildren, true);
@@ -324,8 +324,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     this.loop = loop;
 
-    for (int i = 0; i < _mcVector.length; i++) {
-      _mcVector[i].loop = loop;
+    for (int i = 0; i < _movieClipList.length; i++) {
+      _movieClipList[i].loop = loop;
     }
   }
 
@@ -365,9 +365,9 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
       }
     }
 
-    if (_mcVector != null) {
-      for (int i = 0; i < _mcVector.length; i++) {
-        _mcVector[i].advanceTime(passedTime);
+    if (_movieClipList != null) {
+      for (int i = 0; i < _movieClipList.length; i++) {
+        _movieClipList[i].advanceTime(passedTime);
       }
     }
 
@@ -611,16 +611,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
           case CFrameAction.DISPATCH_EVENT:
             String type = action.params[0];
+
             if (this.hasEventListener(type)) {
-              switch (action.params.length) {
-                case 4:
-                  Map data = action.params[3];
-                case 3:
-                // cancelable param is not used
-                case 2:
-                  bool bubbles = (action.params[1] == "true" ? true : false);
-                  break;
-              }
+              var data = action.params.length >= 4 ? action.params[3] : null;
+              var cancelable = action.params.length >= 3 ? action.params[2] == "true" : false;
+              var bubbles = action.params.length >= 2 ? action.params[1] == "true" : false;
               this.dispatchEventWith(type, bubbles, data);
             }
 
@@ -666,27 +661,21 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   void _draw() {
 
     if (_config.debugRegions != null) {
-
       // Non optimized way when there are debug regions
       _clearDisplayList();
-
     } else {
-
       // Just hide the children to avoid dispatching a lot of events and alloc temporary arrays
       _displayObjectsMap.forEach((k,v) => v.alpha = 0);
-
-      for (int i = 0; i < _mcVector.length; i++) {
-        _mcVector[i]._hidden = true;
-      }
+      _movieClipList.forEach((mc) => mc._hidden = true);
     }
 
-    List<CAnimationFrame> frames = this._config.animationConfigFrames.frames;
+    List<CAnimationFrame> frames = _config.animationConfigFrames.frames;
 
-    if (frames.length > this._currentFrame) {
+    if (frames.length > _currentFrame) {
 
       int maskIndex = 0;
       GAFMovieClip movieClip = null;
-//      GAFPixelMaskDisplayObject pixelMaskObject = null;
+      GAFPixelMaskDisplayObject pixelMaskObject = null;
 
       Map animationObjectsMap = _config.animationObjects.animationObjectsMap;
       CAnimationFrame frameConfig = frames[_currentFrame];
@@ -716,12 +705,13 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
         if (animationObjectsMap[instance.id].mask == false) {
 
           //if display object is under mask
-          if (false && instance.maskID != null) {
+          if (false && instance.maskID.length > 0) {
 
             // TODO: fix this
-            /*
+
             pixelMaskObject = _pixelMasksMap[instance.maskID];
             if (pixelMaskObject != null) {
+              /*
               pixelMaskObject.addChild(displayObject);
               maskIndex++;
 
@@ -729,8 +719,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
               displayObject.invalidateOrientation();
               displayObject.setFilterConfig(null);
               if (maskIndex == 1) this.addChild(pixelMaskObject);
+              */
             }
-            */
 
           } else  {
 
@@ -752,15 +742,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
           if (movieClip != null && movieClip._started) {
             movieClip._play(true);
           }
-
-          /*
-          if (DebugUtility.RENDERING_DEBUG && displayObject is IGAFDebug)
-          {
-            List<int> colors = DebugUtility.getRenderingDifficultyColor(
-                instance, this._alphaLessMax, this._masked, this._hasFilter);
-            (displayObject as IGAFDebug).debugColors = colors;
-          }
-          */
 
         } else {
 
@@ -801,8 +782,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     _currentTime = 0;
     _lastFrameTime = 0;
 
-    for(int i = 0; i < _mcVector.length; i++) {
-      _mcVector[i]._reset();
+    for(int i = 0; i < _movieClipList.length; i++) {
+      _movieClipList[i]._reset();
     }
   }
 
@@ -819,7 +800,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     _pixelMasksMap = {};
     _pixelMasksList = [];
     _imagesList = [];
-    _mcVector = [];
+    _movieClipList = [];
 
     _currentFrame = 0;
     _totalFrames = this._config.framesCount;
@@ -837,7 +818,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
           IGAFTexture texture = textureAtlas.getTexture(animationObjectConfig.regionID);
           if (texture is GAFScale9Texture && !animationObjectConfig.mask) {
             // GAFScale9Image doesn't work as mask
-            displayObject = new GAFScale9Image(texture as GAFScale9Texture);
+            displayObject = new GAFScale9Image(texture);
           } else {
             displayObject = new GAFImage(texture);
             //(displayObject as GAFImage)//.smoothing = this._smoothing; //not supported in StageXL
@@ -846,7 +827,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
         case CAnimationObject.TYPE_TEXTFIELD:
           CTextFieldObject tfObj = this._config.textFields.textFieldObjectsMap[animationObjectConfig.regionID];
-          displayObject = new GAFTextField(tfObj, this._scale, this._contentScaleFactor);
+          displayObject = new GAFTextField(tfObj, _scale, _contentScaleFactor);
           break;
 
         case CAnimationObject.TYPE_TIMELINE:
@@ -895,14 +876,14 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
       _displayObjectsList.add(displayObject);
 
       if (displayObject is IGAFImage) {
-        _imagesList.add(displayObject as IGAFImage);
+        _imagesList.add(displayObject);
       } else if (displayObject is GAFMovieClip) {
-        _mcVector.add(displayObject);
+        _movieClipList.add(displayObject);
       }
     }
   }
 
-  void updateBounds(Rectangle bounds) {
+  void _updateBounds(Rectangle bounds) {
     /*
     this._boundsAndPivot.reset();
     //bounds
@@ -932,7 +913,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   }
 
   //[Inline]
-  void updateTransformMatrix() {
+  void _updateTransformMatrix() {
     if (_orientationChanged) {
       this.transformationMatrix = this.transformationMatrix;
       _orientationChanged = false;
@@ -954,12 +935,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     if (dispose) {
 
-      DisplayObject child = this.getChildAt(index);
-
+      var child = this.getChildAt(index);
       if (child is IGAFDisplayObject) {
 
-        int id = _mcVector.indexOf(child);
-        if (id >= 0) _mcVector.removeAt(id);
+        int id = _movieClipList.indexOf(child);
+        if (id >= 0) _movieClipList.removeAt(id);
 
         id = _imagesList.indexOf(child);
         if (id >= 0) _imagesList.removeAt(id);
@@ -1012,16 +992,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     this.stop();
 
     for (int i = 0; i < _displayObjectsList.length; i++) {
-      _displayObjectsList[i].dispose();
+      //_displayObjectsList[i].dispose();
     }
 
     for (int i = 0; i < _pixelMasksList.length; i++) {
-      _pixelMasksList[i].dispose();
-    }
-
-    if (_boundsAndPivot != null) {
-      _boundsAndPivot.dispose();
-      _boundsAndPivot = null;
+      //_pixelMasksList[i].dispose();
     }
 
     _displayObjectsMap = null;
@@ -1030,7 +1005,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     _pixelMasksList= null;
     _imagesList= null;
     _gafTimeline = null;
-    _mcVector= null;
+    _movieClipList= null;
     _config = null;
 
     this.removeFromParent();
@@ -1082,7 +1057,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     if( resetInvisibleChildren) {
       //reset timelines that aren't visible
-      for (var movieClip in _mcVector) {
+      for (var movieClip in _movieClipList) {
         if (movieClip._hidden) movieClip._reset();
       }
     }
@@ -1138,7 +1113,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
       _frameDuration = 1 / value;
     }
 
-    for(var movieClip in _mcVector) {
+    for(var movieClip in _movieClipList) {
       movieClip.fps = value;
     }
   }
@@ -1151,7 +1126,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _reverse = value;
 
-    for(var movieClip in _mcVector) {
+    for(var movieClip in _movieClipList) {
       movieClip._reverse = value;
     }
   }
@@ -1173,7 +1148,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _skipFrames = value;
 
-    for(var movieClip in _mcVector) {
+    for(var movieClip in _movieClipList) {
       movieClip._skipFrames = value;
     }
   }

@@ -1,6 +1,7 @@
 part of stagexl_gaf;
 
-class GAFPixelMaskDisplayObject extends DisplayObjectContainer {
+class GAFPixelMaskDisplayObject extends DisplayObject {
+
 }
 
 /*

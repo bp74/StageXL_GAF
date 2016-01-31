@@ -1,10 +1,10 @@
 part of stagexl_gaf;
 
-abstract class IGAFDisplayObject {
+abstract class IGAFDisplayObject extends DisplayObject {
 
   void setFilterConfig(CFilter value, [num scale = 1]);
   void invalidateOrientation();
-  void dispose();
+//  void dispose();
 
   num get alpha;
   void set alpha(num value);

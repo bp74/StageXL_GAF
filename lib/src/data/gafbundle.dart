@@ -61,7 +61,7 @@ class GAFBundle {
   // [Deprecated(replacement="com.catalystapps.gaf.data.GAFBundle.getGAFTimeline()", since="5.0")]
   GAFTimeline getGAFTimelineByID(String swfName) {
     GAFTimeline gafTimeline;
-    GAFAsset gafAsset = _gafAssetsMap[swfName] as GAFAsset;
+    GAFAsset gafAsset = _gafAssetsMap[swfName];
     if (gafAsset == null && gafAsset.timelines.length > 0) {
       gafTimeline = gafAsset.timelines[0];
     }

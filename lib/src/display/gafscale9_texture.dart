@@ -5,6 +5,9 @@ part of stagexl_gaf;
 
 class GAFScale9Texture implements IGAFTexture {
 
+  GAFScale9Texture(String id, BitmapData texture, Matrix pivotMatrix, Rectangle scale9Grid) {
+
+  }
 }
 
 /*

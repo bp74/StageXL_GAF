@@ -75,7 +75,7 @@ class GAFAsset {
 		 */
 
   GAFTimeline getGAFTimelineByLinkage(String linkage) {
-    return this._timelinesByLinkage[linkage];
+    return _timelinesByLinkage[linkage];
   }
 
   //--------------------------------------------------------------------------
@@ -92,15 +92,6 @@ class GAFAsset {
 
   GAFTimeline _getGAFTimelineByID(String id) {
     return _timelinesMap[id];
-  }
-
-  /** @
-		 * Returns <code>GAFTimeline</code> from gaf asset bundle by linkage
-		 * @param linkage linkage in a *.fla file library
-		 * @return <code>GAFTimeline</code> from gaf asset
-		 */
-  GAFTimeline _getGAFTimelineByLinkage(String linkage) {
-    return _timelinesByLinkage[linkage];
   }
 
   IGAFTexture _getCustomRegion(String linkage, [num scale, num csf]) {

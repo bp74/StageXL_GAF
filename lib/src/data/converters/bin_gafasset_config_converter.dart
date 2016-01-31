@@ -608,7 +608,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
         if (!_textureElementSizes.containsKey(elementAtlasID)) {
           _textureElementSizes[elementAtlasID] = sHelperRectangle.clone();
         } else {
-          _textureElementSizes[elementAtlasID] = _textureElementSizes[elementAtlasID].union(sHelperRectangle);
+          _textureElementSizes[elementAtlasID] = _textureElementSizes[elementAtlasID].boundingBox(sHelperRectangle);
         }
       }
     }
