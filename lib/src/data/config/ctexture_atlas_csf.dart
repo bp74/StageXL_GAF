@@ -42,7 +42,7 @@ class CTextureAtlasCSF {
   //--------------------------------------------------------------------------
 
   void dispose() {
-    _atlas?.dispose();
+    //_atlas?.dispose();
     _atlas = null;
   }
 

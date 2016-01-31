@@ -118,7 +118,7 @@ class GAFBundle {
     IGAFTexture gafTexture;
     GAFAsset gafAsset = _gafAssetsMap[swfName];
     if (gafAsset != null) {
-      gafTexture = gafAsset.getCustomRegion(linkage, scale, csf);
+      gafTexture = gafAsset._getCustomRegion(linkage, scale, csf);
     }
 
     return gafTexture;
@@ -134,7 +134,7 @@ class GAFBundle {
     GAFTimeline gafTimeline;
     GAFAsset gafAsset = _gafAssetsMap[swfName];
     if (gafAsset != null) {
-      gafTimeline = gafAsset.getGAFTimelineByID(id);
+      gafTimeline = gafAsset._getGAFTimelineByID(id);
     }
 
     return gafTimeline;

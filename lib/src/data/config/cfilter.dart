@@ -14,7 +14,7 @@ class CFilter {
   //
   //--------------------------------------------------------------------------
 
-  List<ICFilterData> _filterConfigs = new List<ICFilterData>();
+  List<CFilterData> _filterConfigs = new List<CFilterData>();
 
   //--------------------------------------------------------------------------
   //
@@ -32,7 +32,7 @@ class CFilter {
 
     CFilter result = new CFilter();
 
-    for (ICFilterData filterData in _filterConfigs) {
+    for (CFilterData filterData in _filterConfigs) {
       result.filterConfigs.add(filterData.clone());
     }
 
@@ -89,7 +89,7 @@ class CFilter {
 
     CColorMatrixFilterData filterData = new CColorMatrixFilterData();
 
-    VectorUtility.fillMatrix(
+    ListUtility.fillMatrix(
         filterData.matrix,
         params[1], 0, 0, 0, params[2],
         0, params[3], 0, 0, params[4],
@@ -116,12 +116,11 @@ class CFilter {
   }
 
   CBlurFilterData getBlurFilter() {
-    for (ICFilterData filterConfig in _filterConfigs) {
+    for (CFilterData filterConfig in _filterConfigs) {
       if (filterConfig is CBlurFilterData) {
-        return filterConfig as CBlurFilterData;
+        return filterConfig;
       }
     }
-
     return null;
   }
 
@@ -132,12 +131,11 @@ class CFilter {
   //--------------------------------------------------------------------------
 
   CColorMatrixFilterData _getColorMatrixFilter() {
-    for (ICFilterData filterConfig in _filterConfigs) {
+    for (CFilterData filterConfig in _filterConfigs) {
       if (filterConfig is CColorMatrixFilterData) {
-        return filterConfig as CColorMatrixFilterData;
+        return filterConfig;
       }
     }
-
     return null;
   }
 
@@ -159,6 +157,6 @@ class CFilter {
   //
   //--------------------------------------------------------------------------
 
-  List<ICFilterData> get filterConfigs => _filterConfigs;
+  List<CFilterData> get filterConfigs => _filterConfigs;
 
 }

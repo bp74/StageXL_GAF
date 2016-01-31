@@ -3,7 +3,7 @@ part of stagexl_gaf.utils;
 /**
 	 * @
 	 */
-class VectorUtility {
+class ListUtility {
 
   //[Inline]
   static void fillMatrix(

@@ -128,7 +128,7 @@ class GAFAsset {
             element = atlasCSF.elements.getElementByLinkage(linkage);
 
             if (element != null) {
-              Bitmap texture = atlasCSF.atlas.getTextureByIDAndAtlasID(element.id, element.atlasID);
+              BitmapData texture = atlasCSF.atlas._getTextureByIDAndAtlasID(element.id, element.atlasID);
               Matrix pivotMatrix = element.pivotMatrix;
               if (element.scale9Grid != null) {
                 gafTexture = new GAFScale9Texture(id, texture, pivotMatrix, element.scale9Grid);

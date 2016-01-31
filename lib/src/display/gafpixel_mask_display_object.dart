@@ -1,6 +1,11 @@
 part of stagexl_gaf;
 
 class GAFPixelMaskDisplayObject extends DisplayObjectContainer {
+}
+
+/*
+
+class GAFPixelMaskDisplayObject extends DisplayObjectContainer {
 
   static final String MASK_MODE = "mask";
   static final int PADDING = 1;
@@ -52,7 +57,7 @@ class GAFPixelMaskDisplayObject extends DisplayObjectContainer {
       _mask = value;
 
       if (_mask.width == 0 || _mask.height == 0) {
-        throw new StateError("Mask must have dimensions. Current dimensions are " + _mask.width + "x" + _mask.height + ".");
+        throw new StateError("Mask must have dimensions. Current dimensions are ${_mask.width}x${_mask.height}.");
       }
 
       IMaxSize objectWithMaxSize = (_mask is IMaxSize) ? _mask : null;
@@ -86,11 +91,11 @@ class GAFPixelMaskDisplayObject extends DisplayObjectContainer {
   void refreshRenderTextures([Event event = null]) {
 
     if (_mask != null) {
+
       this.clearRenderTextures();
 
-      this._renderTexture = new RenderTexture(
-          this._maskSize.x, this._maskSize.y, false, this._scaleFactor);
-      this._maskRenderTexture = new RenderTexture(
+      _renderTexture = new RenderTexture(_maskSize.x, _maskSize.y, false, _scaleFactor);
+      _maskRenderTexture = new RenderTexture(
           this._maskSize.x + PADDING * 2,
           this._maskSize.y + PADDING * 2,
           false,
@@ -191,3 +196,4 @@ class GAFPixelMaskDisplayObject extends DisplayObjectContainer {
     this._mustReorder = value;
   }
 }
+*/

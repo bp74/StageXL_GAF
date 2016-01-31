@@ -8,7 +8,7 @@ class CColorMatrixFilterData implements CFilterData {
   CFilterData clone() {
 
     CColorMatrixFilterData copy = new CColorMatrixFilterData();
-    VectorUtility.copyMatrix(copy.matrix, this.matrix);
+    ListUtility.copyMatrix(copy.matrix, this.matrix);
 
     return copy;
   }

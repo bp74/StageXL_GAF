@@ -3,9 +3,11 @@
  */
 part of stagexl_gaf;
 
-/**
-	 * @
-	 */
+class GAFScale9Texture implements IGAFTexture {
+
+}
+
+/*
 class GAFScale9Texture implements IGAFTexture {
   //--------------------------------------------------------------------------
   //
@@ -265,3 +267,4 @@ class GAFScale9Texture implements IGAFTexture {
   //
   //--------------------------------------------------------------------------
 }
+*/

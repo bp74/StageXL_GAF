@@ -136,7 +136,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   /// @return The mask display object with the specified ID
 
   DisplayObject getMaskByID(String id) {
-    return this._displayObjectsMap[id];
+    return _displayObjectsMap[id];
   }
 
   /*
@@ -713,27 +713,28 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
         displayObject.alpha = instance.alpha;
 
         //if display object is not a mask
-        if (animationObjectsMap[instance.id].mask == null) {
+        if (animationObjectsMap[instance.id].mask == false) {
 
           //if display object is under mask
           if (false && instance.maskID != null) {
 
+            // TODO: fix this
+            /*
             pixelMaskObject = _pixelMasksMap[instance.maskID];
             if (pixelMaskObject != null) {
-
               pixelMaskObject.addChild(displayObject);
               maskIndex++;
 
               instance.applyTransformMatrix(displayObject.transformationMatrix, objectPivotMatrix, _scale);
               displayObject.invalidateOrientation();
               displayObject.setFilterConfig(null);
-
-              if (maskIndex == 1) {
-                this.addChild(pixelMaskObject);
-              }
+              if (maskIndex == 1) this.addChild(pixelMaskObject);
             }
+            */
 
           } else  {
+
+            // TODO: fix this
 
             //if display object is not masked
             //if (pixelMaskObject != null ) {
@@ -773,7 +774,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
             if (maskInstance != null) {
               _getTransformMatrix(maskObject, HELPER_MATRIX);
               maskInstance.applyTransformMatrix(maskObject.transformationMatrix, HELPER_MATRIX, this._scale);
-              //maskObject.invalidateOrientation();
+              maskObject.invalidateOrientation();
             } else {
               throw new StateError("Unable to find mask with ID " + instance.id);
             }
@@ -849,8 +850,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
           break;
 
         case CAnimationObject.TYPE_TIMELINE:
-          GAFTimeline timeline = gafAsset.getGAFTimelineByID(animationObjectConfig.regionID);
-          displayObject = new GAFMovieClip(timeline, this.fps, false);
+          GAFTimeline timeline = gafAsset._getGAFTimelineByID(animationObjectConfig.regionID);
+          displayObject = new GAFMovieClip(timeline, this.fps);
           break;
       }
 
@@ -934,7 +935,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   void updateTransformMatrix() {
     if (_orientationChanged) {
       this.transformationMatrix = this.transformationMatrix;
-      this._orientationChanged = false;
+      _orientationChanged = false;
     }
   }
 

@@ -58,11 +58,10 @@ class CTextureAtlas {
 
     var textureAtlasElement = _textureAtlasConfig.elements.getElement(id);
     if (textureAtlasElement != null) {
-      var textureAtlas = _textureAtlasesMap[textureAtlasElement.atlasID];
-      var texture =  textureAtlas.getBitmapData(id);
+      var texture =  _getTextureByIDAndAtlasID(id, textureAtlasElement.atlasID);
       var pivotMatrix = textureAtlasElement.pivotMatrix;
       if (textureAtlasElement.scale9Grid != null) {
-          return new GAFScale9Texture(id, texture, pivotMatrix, textureAtlasElement.scale9Grid);
+        return new GAFScale9Texture(id, texture, pivotMatrix, textureAtlasElement.scale9Grid);
       } else {
         return new GAFTexture(id, texture, pivotMatrix);
       }
@@ -72,6 +71,19 @@ class CTextureAtlas {
   }
 
   //--------------------------------------------------------------------------
+  //
+  //  PRIVATE METHODS
+  //
+  //--------------------------------------------------------------------------
+
+  BitmapData _getTextureByIDAndAtlasID(String id, String atlasID) {
+    var textureAtlas = _textureAtlasesMap[atlasID];
+    var texture =  textureAtlas.getBitmapData(id);
+    return texture;
+  }
+
+
+//--------------------------------------------------------------------------
   //
   // OVERRIDDEN METHODS
   //

@@ -60,7 +60,6 @@ part 'src/display/gafscale9_texture.dart';
 part 'src/display/gaftext_field.dart';
 part 'src/display/gaftext_field_text_editor.dart';
 part 'src/display/gaftexture.dart';
-part 'src/display/i_gafdebug.dart';
 part 'src/display/i_gafdisplay_object.dart';
 part 'src/display/i_gafimage.dart';
 part 'src/display/i_gaftexture.dart';

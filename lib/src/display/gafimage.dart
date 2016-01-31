@@ -3,7 +3,7 @@ part of stagexl_gaf;
 /// GAFImage represents static GAF display object that is part of
 /// the [GAFMovieClip].
 
-class GAFImage extends Bitmap implements IGAFImage, IMaxSize, IGAFDebug {
+class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
 
   //--------------------------------------------------------------------------
   //
@@ -24,6 +24,8 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize, IGAFDebug {
 
   Point _maxSize;
 
+  bool _orientationChanged = false;
+
   //--------------------------------------------------------------------------
   //
   //  CONSTRUCTOR
@@ -38,15 +40,19 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize, IGAFDebug {
     _assetTexture = assetTexture.clone();
   }
 
-  /// Creates a new instance of GAFImage.
-
-  GAFImage copy() => new GAFImage(_assetTexture);
-
   //--------------------------------------------------------------------------
   //
   //  PUBLIC METHODS
   //
   //--------------------------------------------------------------------------
+
+  /// Creates a new instance of GAFImage.
+
+  GAFImage copy() => new GAFImage(_assetTexture);
+
+  void invalidateOrientation() {
+    _orientationChanged = true;
+  }
 
   /// Change the texture of the <code>GAFImage</code> to a new one.
   /// @param newTexture the new <code>IGAFTexture</code> which will be used to replace existing one.
@@ -110,7 +116,7 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize, IGAFDebug {
   void _updateTransformMatrix() {
     if (_orientationChanged) {
       this.transformationMatrix = this.transformationMatrix;
-      this._orientationChanged = false;
+      _orientationChanged = false;
     }
   }
 

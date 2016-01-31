@@ -167,7 +167,7 @@ class GAFTimeline {
       if (frameSoundConfig.action == CFrameSound.ACTION_STOP) {
         GAFSoundManager
             .getInstance()
-            .stop(frameSoundConfig.soundID, this._config.assetID);
+            ._stop(frameSoundConfig.soundID, this._config.assetID);
       } else {
         Sound sound;
         if (frameSoundConfig.linkage != null) {
@@ -181,7 +181,7 @@ class GAFTimeline {
         soundOptions["continue"] =
             frameSoundConfig.action == CFrameSound.ACTION_CONTINUE;
         soundOptions["repeatCount"] = frameSoundConfig.repeatCount;
-        GAFSoundManager.getInstance().play(sound, frameSoundConfig.soundID,
+        GAFSoundManager.getInstance()._play(sound, frameSoundConfig.soundID,
             soundOptions, this._config.assetID);
       }
     }
@@ -266,7 +266,7 @@ class GAFTimeline {
 
   set scale(num value) {
 
-    num scale = this._gafAsset.getValidScale(value);
+    num scale = this._gafAsset._getValidScale(value);
     if (scale == null) {
       throw new StateError(ErrorConstants.SCALE_NOT_FOUND);
     } else {
@@ -304,7 +304,7 @@ class GAFTimeline {
 
   set contentScaleFactor(num csf) {
 
-    if (_gafAsset.hasCSF(csf)) {
+    if (_gafAsset._hasCSF(csf)) {
       _gafAsset.csf = csf;
     }
 

@@ -39,11 +39,8 @@ class CTextFieldObjects {
   }
 
   CAnimationObject getAnimationObject(String id) {
-    if (_textFieldObjectsMap.containsKey(id)) {
-      return _textFieldObjectsMap[id];
-    } else {
-      return null;
-    }
+    var value = _textFieldObjectsMap[id];
+    return value is CAnimationObject ? value : null;
   }
 
   //--------------------------------------------------------------------------
