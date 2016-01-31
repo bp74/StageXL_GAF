@@ -8,6 +8,7 @@ http://gafmedia.com/
 ##Examples
 
 Skeleton (<http://www.stagexl.org/show/gaf/skeleton/example.html>)
+Fireman (<http://www.stagexl.org/show/gaf/fireman/example.html>)
 
 ##License
 
