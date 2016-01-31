@@ -14,7 +14,7 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 600, height: 600);
+  var stage = new Stage(canvas, width: 500, height: 500);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
@@ -23,6 +23,9 @@ Future main() async {
   var gafTimeline = gafBundle.getGAFTimeline('skeleton');
 
   var skeleton = new GAFMovieClip(gafTimeline);
+  skeleton.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);
+  skeleton.x = 250;
+  skeleton.y = 250;
   stage.addChild(skeleton);
   stage.juggler.add(skeleton);
   skeleton.play();

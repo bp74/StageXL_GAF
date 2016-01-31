@@ -208,8 +208,8 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
   Matrix get pivotMatrix {
     // TODO: What is this?
     var matrix = _assetTexture.pivotMatrix.clone();
-    matrix.tx = this.pivotX;
-    matrix.ty = this.pivotY;
+    //matrix.tx = this.pivotX;
+    //matrix.ty = this.pivotY;
     return matrix;
   }
 

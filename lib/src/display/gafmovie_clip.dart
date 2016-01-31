@@ -1180,8 +1180,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   Matrix get pivotMatrix {
     var matrix = new Matrix.fromIdentity();
-    matrix.tx = this.pivotX;
-    matrix.ty = this.pivotY;
+    //matrix.tx = this.pivotX;
+    //matrix.ty = this.pivotY;
     return matrix;
   }
 
