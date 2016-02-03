@@ -4,7 +4,6 @@ import 'dart:math' as math;
 import 'dart:convert';
 import 'dart:typed_data';
 
-part 'utils/byte_buffer_reader.dart';
 part 'utils/copy_array.dart';
 part 'utils/debug_utility.dart';
 part 'utils/display_utility.dart';

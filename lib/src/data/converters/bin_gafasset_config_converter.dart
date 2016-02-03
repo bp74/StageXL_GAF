@@ -34,11 +34,13 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   static final Matrix sHelperMatrix = new Matrix.fromIdentity();
 
   String _assetID;
-  ByteBufferReader _bytes;
   num _defaultScale;
   num _defaultContentScaleFactor;
   GAFAssetConfig _config;
   Map<String, Rectangle> _textureElementSizes; // Point by texture element id
+
+  ByteData _data;
+  int _dataPosition = 0;
 
   //int _time;
   bool _isTimeline;
@@ -52,11 +54,10 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   //
   //--------------------------------------------------------------------------
 
-  BinGAFAssetConfigConverter(String assetID, ByteBuffer bytes) {
-    _bytes = new ByteBufferReader(bytes);
-    _assetID = assetID;
-    _textureElementSizes = new Map<String, Rectangle>();
-  }
+  BinGAFAssetConfigConverter(String assetID, ByteBuffer bytes)
+      : _data = new ByteData.view(bytes),
+        _assetID = assetID,
+        _textureElementSizes = new Map<String, Rectangle>();
 
   void convert() {
     this.parseStart();
@@ -71,10 +72,10 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   void parseStart() {
 
     _config = new GAFAssetConfig(_assetID);
-    _config.compression = _bytes.readInt();
-    _config.versionMajor = _bytes.readByte();
-    _config.versionMinor = _bytes.readByte();
-    _config.fileLength = _bytes.readUnsignedInt();
+    _config.compression = _readInt();
+    _config.versionMajor = _readByte();
+    _config.versionMinor = _readByte();
+    _config.fileLength = _readUnsignedInt();
 
     if (_config.compression == SIGNATURE_GAC) {
       throw new StateError("TODO: Implement ZLIB decompress");
@@ -85,19 +86,19 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
       _currentTimeline = new GAFTimelineConfig("${_config.versionMajor}.${_config.versionMinor}");
       _currentTimeline.id = "0";
       _currentTimeline.assetID = this._assetID;
-      _currentTimeline.framesCount = this._bytes.readShort();
-      _currentTimeline.bounds = new Rectangle<num>(_bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat());
-      _currentTimeline.pivot = new Point(_bytes.readFloat(), _bytes.readFloat());
+      _currentTimeline.framesCount = _readShort();
+      _currentTimeline.bounds = new Rectangle<num>(_readFloat(), _readFloat(), _readFloat(), _readFloat());
+      _currentTimeline.pivot = new Point(_readFloat(), _readFloat());
       _config.timelines.add(_currentTimeline);
 
     } else {
 
-      for (int i = 0, l = _bytes.readUnsignedInt(); i < l; i++) {
-        _config.scaleValues.add(_bytes.readFloat());
+      for (int i = 0, l = _readUnsignedInt(); i < l; i++) {
+        _config.scaleValues.add(_readFloat());
       }
 
-      for (int i = 0, l = _bytes.readUnsignedInt(); i < l; i++) {
-        _config.csfValues.add(_bytes.readFloat());
+      for (int i = 0, l = _readUnsignedInt(); i < l; i++) {
+        _config.csfValues.add(_readFloat());
       }
     }
 
@@ -118,13 +119,13 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
   void readNextTag() {
 
-    int tagID = _bytes.readShort();
-    int tagLength = _bytes.readUnsignedInt();
+    int tagID = _readShort();
+    int tagLength = _readUnsignedInt();
 
     switch (tagID) {
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_STAGE:
-        readStageConfig(_config);
+        _readStageConfig(_config);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS:
@@ -135,12 +136,12 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS:
       case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS2:
-        readAnimationMasks(tagID, _currentTimeline);
+        _readAnimationMasks(tagID, _currentTimeline);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS:
       case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS2:
-        readAnimationObjects(tagID, _currentTimeline);
+        _readAnimationObjects(tagID, _currentTimeline);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_FRAMES:
@@ -149,22 +150,22 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
         return;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_NAMED_PARTS:
-        readNamedParts(_currentTimeline);
+        _readNamedParts(_currentTimeline);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_SEQUENCES:
-        readAnimationSequences(_currentTimeline);
+        _readAnimationSequences(_currentTimeline);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_TEXT_FIELDS:
-        readTextFields(_currentTimeline);
+        _readTextFields(_currentTimeline);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_SOUNDS:
         if (!_ignoreSounds) {
-          readSounds(_config);
+          _readSounds(_config);
         } else {
-          _bytes.position += tagLength;
+          _dataPosition += tagLength;
         }
         break;
 
@@ -176,7 +177,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
         if (_isTimeline) {
           _isTimeline = false;
         } else {
-          _bytes.position = _bytes.length;
+          _dataPosition = _data.lengthInBytes;
           this.endParsing();
           return;
         }
@@ -184,7 +185,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
       default:
         print(WarningConstants.UNSUPPORTED_TAG);
-        _bytes.position += tagLength;
+        _dataPosition += tagLength;
         break;
     }
 
@@ -194,15 +195,15 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   GAFTimelineConfig readTimeline() {
 
     GAFTimelineConfig timelineConfig = new GAFTimelineConfig("${_config.versionMajor}.${_config.versionMinor}");
-    timelineConfig.id = _bytes.readUnsignedInt().toString();
+    timelineConfig.id = _readUnsignedInt().toString();
     timelineConfig.assetID = _config.id;
-    timelineConfig.framesCount = _bytes.readUnsignedInt();
-    timelineConfig.bounds = new Rectangle<num>(_bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat());
-    timelineConfig.pivot = new Point(_bytes.readFloat(), _bytes.readFloat());
-    bool hasLinkage = _bytes.readbool();
+    timelineConfig.framesCount = _readUnsignedInt();
+    timelineConfig.bounds = new Rectangle<num>(_readFloat(), _readFloat(), _readFloat(), _readFloat());
+    timelineConfig.pivot = new Point(_readFloat(), _readFloat());
+    bool hasLinkage = _readBool();
 
     if (hasLinkage) {
-      timelineConfig.linkage = _bytes.readUTF();
+      timelineConfig.linkage = _readUTF();
     }
 
     this._config.timelines.add(timelineConfig);
@@ -214,7 +215,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
   void readMaskMaxSizes() {
 
-    for (GAFTimelineConfig timeline in this._config.timelines) {
+    for (GAFTimelineConfig timeline in _config.timelines) {
 
       for (CAnimationFrame frame in timeline.animationConfigFrames.frames) {
         for (CAnimationFrameInstance frameInstance in frame.instances) {
@@ -249,8 +250,6 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   }
 
   void endParsing() {
-    //_bytes.clear();
-    //_bytes = null;
 
     this.readMaskMaxSizes();
 
@@ -305,7 +304,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   void readAnimationFrames(int tagID, [int startIndex = 0, num framesCount, CAnimationFrame prevFrame]) {
 
     if (framesCount is! num) {
-      framesCount = _bytes.readUnsignedInt();
+      framesCount = _readUnsignedInt();
     }
 
     int filterLength = 0;
@@ -332,14 +331,14 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
     for (int i = startIndex; i < framesCount; i++) {
 
-      frameNumber = _bytes.readUnsignedInt();
+      frameNumber = _readUnsignedInt();
 
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_FRAMES) {
         hasChangesInDisplayList = true;
         hasActions = false;
       } else {
-        hasChangesInDisplayList = _bytes.readbool();
-        hasActions = _bytes.readbool();
+        hasChangesInDisplayList = _readBool();
+        hasActions = _readBool();
       }
 
       if (prevFrame != null) {
@@ -358,37 +357,37 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
       if (hasChangesInDisplayList) {
 
-        statesCount = _bytes.readUnsignedInt();
+        statesCount = _readUnsignedInt();
 
         for (int j = 0; j < statesCount; j++) {
-          hasColorTransform = _bytes.readbool();
-          hasMask = _bytes.readbool();
-          hasEffect = _bytes.readbool();
+          hasColorTransform = _readBool();
+          hasMask = _readBool();
+          hasEffect = _readBool();
 
-          stateID = _bytes.readUnsignedInt();
-          zIndex = _bytes.readInt();
-          alpha = _bytes.readFloat();
-          matrix = new Matrix(_bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat());
+          stateID = _readUnsignedInt();
+          zIndex = _readInt();
+          alpha = _readFloat();
+          matrix = new Matrix(_readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat());
           filter = null;
 
           if (hasColorTransform) {
-            List<num> params = [_bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat()];
+            List<num> params = [_readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat()];
             filter ??= new CFilter();
             filter.addColorTransform(params);
           }
 
           if (hasEffect) {
             filter ??= new CFilter();
-            filterLength = _bytes.readByte();
+            filterLength = _readByte();
 
             for (int k = 0; k < filterLength; k++) {
-              filterType = _bytes.readUnsignedInt();
+              filterType = _readUnsignedInt();
               String warning;
 
               switch (filterType) {
 
                 case BinGAFAssetConfigConverter.FILTER_DROP_SHADOW:
-                  warning = readDropShadowFilter(filter);
+                  warning = _readDropShadowFilter(filter);
                   break;
 
                 case BinGAFAssetConfigConverter.FILTER_BLUR:
@@ -404,11 +403,11 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
                   break;
 
                 case BinGAFAssetConfigConverter.FILTER_GLOW:
-                  warning = readGlowFilter(filter);
+                  warning = _readGlowFilter(filter);
                   break;
 
                 case BinGAFAssetConfigConverter.FILTER_COLOR_MATRIX:
-                  warning = readColorMatrixFilter(filter);
+                  warning = _readColorMatrixFilter(filter);
                   break;
 
                 default:
@@ -421,7 +420,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
           }
 
           if (hasMask) {
-            maskID = _bytes.readUnsignedInt().toString();
+            maskID = _readUnsignedInt().toString();
           } else {
             maskID = "";
           }
@@ -441,17 +440,17 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
       if (hasActions) {
 
-        for (int a = 0, count = _bytes.readUnsignedInt(); a < count; a++) {
+        for (int a = 0, count = _readUnsignedInt(); a < count; a++) {
 
-          var type = _bytes.readUnsignedInt();
-          var scope = _bytes.readUTF();
+          var type = _readUnsignedInt();
+          var scope = _readUTF();
           var params = new List<String>();
 
-          int paramsLength = _bytes.readUnsignedInt();
-          int paramsOffset = _bytes.position;
+          int paramsLength = _readUnsignedInt();
+          int paramsOffset = _dataPosition;
 
-          while (_bytes.position < paramsOffset + paramsLength) {
-            params.add(_bytes.readUTF());
+          while (_dataPosition < paramsOffset + paramsLength) {
+            params.add(_readUTF());
           }
 
           var action = new CFrameAction(type, scope, params);
@@ -499,7 +498,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     int i;
     int j;
 
-    num scale = _bytes.readFloat();
+    num scale = _readFloat();
 
     if (_config.scaleValues.indexOf(scale) == -1) {
       _config.scaleValues.add(scale);
@@ -510,7 +509,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     /////////////////////
 
     CTextureAtlasCSF contentScaleFactor;
-    int atlasLength = _bytes.readByte();
+    int atlasLength = _readByte();
 
     CTextureAtlasElements elements;
     if (textureAtlas.allContentScaleFactors.length > 0) {
@@ -523,12 +522,12 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
     for (i = 0; i < atlasLength; i++) {
 
-      String atlasID = _bytes.readUnsignedInt().toString();
-      int sourceLength = _bytes.readByte();
+      String atlasID = _readUnsignedInt().toString();
+      int sourceLength = _readByte();
 
       for (j = 0; j < sourceLength; j++) {
-        String source = _bytes.readUTF();
-        double csf = _bytes.readFloat();
+        String source = _readUTF();
+        double csf = _readFloat();
 
         if (_config.csfValues.indexOf(csf) == -1) {
           _config.csfValues.add(csf);
@@ -545,7 +544,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
 
     /////////////////////
 
-    int elementsLength = _bytes.readUnsignedInt();
+    int elementsLength = _readUnsignedInt();
     CTextureAtlasElement element = null;
     bool hasScale9Grid = false;
     Rectangle scale9Grid = null;
@@ -559,33 +558,33 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     String linkageName = "";
 
     for (i = 0; i < elementsLength; i++) {
-      pivot = new Point(_bytes.readFloat(), _bytes.readFloat());
-      topLeft = new Point(_bytes.readFloat(), _bytes.readFloat());
+      pivot = new Point(_readFloat(), _readFloat());
+      topLeft = new Point(_readFloat(), _readFloat());
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS ||
           tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2) {
-        elementScaleX = elementScaleY = _bytes.readFloat();
+        elementScaleX = elementScaleY = _readFloat();
       }
 
-      double elementWidth = _bytes.readFloat();
-      double elementHeight = _bytes.readFloat();
-      String atlasID = _bytes.readUnsignedInt().toString();
-      String elementAtlasID = _bytes.readUnsignedInt().toString();
+      double elementWidth = _readFloat();
+      double elementHeight = _readFloat();
+      String atlasID = _readUnsignedInt().toString();
+      String elementAtlasID = _readUnsignedInt().toString();
 
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2 ||
           tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
-        hasScale9Grid = _bytes.readbool();
+        hasScale9Grid = _readBool();
         if (hasScale9Grid) {
-          scale9Grid = new Rectangle(_bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat(), _bytes.readFloat());
+          scale9Grid = new Rectangle(_readFloat(), _readFloat(), _readFloat(), _readFloat());
         } else {
           scale9Grid = null;
         }
       }
 
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
-        elementScaleX = _bytes.readFloat();
-        elementScaleY = _bytes.readFloat();
-        rotation = _bytes.readbool();
-        linkageName = _bytes.readUTF();
+        elementScaleX = _readFloat();
+        elementScaleY = _readFloat();
+        rotation = _readBool();
+        linkageName = _readUTF();
       }
 
       if (elements.getElement(elementAtlasID) == null) {
@@ -690,86 +689,145 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     _ignoreSounds = ignoreSounds;
   }
 
+  void set defaultScale(num defaultScale) {
+    _defaultScale = defaultScale;
+  }
+
+  void set defaultCSF(num csf) {
+    _defaultContentScaleFactor = csf;
+  }
+
   //--------------------------------------------------------------------------
   //
-  //  STATIC METHODS
+  //  READER METHODS
   //
   //--------------------------------------------------------------------------
 
-  void readStageConfig(GAFAssetConfig config) {
-    var fps = _bytes.readByte();
-    var color = _bytes.readInt();
-    var width = _bytes.readUnsignedShort();
-    var height = _bytes.readUnsignedShort();
+  double _readFloat() {
+    var value = _data.getFloat32(_dataPosition, Endianness.LITTLE_ENDIAN);
+    _dataPosition += 4;
+    return value;
+  }
+
+  int _readByte() {
+    var value = _data.getUint8(_dataPosition);
+    _dataPosition += 1;
+    return value;
+  }
+
+  int _readInt() {
+    var value = _data.getInt32(_dataPosition, Endianness.LITTLE_ENDIAN);
+    _dataPosition += 4;
+    return value;
+  }
+
+  int _readShort() {
+    var value = _data.getInt16(_dataPosition, Endianness.LITTLE_ENDIAN);
+    _dataPosition += 2;
+    return value;
+  }
+
+  int _readUnsignedShort() {
+    var value = _data.getUint16(_dataPosition, Endianness.LITTLE_ENDIAN);
+    _dataPosition += 2;
+    return value;
+  }
+
+  int _readUnsignedInt() {
+    var value = _data.getUint32(_dataPosition, Endianness.LITTLE_ENDIAN);
+    _dataPosition += 4;
+    return value;
+  }
+
+  bool _readBool() {
+    var value = _data.getInt8(_dataPosition);
+    _dataPosition += 1;
+    return value != 0;
+  }
+
+  String _readUTF() {
+    var length = _data.getUint16(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var string = new Uint8List.view(_data.buffer, _dataPosition + 2, length);
+    _dataPosition += 2 + length;
+    return UTF8.decode(string);
+  }
+
+  void _readStageConfig(GAFAssetConfig config) {
+    var fps = _readByte();
+    var color = _readInt();
+    var width = _readUnsignedShort();
+    var height = _readUnsignedShort();
     config.stageConfig = new CStage(fps, color, width, height);
   }
 
-  String readDropShadowFilter(CFilter filter) {
-    List<num> color = readColorValue();
-    num blurX = _bytes.readFloat();
-    num blurY = _bytes.readFloat();
-    num angle = _bytes.readFloat();
-    num distance = _bytes.readFloat();
-    num strength = _bytes.readFloat();
-    bool inner = _bytes.readbool();
-    bool knockout = _bytes.readbool();
+  String _readDropShadowFilter(CFilter filter) {
+    List<num> color = _readColorValue();
+    num blurX = _readFloat();
+    num blurY = _readFloat();
+    num angle = _readFloat();
+    num distance = _readFloat();
+    num strength = _readFloat();
+    bool inner = _readBool();
+    bool knockout = _readBool();
 
     return filter.addDropShadowFilter(blurX, blurY, color[1], color[0], angle,
         distance, strength, inner, knockout);
   }
 
   String readBlurFilter(CFilter filter) {
-    return filter.addBlurFilter(_bytes.readFloat(), _bytes.readFloat());
+    num blurX = _readFloat();
+    num blurY = _readFloat();
+    return filter.addBlurFilter(blurX, blurY);
   }
 
-  String readGlowFilter(CFilter filter) {
-    List<num> color = readColorValue();
-    num blurX = _bytes.readFloat();
-    num blurY = _bytes.readFloat();
-    num strength = _bytes.readFloat();
-    bool inner = _bytes.readbool();
-    bool knockout = _bytes.readbool();
+  String _readGlowFilter(CFilter filter) {
+    List<num> color = _readColorValue();
+    num blurX = _readFloat();
+    num blurY = _readFloat();
+    num strength = _readFloat();
+    bool inner = _readBool();
+    bool knockout = _readBool();
     return filter.addGlowFilter(blurX, blurY, color[1], color[0], strength, inner, knockout);
   }
 
-  String readColorMatrixFilter(CFilter filter) {
+  String _readColorMatrixFilter(CFilter filter) {
     List<num> matrix = new List<num>(20);
     for (int i = 0; i < 20; i++) {
-      matrix[i] = _bytes.readFloat();
+      matrix[i] = _readFloat();
     }
 
     return filter.addColorMatrixFilter(matrix);
   }
 
-  List<num> readColorValue() {
-    int argbValue = _bytes.readUnsignedInt();
+  List<num> _readColorValue() {
+    int argbValue = _readUnsignedInt();
     num alpha = ((argbValue >> 24) & 0xFF) / 255.0;
     int color = argbValue & 0xFFFFFF;
     return [alpha, color];
   }
 
-  void readAnimationMasks(int tagID, GAFTimelineConfig timelineConfig) {
+  void _readAnimationMasks(int tagID, GAFTimelineConfig timelineConfig) {
 
-    int length = _bytes.readUnsignedInt();
+    int length = _readUnsignedInt();
     int objectID;
     int regionID;
     String type;
 
     for (int i = 0; i < length; i++) {
-      objectID = _bytes.readUnsignedInt();
-      regionID = _bytes.readUnsignedInt();
+      objectID = _readUnsignedInt();
+      regionID = _readUnsignedInt();
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS) {
         type = CAnimationObject.TYPE_TEXTURE;
       } else // BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS2
       {
-        type = getAnimationObjectTypeString(_bytes.readUnsignedShort());
+        type = _getAnimationObjectTypeString(_readUnsignedShort());
       }
       timelineConfig.animationObjects.addAnimationObject(new CAnimationObject(
           objectID.toString(), regionID.toString(), type, true));
     }
   }
 
-  String getAnimationObjectTypeString(int type) {
+  String _getAnimationObjectTypeString(int type) {
     String typeString = CAnimationObject.TYPE_TEXTURE;
     switch (type) {
       case 0: typeString = CAnimationObject.TYPE_TEXTURE; break;
@@ -779,53 +837,53 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     return typeString;
   }
 
-  void readAnimationObjects(int tagID, GAFTimelineConfig timelineConfig) {
-    int length = _bytes.readUnsignedInt();
+  void _readAnimationObjects(int tagID, GAFTimelineConfig timelineConfig) {
+    int length = _readUnsignedInt();
     int objectID;
     int regionID;
     String type;
 
     for (int i = 0; i < length; i++) {
-      objectID = _bytes.readUnsignedInt();
-      regionID = _bytes.readUnsignedInt();
+      objectID = _readUnsignedInt();
+      regionID = _readUnsignedInt();
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS) {
         type = CAnimationObject.TYPE_TEXTURE;
       } else {
-        type = getAnimationObjectTypeString(_bytes.readUnsignedShort());
+        type = _getAnimationObjectTypeString(_readUnsignedShort());
       }
       timelineConfig.animationObjects.addAnimationObject(new CAnimationObject(
           objectID.toString(), regionID.toString(), type, false));
     }
   }
 
-  void readAnimationSequences(GAFTimelineConfig timelineConfig) {
-    int length = _bytes.readUnsignedInt();
+  void _readAnimationSequences(GAFTimelineConfig timelineConfig) {
+    int length = _readUnsignedInt();
     String sequenceID;
     int startFrameNo;
     int endFrameNo;
 
     for (int i = 0; i < length; i++) {
-      sequenceID = _bytes.readUTF();
-      startFrameNo = _bytes.readShort();
-      endFrameNo = _bytes.readShort();
+      sequenceID = _readUTF();
+      startFrameNo = _readShort();
+      endFrameNo = _readShort();
       timelineConfig.animationSequences.addSequence(
           new CAnimationSequence(sequenceID, startFrameNo, endFrameNo));
     }
   }
 
-  void readNamedParts(GAFTimelineConfig timelineConfig) {
+  void _readNamedParts(GAFTimelineConfig timelineConfig) {
     timelineConfig.namedParts = {};
-    int length = _bytes.readUnsignedInt();
+    int length = _readUnsignedInt();
     int partID;
     for (int i = 0; i < length; i++) {
-      partID = _bytes.readUnsignedInt();
-      timelineConfig.namedParts[partID] = _bytes.readUTF();
+      partID = _readUnsignedInt();
+      timelineConfig.namedParts[partID] = _readUTF();
     }
   }
 
-  void readTextFields(GAFTimelineConfig timelineConfig) {
+  void _readTextFields(GAFTimelineConfig timelineConfig) {
 
-    int length = _bytes.readUnsignedInt();
+    int length = _readUnsignedInt();
     num pivotX;
     num pivotY;
     int textFieldID;
@@ -844,30 +902,30 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     TextFormat textFormat;
 
     for (int i = 0; i < length; i++) {
-      textFieldID = _bytes.readUnsignedInt();
-      pivotX = _bytes.readFloat();
-      pivotY = _bytes.readFloat();
-      width = _bytes.readFloat();
-      height = _bytes.readFloat();
+      textFieldID = _readUnsignedInt();
+      pivotX = _readFloat();
+      pivotY = _readFloat();
+      width = _readFloat();
+      height = _readFloat();
 
-      text = _bytes.readUTF();
+      text = _readUTF();
 
-      embedFonts = _bytes.readbool();
-      multiline = _bytes.readbool();
-      wordWrap = _bytes.readbool();
+      embedFonts = _readBool();
+      multiline = _readBool();
+      wordWrap = _readBool();
 
-      bool hasRestrict = _bytes.readbool();
+      bool hasRestrict = _readBool();
       if (hasRestrict) {
-        restrict = _bytes.readUTF();
+        restrict = _readUTF();
       }
 
-      editable = _bytes.readbool();
-      selectable = _bytes.readbool();
-      displayAsPassword = _bytes.readbool();
-      maxChars = _bytes.readUnsignedInt();
+      editable = _readBool();
+      selectable = _readBool();
+      displayAsPassword = _readBool();
+      maxChars = _readUnsignedInt();
 
       // read textFormat
-      int alignFlag = _bytes.readUnsignedInt();
+      int alignFlag = _readUnsignedInt();
       String align;
       switch (alignFlag) {
         case 0: align = TextFormatAlign.LEFT; break;
@@ -878,30 +936,30 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
         case 5: align = TextFormatAlign.END; break;
       }
 
-      num blockIndent = _bytes.readUnsignedInt();
-      bool bold = _bytes.readbool();
-      bool bullet = _bytes.readbool();
-      int color = _bytes.readUnsignedInt();
+      num blockIndent = _readUnsignedInt();
+      bool bold = _readBool();
+      bool bullet = _readBool();
+      int color = _readUnsignedInt();
 
-      String font = _bytes.readUTF();
-      int indent = _bytes.readUnsignedInt();
-      bool italic = _bytes.readbool();
-      bool kerning = _bytes.readbool();
-      int leading = _bytes.readUnsignedInt();
-      num leftMargin = _bytes.readUnsignedInt();
-      num letterSpacing = _bytes.readFloat();
-      num rightMargin = _bytes.readUnsignedInt();
-      int size = _bytes.readUnsignedInt();
+      String font = _readUTF();
+      int indent = _readUnsignedInt();
+      bool italic = _readBool();
+      bool kerning = _readBool();
+      int leading = _readUnsignedInt();
+      num leftMargin = _readUnsignedInt();
+      num letterSpacing = _readFloat();
+      num rightMargin = _readUnsignedInt();
+      int size = _readUnsignedInt();
 
-      int l = _bytes.readUnsignedInt();
+      int l = _readUnsignedInt();
       List tabStops = [];
       for (int j = 0; j < l; j++) {
-        tabStops.add(_bytes.readUnsignedInt());
+        tabStops.add(_readUnsignedInt());
       }
 
-      String target = _bytes.readUTF();
-      bool underline = _bytes.readbool();
-      String url = _bytes.readUTF();
+      String target = _readUTF();
+      bool underline = _readBool();
+      String url = _readUTF();
 
       /* String display = tagContent.readUTF();*/
 
@@ -940,28 +998,22 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     }
   }
 
-  void readSounds(GAFAssetConfig config) {
+  void _readSounds(GAFAssetConfig config) {
     CSound soundData;
-    int count = _bytes.readShort();
+    int count = _readShort();
     for (int i = 0; i < count; i++) {
       soundData = new CSound();
-      soundData.soundID = _bytes.readShort();
-      soundData.linkageName = _bytes.readUTF();
-      soundData.source = _bytes.readUTF();
-      soundData.format = _bytes.readByte();
-      soundData.rate = _bytes.readByte();
-      soundData.sampleSize = _bytes.readByte();
-      soundData.stereo = _bytes.readbool();
-      soundData.sampleCount = _bytes.readUnsignedInt();
+      soundData.soundID = _readShort();
+      soundData.linkageName = _readUTF();
+      soundData.source = _readUTF();
+      soundData.format = _readByte();
+      soundData.rate = _readByte();
+      soundData.sampleSize = _readByte();
+      soundData.stereo = _readBool();
+      soundData.sampleCount = _readUnsignedInt();
       config.addSound(soundData);
     }
   }
 
-  void set defaultScale(num defaultScale) {
-    _defaultScale = defaultScale;
-  }
 
-  void set defaultCSF(num csf) {
-    _defaultContentScaleFactor = csf;
-  }
 }
