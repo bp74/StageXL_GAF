@@ -87,8 +87,8 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
       _currentTimeline.id = "0";
       _currentTimeline.assetID = this._assetID;
       _currentTimeline.framesCount = _readShort();
-      _currentTimeline.bounds = new Rectangle<num>(_readFloat(), _readFloat(), _readFloat(), _readFloat());
-      _currentTimeline.pivot = new Point(_readFloat(), _readFloat());
+      _currentTimeline.bounds = _readRectangle();
+      _currentTimeline.pivot = _readPoint();
       _config.timelines.add(_currentTimeline);
 
     } else {
@@ -198,8 +198,8 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     timelineConfig.id = _readUnsignedInt().toString();
     timelineConfig.assetID = _config.id;
     timelineConfig.framesCount = _readUnsignedInt();
-    timelineConfig.bounds = new Rectangle<num>(_readFloat(), _readFloat(), _readFloat(), _readFloat());
-    timelineConfig.pivot = new Point(_readFloat(), _readFloat());
+    timelineConfig.bounds = _readRectangle();
+    timelineConfig.pivot = _readPoint();
     bool hasLinkage = _readBool();
 
     if (hasLinkage) {
@@ -367,11 +367,11 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
           stateID = _readUnsignedInt();
           zIndex = _readInt();
           alpha = _readFloat();
-          matrix = new Matrix(_readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat());
+          matrix = _readMatrix();
           filter = null;
 
           if (hasColorTransform) {
-            List<num> params = [_readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat(), _readFloat()];
+            List<num> params = new List<num>.generate(7, (i) => _readFloat());
             filter ??= new CFilter();
             filter.addColorTransform(params);
           }
@@ -391,7 +391,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
                   break;
 
                 case BinGAFAssetConfigConverter.FILTER_BLUR:
-                  warning = readBlurFilter(filter);
+                  warning = _readBlurFilter(filter);
                   blurFilter = filter.filterDatas.last as CBlurFilterData;
                   if (blurFilter.blurX >= 2 && blurFilter.blurY >= 2) {
                     if (!blurFilters.containsKey(stateID)) {
@@ -558,8 +558,8 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     String linkageName = "";
 
     for (i = 0; i < elementsLength; i++) {
-      pivot = new Point(_readFloat(), _readFloat());
-      topLeft = new Point(_readFloat(), _readFloat());
+      pivot = _readPoint();
+      topLeft = _readPoint();
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS ||
           tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2) {
         elementScaleX = elementScaleY = _readFloat();
@@ -573,11 +573,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2 ||
           tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
         hasScale9Grid = _readBool();
-        if (hasScale9Grid) {
-          scale9Grid = new Rectangle(_readFloat(), _readFloat(), _readFloat(), _readFloat());
-        } else {
-          scale9Grid = null;
-        }
+        scale9Grid = hasScale9Grid ? _readRectangle() : null;
       }
 
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
@@ -752,6 +748,30 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     return UTF8.decode(string);
   }
 
+  Matrix _readMatrix() {
+    var a = _readFloat();
+    var b = _readFloat();
+    var c = _readFloat();
+    var d = _readFloat();
+    var tx = _readFloat();
+    var ty = _readFloat();
+    return new Matrix(a, b, c, d, tx, ty);
+  }
+
+  Rectangle<num> _readRectangle() {
+    var left = _readFloat();
+    var top = _readFloat();
+    var width = _readFloat();
+    var height = _readFloat();
+    return new Rectangle<num>(left, top, width, height);
+  }
+
+  Point<num> _readPoint() {
+    var x = _readFloat();
+    var y = _readFloat();
+    return new Point<num>(x, y);
+  }
+
   void _readStageConfig(GAFAssetConfig config) {
     var fps = _readByte();
     var color = _readInt();
@@ -774,7 +794,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
         distance, strength, inner, knockout);
   }
 
-  String readBlurFilter(CFilter filter) {
+  String _readBlurFilter(CFilter filter) {
     num blurX = _readFloat();
     num blurY = _readFloat();
     return filter.addBlurFilter(blurX, blurY);
