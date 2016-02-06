@@ -54,7 +54,6 @@ part 'src/data/gaftimeline_config.dart';
 
 part 'src/display/gafimage.dart';
 part 'src/display/gafmovie_clip.dart';
-part 'src/display/gafpixel_mask_display_object.dart';
 part 'src/display/gaftext_field.dart';
 part 'src/display/gaftext_field_text_editor.dart';
 part 'src/display/gaftexture.dart';
