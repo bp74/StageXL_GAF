@@ -130,7 +130,7 @@ class GAFTimeline {
     switch (content) {
       case CONTENT_ALL:
         _gafgfxData.disposeTextures();
-        _config.dispose();
+        //_config.dispose();
         return;
       case CONTENT_DEFAULT:
         _gafgfxData.disposeTextures(this.scale, this.contentScaleFactor);

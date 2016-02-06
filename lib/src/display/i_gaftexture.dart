@@ -20,9 +20,4 @@ abstract class IGAFTexture {
   /// Returns a new object that is a clone of this object.
 
   IGAFTexture clone();
-
-  /// Copies all of the data from the source object into the
-  /// calling <code>IGAFTexture</code> object
-
-  void copyFrom(IGAFTexture newTexture);
 }

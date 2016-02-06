@@ -2,9 +2,8 @@ part of stagexl_gaf;
 
 abstract class IGAFDisplayObject extends DisplayObject {
 
-  void setFilterConfig(CFilter value, [num scale = 1]);
-  void invalidateOrientation();
-//  void dispose();
+  String get name;
+  void set name(String value);
 
   num get alpha;
   void set alpha(num value);
@@ -19,6 +18,8 @@ abstract class IGAFDisplayObject extends DisplayObject {
 
   Matrix get pivotMatrix;
 
-  String get name;
-  void set name(String value);
+  void invalidateOrientation();
+  void setFilterConfig(CFilter value, [num scale = 1]);
+
+
 }

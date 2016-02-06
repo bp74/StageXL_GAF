@@ -66,7 +66,6 @@ class GAFBundleLoader {
     //--------------
 
     var request = await html.HttpRequest.request(gafUrl, responseType: "arraybuffer");
-    print(request.response.runtimeType);
     ByteBuffer configSource = request.response;
     String gafAssetID = getAssetId(gafUrl);
 

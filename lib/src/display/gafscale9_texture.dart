@@ -5,9 +5,17 @@ part of stagexl_gaf;
 
 class GAFScale9Texture implements IGAFTexture {
 
-  GAFScale9Texture(String id, BitmapData texture, Matrix pivotMatrix, Rectangle scale9Grid) {
+  String id;
+  BitmapData texture;
+  Matrix pivotMatrix;
+  Rectangle scale9Grid;
+
+  GAFScale9Texture(this.id, this.texture, this.pivotMatrix, this.scale9Grid) {
 
   }
+
+  GAFScale9Texture clone() => new GAFScale9Texture(id, texture, pivotMatrix, scale9Grid);
+
 }
 
 /*

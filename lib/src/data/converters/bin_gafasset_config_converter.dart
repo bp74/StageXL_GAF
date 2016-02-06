@@ -1,6 +1,6 @@
 part of stagexl_gaf;
 
-class BinGAFAssetConfigConverter extends EventDispatcher {
+class BinGAFAssetConfigConverter {
 
   static const int SIGNATURE_GAF = 0x00474146;
   static const int SIGNATURE_GAC = 0x00474143;
@@ -297,8 +297,6 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
       timelineConfig.stageConfig = this._config.stageConfig;
       this.checkForMissedRegions(timelineConfig);
     }
-
-    this.dispatchEvent(new Event(Event.COMPLETE));
   }
 
   void readAnimationFrames(int tagID, [int startIndex = 0, num framesCount, CAnimationFrame prevFrame]) {
@@ -664,11 +662,7 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
   }
 
   void parseError(String message) {
-    if (this.hasEventListener(ErrorEvent.ERROR)) {
-      this.dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, message));
-    } else {
-      throw new StateError(message);
-    }
+    throw new StateError(message);
   }
 
   //--------------------------------------------------------------------------
@@ -789,15 +783,15 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     num strength = _readFloat();
     bool inner = _readBool();
     bool knockout = _readBool();
-
-    return filter.addDropShadowFilter(blurX, blurY, color[1], color[0], angle,
-        distance, strength, inner, knockout);
+    filter.addDropShadowFilter(blurX, blurY, color[1], color[0], angle, distance, strength, inner, knockout);
+    return "";
   }
 
   String _readBlurFilter(CFilter filter) {
     num blurX = _readFloat();
     num blurY = _readFloat();
-    return filter.addBlurFilter(blurX, blurY);
+    filter.addBlurFilter(blurX, blurY);
+    return "";
   }
 
   String _readGlowFilter(CFilter filter) {
@@ -807,16 +801,14 @@ class BinGAFAssetConfigConverter extends EventDispatcher {
     num strength = _readFloat();
     bool inner = _readBool();
     bool knockout = _readBool();
-    return filter.addGlowFilter(blurX, blurY, color[1], color[0], strength, inner, knockout);
+    filter.addGlowFilter(blurX, blurY, color[1], color[0], strength, inner, knockout);
+    return "";
   }
 
   String _readColorMatrixFilter(CFilter filter) {
-    List<num> matrix = new List<num>(20);
-    for (int i = 0; i < 20; i++) {
-      matrix[i] = _readFloat();
-    }
-
-    return filter.addColorMatrixFilter(matrix);
+    var matrix = new List<num>.generate(20, (i) => _readFloat());
+    filter.addColorMatrixFilter(matrix);
+    return "";
   }
 
   List<num> _readColorValue() {
