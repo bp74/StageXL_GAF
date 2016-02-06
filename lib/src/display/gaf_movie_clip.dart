@@ -15,7 +15,7 @@ part of stagexl_gaf;
 /// ([play], [stop], [gotoAndPlay], etc.) and some more like [loop],
 /// [nPlay], [setSequence] that helps manage playback
 
-class GAFMovieClip extends DisplayObjectContainer implements Animatable, GAFDisplayObject, MaxSize {
+class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize {
 
   static final String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
 	static final String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
@@ -24,8 +24,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, GAFDisp
 
   final GAFTimeline _gafTimeline;
 
-  final Map<String, GAFDisplayObject> _displayObjectsMap = new Map<String, GAFDisplayObject>();
-  final List<GAFDisplayObject> _displayObjectsList = new List<GAFDisplayObject>();
+  final Map<String, DisplayObject> _displayObjectsMap = new Map<String, DisplayObject>();
+  final List<DisplayObject> _displayObjectsList = new List<DisplayObject>();
 
   final List<GAFImage> _imagesList = new List<GAFImage>();
   final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
@@ -172,13 +172,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, GAFDisp
   void set skipFrames(bool value) {
     _skipFrames = value;
     _movieClipList.forEach((mc) => mc.skipFrames = value);
-  }
-
-  Matrix get pivotMatrix {
-    var matrix = new Matrix.fromIdentity();
-    //matrix.tx = this.pivotX;
-    //matrix.ty = this.pivotY;
-    return matrix;
   }
 
   void set transformationMatrix(Matrix value) {
@@ -559,8 +552,13 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, GAFDisp
 
         displayObject.transformationMatrix.copyFrom(instance.matrix);
         displayObject.transformationMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
-        displayObject.transformationMatrix.prepend(displayObject.pivotMatrix);
         displayObject.addTo(this); // TODO: this is slow
+
+        if (displayObject is GAFImage) {
+          // TODO: We should remove this by addint the pivot to the vxList
+          var pivotMatrix = displayObject.assetTexture.pivotMatrix;
+          displayObject.transformationMatrix.prepend(pivotMatrix);
+        }
 
         if (animationObject.mask == false && instance.maskID.length > 0) {
           var mask = _displayObjectsMap[instance.maskID];

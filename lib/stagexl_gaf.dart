@@ -52,7 +52,6 @@ part 'src/data/gaf_gfxdata.dart';
 part 'src/data/gaf_timeline.dart';
 part 'src/data/gaf_timeline_config.dart';
 
-part 'src/display/gaf_display_object.dart';
 part 'src/display/gaf_image.dart';
 part 'src/display/gaf_movie_clip.dart';
 part 'src/display/gaf_text_field.dart';
