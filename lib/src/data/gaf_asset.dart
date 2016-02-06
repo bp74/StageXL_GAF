@@ -60,21 +60,18 @@ class GAFAsset {
     scale = scale ?? this.scale;
     csf = csf ?? this.csf;
 
-    for(var atlasScale in config.allTextureAtlases) {
-      if (atlasScale.scale == scale) {
-        for(var atlasCSF in atlasScale.allContentScaleFactors) {
-          if (atlasCSF.csf == csf) {
-            var element = atlasCSF.elements.getElementByLinkage(linkage);
-            if (element != null) {
-              var elementID = element.id;
-              var atlasID = element.atlasID;
-              var scale9Grid = element.scale9Grid;
-              var pivotMatrix = element.pivotMatrix;
-              var renderTextureQuad = atlasCSF.atlas.getRenderTextureQuadByIDAndAtlasID(elementID, atlasID);
-              return new GAFBitmapData(id, renderTextureQuad, pivotMatrix, scale9Grid);
-            }
-          }
-        }
+    for (var atlasScale in config.allTextureAtlases) {
+      if (atlasScale.scale != scale) continue;
+      for (var atlasCSF in atlasScale.allContentScaleFactors) {
+        if (atlasCSF.csf != csf) continue;
+        var element = atlasCSF.elements.getElementByLinkage(linkage);
+        if (element == null) continue;
+        var elementID = element.id;
+        var atlasID = element.atlasID;
+        var scale9Grid = element.scale9Grid;
+        var pivotMatrix = element.pivotMatrix;
+        var renderTextureQuad = atlasCSF.atlas.getRenderTextureQuadByIDAndAtlasID(elementID, atlasID);
+        return new GAFBitmapData(id, scale9Grid, pivotMatrix, renderTextureQuad);
       }
     }
 

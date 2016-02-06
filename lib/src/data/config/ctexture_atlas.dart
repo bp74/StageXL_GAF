@@ -35,7 +35,7 @@ class CTextureAtlas {
     var scale9Grid = element.scale9Grid;
     var pivotMatrix = element.pivotMatrix;
     var renderTextureQuad = getRenderTextureQuadByIDAndAtlasID(id, atlasID);
-    return new GAFBitmapData(id, renderTextureQuad, pivotMatrix, scale9Grid);
+    return new GAFBitmapData(id, scale9Grid, pivotMatrix, renderTextureQuad);
   }
 
   //--------------------------------------------------------------------------

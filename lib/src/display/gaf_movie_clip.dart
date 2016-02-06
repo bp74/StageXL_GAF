@@ -518,7 +518,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
         if (displayObject is GAFBitmap) {
           // TODO: remove this, see GAFBitmapData
-          var matrix = displayObject.gafBitmapData.transformationMatrix;
+          var matrix = displayObject.bitmapData.transformationMatrix;
           displayObject.transformationMatrix.prepend(matrix);
         }
 
