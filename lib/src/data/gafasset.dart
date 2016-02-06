@@ -68,15 +68,13 @@ class GAFAsset {
           if (atlasCSF.csf == csf) {
             var element = atlasCSF.elements.getElementByLinkage(linkage);
             if (element != null) {
-              var texture = atlasCSF.atlas._getTextureByIDAndAtlasID(element.id, element.atlasID);
+              var elementID = element.id;
+              var atlasID = element.atlasID;
+              var scale9Grid = element.scale9Grid;
               var pivotMatrix = element.pivotMatrix;
-              if (element.scale9Grid != null) {
-                gafTexture = new GAFScale9Texture(id, texture, pivotMatrix, element.scale9Grid);
-              } else {
-                gafTexture = new GAFTexture(id, texture, pivotMatrix);
-              }
+              var texture = atlasCSF.atlas.getTextureByIDAndAtlasID(elementID, atlasID);
+              gafTexture = new GAFTexture(id, texture, pivotMatrix, scale9Grid);
             }
-
             break;
           }
         }

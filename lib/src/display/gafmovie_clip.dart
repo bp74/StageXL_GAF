@@ -36,20 +36,15 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
 
   CAnimationSequence _playingSequence;
-  Rectangle _timelineBounds;
   Point _maxSize;
 
   bool _loop = true;
   bool _skipFrames = true;
   bool _reseted = false;
-  bool _masked = false;
   bool _inPlay = false;
   bool _hidden = false;
   bool _reverse = false;
   bool _started = false;
-  bool _hasFilter = false;
-  bool _useClipping = false;
-  bool _alphaLessMax = false;
 
   num _currentTime = 0.0;
   num _lastFrameTime = 0.0;
@@ -87,8 +82,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
      if (animationObject.type == CAnimationObject.TYPE_TEXTURE) {
        var texture = gafTimeline.textureAtlas.getTexture(regionID);
-       if (texture is GAFScale9Texture) displayObject = new GAFScale9Image(texture);
-       if (texture is! GAFScale9Texture) displayObject = new GAFImage(texture);
+       displayObject = new GAFImage(texture);
        _imagesList.add(displayObject);
      } else if (animationObject.type == CAnimationObject.TYPE_TEXTFIELD) {
        var textFieldObject = gafTimeline.config.textFields.getTextFieldObject(regionID);
@@ -124,10 +118,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
          displayObject.name = instanceName;
        }
      }
-   }
-
-   if (gafTimeline.config.bounds != null) {
-     _timelineBounds = gafTimeline.config.bounds.clone();
    }
 
    _draw();
@@ -306,8 +296,10 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _started = true;
 
-    for (int i = 0; applyToAllChildren && i < _movieClipList.length; i++) {
-      _movieClipList[i]._started = true;
+    if (applyToAllChildren) {
+      for (var movieClip in _movieClipList) {
+        movieClip._started = true;
+      }
     }
 
     _play(applyToAllChildren, true);
@@ -326,8 +318,10 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _started = false;
 
-    for (int i = 0; applyToAllChildren && i < _movieClipList.length; i++) {
-      _movieClipList[i]._started = false;
+    if (applyToAllChildren) {
+      for (var movieClip in _movieClipList) {
+        movieClip._started = false;
+      }
     }
 
     _stop(applyToAllChildren, true);
@@ -360,8 +354,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     this.loop = loop;
 
-    for (int i = 0; i < _movieClipList.length; i++) {
-      _movieClipList[i].loop = loop;
+    for (var movieClip in _movieClipList) {
+      movieClip.loop = loop;
     }
   }
 
@@ -411,6 +405,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     return new GAFMovieClip(_gafTimeline, this.fps);
   }
 
+
   void setFilterConfig(CFilter value, [num scale = 1]) {
     /*
     if (_filterConfig != value || _filterScale != scale) {
@@ -440,6 +435,66 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
         _filterScale = null;
       }
     }*/
+  }
+
+  //--------------------------------------------------------------------------
+
+  /// Removes a child at a certain index. The index positions of any display
+  /// objects above the child are decreased by 1. If requested, the child
+  /// will be disposed right away.
+
+  @override
+  void removeChildAt(int index, [bool dispose = false]) {
+
+    if (dispose) {
+
+      var child = this.getChildAt(index);
+      if (child is IGAFDisplayObject) {
+
+        int id = _movieClipList.indexOf(child);
+        if (id >= 0) _movieClipList.removeAt(id);
+
+        id = _imagesList.indexOf(child);
+        if (id >= 0) _imagesList.removeAt(id);
+
+        id = _displayObjectsList.indexOf(child);
+        if (id >= 0) {
+          _displayObjectsList.removeAt(id);
+          for (var key in _displayObjectsMap.keys) {
+            if (_displayObjectsMap[key] == child) {
+              _displayObjectsMap.remove(key);
+              break;
+            }
+          }
+        }
+
+        id = _pixelMasksList.indexOf(child);
+        if (id >= 0) {
+          _pixelMasksList.removeAt(id);
+          for (var key in _pixelMasksMap.keys) {
+            if (_pixelMasksMap[key] == child) {
+              _pixelMasksMap.remove(key);
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    return super.removeChildAt(index);
+  }
+
+  /** Returns a child object with a certain name (non-recursively). */
+  @override
+  DisplayObject getChildByName(String name) {
+
+    for (int i = 0; i < _displayObjectsList.length; ++i) {
+      if (_displayObjectsList[i].name == name) {
+        return _displayObjectsList[i];
+      }
+    }
+
+    return super.getChildByName(name);
   }
 
   //--------------------------------------------------------------------------
@@ -780,35 +835,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     return matrix;
   }
 
-  void _updateBounds(Rectangle bounds) {
-    /*
-    this._boundsAndPivot.reset();
-    //bounds
-    if (bounds.width > 0 &&  bounds.height > 0)
-    {
-      Quad quad = new Quad(bounds.width * this._scale, 2, 0xff0000);
-      quad.x = bounds.x * this._scale;
-      quad.y = bounds.y * this._scale;
-      this._boundsAndPivot.addQuad(quad);
-      quad = new Quad(bounds.width * this._scale, 2, 0xff0000);
-      quad.x = bounds.x * this._scale;
-      quad.y = bounds.bottom * this._scale - 2;
-      this._boundsAndPivot.addQuad(quad);
-      quad = new Quad(2, bounds.height * this._scale, 0xff0000);
-      quad.x = bounds.x * this._scale;
-      quad.y = bounds.y * this._scale;
-      this._boundsAndPivot.addQuad(quad);
-      quad = new Quad(2, bounds.height * this._scale, 0xff0000);
-      quad.x = bounds.right * this._scale - 2;
-      quad.y = bounds.y * this._scale;
-      this._boundsAndPivot.addQuad(quad);
-    }
-    //pivot point
-    quad = new Quad(5, 5, 0xff0000);
-    this._boundsAndPivot.addQuad(quad);
-    */
-  }
-
   //[Inline]
   void _updateTransformMatrix() {
     if (_orientationChanged) {
@@ -817,74 +843,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     }
   }
 
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  /// Removes a child at a certain index. The index positions of any display
-  /// objects above the child are decreased by 1. If requested, the child
-  /// will be disposed right away.
-  ///
-  @override
-  void removeChildAt(int index, [bool dispose = false]) {
-
-    if (dispose) {
-
-      var child = this.getChildAt(index);
-      if (child is IGAFDisplayObject) {
-
-        int id = _movieClipList.indexOf(child);
-        if (id >= 0) _movieClipList.removeAt(id);
-
-        id = _imagesList.indexOf(child);
-        if (id >= 0) _imagesList.removeAt(id);
-
-        id = this._displayObjectsList.indexOf(child);
-        if (id >= 0) {
-          _displayObjectsList.removeAt(id);
-          for (var key in _displayObjectsMap.keys) {
-            if (_displayObjectsMap[key] == child) {
-              _displayObjectsMap.remove(key);
-              break;
-            }
-          }
-        }
-
-        id = _pixelMasksList.indexOf(child);
-        if (id >= 0) {
-          _pixelMasksList.removeAt(id);
-          for (var key in _pixelMasksMap.keys) {
-            if (_pixelMasksMap[key] == child) {
-              _pixelMasksMap.remove(key);
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    return super.removeChildAt(index);
-  }
-
-  /** Returns a child object with a certain name (non-recursively). */
-  @override
-  DisplayObject getChildByName(String name) {
-
-    for (int i = 0; i < _displayObjectsList.length; ++i) {
-      if (_displayObjectsList[i].name == name) {
-        return _displayObjectsList[i];
-      }
-    }
-
-    return super.getChildByName(name);
-  }
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
   //--------------------------------------------------------------------------
 
   void _changeCurrentFrame(bool isSkipping) {

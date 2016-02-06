@@ -29,18 +29,13 @@ class CTextureAtlas {
   IGAFTexture getTexture(String id) {
 
     var textureAtlasElement = textureAtlasConfig.elements.getElement(id);
-    if (textureAtlasElement != null) {
-      var texture =  getTextureByIDAndAtlasID(id, textureAtlasElement.atlasID);
-      var pivotMatrix = textureAtlasElement.pivotMatrix;
-      var scale9Grid = textureAtlasElement.scale9Grid;
-      if (scale9Grid != null) {
-        return new GAFScale9Texture(id, texture, pivotMatrix, scale9Grid);
-      } else {
-        return new GAFTexture(id, texture, pivotMatrix);
-      }
-    }
+    if (textureAtlasElement == null) return null;
 
-    return null;
+    var atlasID = textureAtlasElement.atlasID;
+    var scale9Grid = textureAtlasElement.scale9Grid;
+    var pivotMatrix = textureAtlasElement.pivotMatrix;
+    var texture =  getTextureByIDAndAtlasID(id, atlasID);
+    return new GAFTexture(id, texture, pivotMatrix, scale9Grid);
   }
 
   //--------------------------------------------------------------------------
