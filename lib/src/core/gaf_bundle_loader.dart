@@ -14,26 +14,8 @@ part of stagexl_gaf;
 
 class GAFBundleLoader {
 
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
   String _id;
   bool _ignoreSounds = false;
-
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
-  //--------------------------------------------------------------------------
 
   /// Creates a new [GAFBundleLoader] instance.
   ///
@@ -47,9 +29,22 @@ class GAFBundleLoader {
   }
 
   //--------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
+
+  /// The id of the converter.
+  /// If it is not empty [GAFBundleLoader] sets the [name] of produced
+  /// bundle equal to this id.
+
+  String get id => _id;
+
+  set id(String value) {
+    _id = value;
+  }
+
+  bool get ignoreSounds => _ignoreSounds;
+
+  set ignoreSounds(bool ignoreSounds) {
+    _ignoreSounds = ignoreSounds;
+  }
   //--------------------------------------------------------------------------
 
   /// Converts a GAF file into a [GAFTimeline] or [GAFBundle] depending on content.
@@ -145,33 +140,6 @@ class GAFBundleLoader {
     startIndex = startIndex < 0 ? 0 : startIndex + 1;
     endIndex = endIndex < 0 ? 0x7fffffff : endIndex;
     return configName.substring(startIndex, endIndex);
-  }
-
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  /// The id of the converter.
-  /// If it is not empty [GAFBundleLoader] sets the [name] of produced
-  /// bundle equal to this id.
-
-  String get id => _id;
-
-  set id(String value) {
-    _id = value;
-  }
-
-  bool get ignoreSounds => _ignoreSounds;
-
-  set ignoreSounds(bool ignoreSounds) {
-    this._ignoreSounds = ignoreSounds;
   }
 
   //--------------------------------------------------------------------------

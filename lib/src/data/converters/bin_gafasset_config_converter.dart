@@ -78,7 +78,12 @@ class BinGAFAssetConfigConverter {
     _config.fileLength = _readUnsignedInt();
 
     if (_config.compression == SIGNATURE_GAC) {
-      throw new StateError("TODO: Implement ZLIB decompress");
+      var decoder = new ZLibDecoder();
+      var compressed = new Uint8List.view(_data.buffer, _dataPosition);
+      var inputStream = new InputStream(compressed, byteOrder: LITTLE_ENDIAN);
+      var uncompressed = decoder.decodeBuffer(inputStream) as Uint8List;
+      _data = new ByteData.view(uncompressed.buffer);
+      _dataPosition = 0;
     }
 
     if (_config.versionMajor < 4) {

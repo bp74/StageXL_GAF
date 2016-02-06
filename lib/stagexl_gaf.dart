@@ -6,6 +6,7 @@ import 'dart:html' as html;
 import 'dart:math' hide Rectangle, Point;
 import 'dart:typed_data';
 
+import 'package:archive/archive.dart';
 import 'package:stagexl/stagexl.dart';
 
 part 'src/core/gaf_bundle_loader.dart';
