@@ -55,12 +55,12 @@ class GAFAsset {
 
   //--------------------------------------------------------------------------
 
-  IGAFTexture _getCustomRegion(String linkage, [num scale, num csf]) {
+  GAFTexture _getCustomRegion(String linkage, [num scale, num csf]) {
 
     scale = scale ?? this.scale;
     csf = csf ?? this.csf;
 
-    IGAFTexture gafTexture = null;
+    GAFTexture gafTexture = null;
 
     for(var atlasScale in config.allTextureAtlases) {
       if (atlasScale.scale == scale) {

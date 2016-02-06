@@ -26,7 +26,7 @@ class CTextureAtlas {
 
   //--------------------------------------------------------------------------
 
-  IGAFTexture getTexture(String id) {
+  GAFTexture getTexture(String id) {
 
     var textureAtlasElement = textureAtlasConfig.elements.getElement(id);
     if (textureAtlasElement == null) return null;

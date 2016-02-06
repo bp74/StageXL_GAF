@@ -3,9 +3,9 @@ part of stagexl_gaf;
 /// GAFImage represents static GAF display object that is part of
 /// the [GAFMovieClip].
 
-class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
+class GAFImage extends Bitmap implements IMaxSize {
 
-  IGAFTexture _assetTexture;
+  GAFTexture _assetTexture;
 
   Point _maxSize = null;
   num _filterScale = 1.0;
@@ -35,7 +35,7 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
     return matrix;
   }
 
-  IGAFTexture get assetTexture => _assetTexture;
+  GAFTexture get assetTexture => _assetTexture;
 
   void set transformationMatrix(Matrix value) {
     throw new UnimplementedError("transformationMatrix setter");
@@ -49,41 +49,9 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
 
   /// Change the texture of the [GAFImage] to a new one.
 
-  void changeTexture(IGAFTexture newTexture) {
+  void changeTexture(GAFTexture newTexture) {
     this.bitmapData = newTexture.texture;
     _assetTexture = newTexture.clone();
-  }
-
-
-  void setFilterConfig(CFilter value, [num scale = 1]) {
-    /*
-    if (_filterConfig != value || _filterScale != scale) {
-      if( value != null) {
-        _filterConfig = value;
-        _filterScale = scale;
-        GAFFilter gafFilter;
-        if (this.filter != null) {
-          if (this.filter is GAFFilter) {
-            gafFilter = this.filter as GAFFilter;
-          } else {
-            this.filter.dispose();
-            gafFilter = new GAFFilter();
-          }
-        } else {
-          gafFilter = new GAFFilter();
-        }
-
-        gafFilter.setConfig(this._filterConfig, this._filterScale);
-        this.filter = gafFilter;
-      } else {
-        if (this.filter != null) {
-          this.filter.dispose();
-          this.filter = null;
-        }
-        _filterConfig = null;
-        _filterScale = null;
-      }
-    }*/
   }
 
   //--------------------------------------------------------------------------

@@ -74,7 +74,7 @@ class GAFBundle {
   /// @param csf Texture atlas content scale factor (that as CSF) will be used
   /// for [IGAFTexture] creation. Possible values are values from converted animation config.
 
-  IGAFTexture getCustomRegion(String swfName, String linkage, [num scale, num csf]) {
+  GAFTexture getCustomRegion(String swfName, String linkage, [num scale, num csf]) {
     GAFAsset gafAsset = _gafAssetsMap[swfName];
     return gafAsset?._getCustomRegion(linkage, scale, csf);
   }

@@ -1,6 +1,6 @@
 part of stagexl_gaf;
 
-abstract class IGAFDisplayObject extends DisplayObject {
+abstract class GAFDisplayObject extends DisplayObject {
 
   String get name;
   void set name(String value);
@@ -17,7 +17,5 @@ abstract class IGAFDisplayObject extends DisplayObject {
   void set transformationMatrix(Matrix matrix);
 
   Matrix get pivotMatrix;
-
-  void setFilterConfig(CFilter value, [num scale = 1]);
 
 }

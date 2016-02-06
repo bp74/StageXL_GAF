@@ -15,7 +15,7 @@ part of stagexl_gaf;
 /// ([play], [stop], [gotoAndPlay], etc.) and some more like [loop],
 /// [nPlay], [setSequence] that helps manage playback
 
-class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDisplayObject, IMaxSize {
+class GAFMovieClip extends DisplayObjectContainer implements Animatable, GAFDisplayObject, IMaxSize {
 
   static final String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
 	static final String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
@@ -24,10 +24,10 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   final GAFTimeline _gafTimeline;
 
-  final Map<String, IGAFDisplayObject> _displayObjectsMap = new Map<String, IGAFDisplayObject>();
-  final List<IGAFDisplayObject> _displayObjectsList = new List<IGAFDisplayObject>();
+  final Map<String, GAFDisplayObject> _displayObjectsMap = new Map<String, GAFDisplayObject>();
+  final List<GAFDisplayObject> _displayObjectsList = new List<GAFDisplayObject>();
 
-  final List<IGAFImage> _imagesList = new List<IGAFImage>();
+  final List<GAFImage> _imagesList = new List<GAFImage>();
   final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
 
   CAnimationSequence _playingSequence;
@@ -49,9 +49,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   int _startFrame = 0;
   int _finalFrame = 0;
   int _currentFrame = 0;
-
-  CFilter _filterConfig = null;
-  num _filterScale = 1.0;
 
   //---------------------------------------------------------------------------
 
@@ -370,37 +367,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     return new GAFMovieClip(_gafTimeline, this.fps);
   }
 
-  void setFilterConfig(CFilter value, [num scale = 1]) {
-    /*
-    if (_filterConfig != value || _filterScale != scale) {
-      if( value != null) {
-        _filterConfig = value;
-        _filterScale = scale;
-        GAFFilter gafFilter;
-        if (this.filter != null) {
-          if (this.filter is GAFFilter) {
-            gafFilter = this.filter as GAFFilter;
-          } else {
-            this.filter.dispose();
-            gafFilter = new GAFFilter();
-          }
-        } else {
-          gafFilter = new GAFFilter();
-        }
-
-        gafFilter.setConfig(this._filterConfig, this._filterScale);
-        this.filter = gafFilter;
-      } else {
-        if (this.filter != null) {
-          this.filter.dispose();
-          this.filter = null;
-        }
-        _filterConfig = null;
-        _filterScale = null;
-      }
-    }*/
-  }
-
   //--------------------------------------------------------------------------
 
   void _gotoAndStop(dynamic frame) {
@@ -594,7 +560,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
         displayObject.transformationMatrix.copyFrom(instance.matrix);
         displayObject.transformationMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
         displayObject.transformationMatrix.prepend(displayObject.pivotMatrix);
-        displayObject.setFilterConfig(instance.filter, _gafTimeline.scale);
         displayObject.addTo(this); // TODO: this is slow
 
         if (animationObject.mask == false && instance.maskID.length > 0) {
@@ -609,6 +574,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
             throw new StateError("MovieClip masks not yet supported.");
           }
         }
+
+        var filterConfig = instance.filter;
+        var filterScale = _gafTimeline.scale;
+        // TODO: apply filters
+
       }
     }
 

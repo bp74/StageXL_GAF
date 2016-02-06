@@ -1,6 +1,6 @@
 part of stagexl_gaf;
 
-class GAFTexture implements IGAFTexture {
+class GAFTexture {
 
   final String id;
   final BitmapData texture;
@@ -11,7 +11,7 @@ class GAFTexture implements IGAFTexture {
 
   //--------------------------------------------------------------------------
 
-  IGAFTexture clone() {
+  GAFTexture clone() {
     var pivotMatrix = this.pivotMatrix.clone();
     var scale9Grid = this.scale9Grid?.clone();
     return new GAFTexture(id, texture, pivotMatrix, scale9Grid);
