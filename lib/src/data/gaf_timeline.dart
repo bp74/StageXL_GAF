@@ -254,8 +254,7 @@ class GAFTimeline {
 
   set scale(num value) {
 
-    num scale = this._gafAsset._getValidScale(value);
-    if (scale == null) {
+    if (_gafAsset.config.scaleValues.contains(value) == false) {
       throw new StateError(ErrorConstants.SCALE_NOT_FOUND);
     } else {
       _gafAsset.scale = scale;
@@ -292,7 +291,7 @@ class GAFTimeline {
 
   set contentScaleFactor(num csf) {
 
-    if (_gafAsset._hasCSF(csf)) {
+    if (_gafAsset.config.csfValues.contains(csf)) {
       _gafAsset.csf = csf;
     }
 

@@ -87,10 +87,10 @@ class GAFBundleLoader {
     for (GAFTimelineConfig config in config.timelines) {
 
       for (CTextureAtlasScale cScale in config.allTextureAtlases) {
-        if (defaultScale is num && !MathUtility.equals(defaultScale, cScale.scale)) continue;
+        if (defaultScale is num && !_isEquivalent(defaultScale, cScale.scale)) continue;
 
         for (CTextureAtlasCSF cCSF in cScale.allContentScaleFactors) {
-          if (defaultContentScaleFactor is num && !MathUtility.equals(defaultContentScaleFactor, cCSF.csf)) continue;
+          if (defaultContentScaleFactor is num && !_isEquivalent(defaultContentScaleFactor, cCSF.csf)) continue;
 
           for (CTextureAtlasSource taSource in cCSF.sources) {
             if (taSource.source == "no_atlas") continue;
@@ -172,5 +172,11 @@ class GAFBundleLoader {
 
   set ignoreSounds(bool ignoreSounds) {
     this._ignoreSounds = ignoreSounds;
+  }
+
+  //--------------------------------------------------------------------------
+
+  bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
+    return (a - epsilon < b) && (a + epsilon > b);
   }
 }

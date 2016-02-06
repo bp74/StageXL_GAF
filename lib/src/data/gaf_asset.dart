@@ -81,18 +81,4 @@ class GAFAsset {
     return null;
   }
 
-  /** @ */
-  num _getValidScale(num value) {
-    int index = MathUtility.getItemIndex(this.config.scaleValues, value);
-    if (index != -1) {
-      return this.config.scaleValues[index];
-    }
-    return null;
-  }
-
-  /** @ */
-  bool _hasCSF(num value) {
-    return MathUtility.getItemIndex(config.csfValues, value) >= 0;
-  }
-
 }

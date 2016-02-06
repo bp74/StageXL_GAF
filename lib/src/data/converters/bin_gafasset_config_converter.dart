@@ -253,10 +253,10 @@ class BinGAFAssetConfigConverter {
 
     this.readMaskMaxSizes();
 
-    int itemIndex = 0;
     if (_config.defaultScale is! num) {
+      int itemIndex = 0;
       if (_defaultScale is num) {
-        itemIndex = MathUtility.getItemIndex(_config.scaleValues, _defaultScale);
+        itemIndex = _config.scaleValues.indexOf(_defaultScale);
         if (itemIndex < 0) {
           parseError("${_defaultScale} + ${ErrorConstants.SCALE_NOT_FOUND}");
           return;
@@ -266,9 +266,9 @@ class BinGAFAssetConfigConverter {
     }
 
     if (_config.defaultContentScaleFactor is! num) {
-      itemIndex = 0;
+      int itemIndex = 0;
       if (_defaultContentScaleFactor is num) {
-        itemIndex = MathUtility.getItemIndex(_config.csfValues, _defaultContentScaleFactor);
+        itemIndex = _config.csfValues.indexOf(_defaultContentScaleFactor);
         if (itemIndex < 0) {
           parseError("${_defaultContentScaleFactor} + ${ErrorConstants.CSF_NOT_FOUND}");
           return;
@@ -279,7 +279,7 @@ class BinGAFAssetConfigConverter {
 
     for (CTextureAtlasScale textureAtlasScale in _config.allTextureAtlases) {
       for (CTextureAtlasCSF textureAtlasCSF in textureAtlasScale.allContentScaleFactors) {
-        if (MathUtility.equals(_config.defaultContentScaleFactor, textureAtlasCSF.csf)) {
+        if (_isEquivalent(_config.defaultContentScaleFactor, textureAtlasCSF.csf)) {
           textureAtlasScale.contentScaleFactor = textureAtlasCSF;
           break;
         }
@@ -289,7 +289,7 @@ class BinGAFAssetConfigConverter {
     for (GAFTimelineConfig timelineConfig in _config.timelines) {
       timelineConfig.allTextureAtlases = _config.allTextureAtlases;
       for (CTextureAtlasScale textureAtlasScale in _config.allTextureAtlases) {
-        if (MathUtility.equals(_config.defaultScale, textureAtlasScale.scale)) {
+        if (_isEquivalent(_config.defaultScale, textureAtlasScale.scale)) {
           timelineConfig.textureAtlas = textureAtlasScale;
         }
       }
@@ -620,7 +620,7 @@ class BinGAFAssetConfigConverter {
 
     int l = textureAtlasScales.length;
     for (int i = 0; i < l; i++) {
-      if (MathUtility.equals(textureAtlasScales[i].scale, scale)) {
+      if (_isEquivalent(textureAtlasScales[i].scale, scale)) {
         textureAtlasScale = textureAtlasScales[i];
         break;
       }
@@ -1031,5 +1031,7 @@ class BinGAFAssetConfigConverter {
     }
   }
 
-
+  bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
+    return (a - epsilon < b) && (a + epsilon > b);
+  }
 }

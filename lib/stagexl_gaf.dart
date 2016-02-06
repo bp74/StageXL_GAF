@@ -7,7 +7,6 @@ import 'dart:math' hide Rectangle, Point;
 import 'dart:typed_data';
 
 import 'package:stagexl/stagexl.dart';
-import 'src/utils.dart';
 
 part 'src/core/gaf_bundle_loader.dart';
 part 'src/core/gaf_timelines_manager.dart';
@@ -62,7 +61,6 @@ part 'src/display/max_size.dart';
 part 'src/sound/gaf_sound_channel.dart';
 part 'src/sound/gaf_sound_data.dart';
 part 'src/sound/gaf_sound_manager.dart';
-
 
 
 

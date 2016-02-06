@@ -62,7 +62,7 @@ class GAFTimelineConfig {
 
   CTextureAtlasScale getTextureAtlasForScale(num scale) {
     for (CTextureAtlasScale cTextureAtlas in _allTextureAtlases) {
-      if (MathUtility.equals(cTextureAtlas.scale, scale)) {
+      if (_isEquivalent(cTextureAtlas.scale, scale)) {
         return cTextureAtlas;
       }
     }
@@ -98,28 +98,6 @@ class GAFTimelineConfig {
     return null;
   }
 
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
   //--------------------------------------------------------------------------
 
   CTextureAtlasScale get textureAtlas => _textureAtlas;
@@ -214,5 +192,11 @@ class GAFTimelineConfig {
 
   set pivot(Point value) {
     _pivot = value;
+  }
+
+  //--------------------------------------------------------------------------
+
+  bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
+    return (a - epsilon < b) && (a + epsilon > b);
   }
 }

@@ -14,9 +14,14 @@ class CTextureAtlasScale {
 
   CTextureAtlasCSF getTextureAtlasForCSF(num csf) {
     for (CTextureAtlasCSF textureAtlas in allContentScaleFactors) {
-      if (MathUtility.equals(textureAtlas.csf, csf)) return textureAtlas;
+      if (_isEquivalent(textureAtlas.csf, csf)) return textureAtlas;
     }
     return null;
   }
 
+  //--------------------------------------------------------------------------
+
+  bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
+    return (a - epsilon < b) && (a + epsilon > b);
+  }
 }
