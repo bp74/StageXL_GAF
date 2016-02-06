@@ -217,7 +217,7 @@ class BinGAFAssetConfigConverter {
 
     for (GAFTimelineConfig timeline in _config.timelines) {
 
-      for (CAnimationFrame frame in timeline.animationConfigFrames.all) {
+      for (CAnimationFrame frame in timeline.animationFrames.all) {
         for (CAnimationFrameInstance frameInstance in frame.instances) {
           CAnimationObject animationObject = timeline.animationObjects.getAnimationObject(frameInstance.id);
           if (animationObject.mask) {
@@ -342,13 +342,13 @@ class BinGAFAssetConfigConverter {
       if (prevFrame != null) {
         currentFrame = prevFrame.clone(frameNumber);
         for (int n = prevFrame.frameNumber + 1; n < currentFrame.frameNumber; n++) {
-          timelineConfig.animationConfigFrames.addFrame(prevFrame.clone(n));
+          timelineConfig.animationFrames.addFrame(prevFrame.clone(n));
         }
       } else {
         currentFrame = new CAnimationFrame(frameNumber);
         if (currentFrame.frameNumber > 1) {
           for (int n = 1; n < currentFrame.frameNumber; n++) {
-            timelineConfig.animationConfigFrames.addFrame(new CAnimationFrame(n));
+            timelineConfig.animationFrames.addFrame(new CAnimationFrame(n));
           }
         }
       }
@@ -466,16 +466,16 @@ class BinGAFAssetConfigConverter {
         }
       }
 
-      timelineConfig.animationConfigFrames.addFrame(currentFrame);
+      timelineConfig.animationFrames.addFrame(currentFrame);
 
       prevFrame = currentFrame;
     } //end loop
 
     for (int n = prevFrame.frameNumber + 1; n <= timelineConfig.framesCount; n++) {
-      timelineConfig.animationConfigFrames.addFrame(prevFrame.clone(n));
+      timelineConfig.animationFrames.addFrame(prevFrame.clone(n));
     }
 
-    for (currentFrame in timelineConfig.animationConfigFrames.all) {
+    for (currentFrame in timelineConfig.animationFrames.all) {
       for (instance in currentFrame.instances) {
         if (blurFilters.containsKey(instance.id) && instance.filter != null) {
           blurFilter = instance.filter.getBlurFilter();

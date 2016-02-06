@@ -23,7 +23,7 @@ class GAFTimelineConfig {
   List<CTextureAtlasScale> _allTextureAtlases;
   CTextureAtlasScale _textureAtlas;
 
-  CAnimationFrames _animationConfigFrames;
+  CAnimationFrames _animationFrames;
   CAnimationObjects _animationObjects;
   CAnimationSequences _animationSequences;
   CTextFieldObjects _textFields;
@@ -47,7 +47,7 @@ class GAFTimelineConfig {
 
   GAFTimelineConfig(String version) {
     _version = version;
-    _animationConfigFrames = new CAnimationFrames();
+    _animationFrames = new CAnimationFrames();
     _animationObjects = new CAnimationObjects();
     _animationSequences = new CAnimationSequences();
     _textFields = new CTextFieldObjects();
@@ -134,10 +134,10 @@ class GAFTimelineConfig {
     _animationObjects = animationObjects;
   }
 
-  CAnimationFrames get animationConfigFrames => _animationConfigFrames;
+  CAnimationFrames get animationFrames => _animationFrames;
 
-  set animationConfigFrames(CAnimationFrames animationConfigFrames) {
-    _animationConfigFrames = animationConfigFrames;
+  set animationFrames(CAnimationFrames animationConfigFrames) {
+    _animationFrames = animationConfigFrames;
   }
 
   CAnimationSequences get animationSequences => this._animationSequences;

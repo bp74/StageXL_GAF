@@ -46,7 +46,7 @@ class CAnimationFrameInstance {
     result.concat(_tmpMatrix);
     return result;
   }
-
+/*
   void applyTransformMatrix(Matrix transformationMatrix, Matrix pivotMatrix, num scale) {
     _tmpMatrix.copyFrom(_matrix);
     _tmpMatrix.tx *= scale;
@@ -58,5 +58,5 @@ class CAnimationFrameInstance {
     applyTransformMatrix(transformationMatrix, pivotMatrix, scale);
     return transformationMatrix;
   }
-
+*/
 }

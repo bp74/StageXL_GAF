@@ -10,7 +10,6 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
   Point _maxSize = null;
   num _filterScale = 1.0;
   CFilter _filterConfig = null;
-  bool _orientationChanged = false;
 
   /// Creates a new [GAFImage] instance.
   ///
@@ -47,10 +46,6 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
   /// Creates a new instance of GAFImage.
 
   GAFImage copy() => new GAFImage(_assetTexture);
-
-  void invalidateOrientation() {
-    _orientationChanged = true;
-  }
 
   /// Change the texture of the [GAFImage] to a new one.
 
@@ -92,14 +87,6 @@ class GAFImage extends Bitmap implements IGAFImage, IMaxSize {
   }
 
   //--------------------------------------------------------------------------
-
-  void _updateTransformMatrix() {
-    if (_orientationChanged) {
-      this.transformationMatrix = this.transformationMatrix;
-      _orientationChanged = false;
-    }
-  }
-
 
   bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
     return (a - epsilon < b) && (a + epsilon > b);

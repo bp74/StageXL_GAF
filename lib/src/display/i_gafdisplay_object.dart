@@ -18,8 +18,6 @@ abstract class IGAFDisplayObject extends DisplayObject {
 
   Matrix get pivotMatrix;
 
-  void invalidateOrientation();
   void setFilterConfig(CFilter value, [num scale = 1]);
-
 
 }

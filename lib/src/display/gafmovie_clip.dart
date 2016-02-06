@@ -20,17 +20,15 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   static final String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
 	static final String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
 
-	static final Matrix HELPER_MATRIX = new Matrix.fromIdentity();
-
   //--------------------------------------------------------------------------
 
   final GAFTimeline _gafTimeline;
 
   final Map<String, IGAFDisplayObject> _displayObjectsMap = new Map<String, IGAFDisplayObject>();
-  final Map<String, GAFPixelMaskDisplayObject> _pixelMasksMap = new Map<String, GAFPixelMaskDisplayObject>();
+//  final Map<String, GAFPixelMaskDisplayObject> _pixelMasksMap = new Map<String, GAFPixelMaskDisplayObject>();
 
   final List<IGAFDisplayObject> _displayObjectsList = new List<IGAFDisplayObject>();
-  final List<GAFPixelMaskDisplayObject> _pixelMasksList = new List<GAFPixelMaskDisplayObject>();
+//  final List<GAFPixelMaskDisplayObject> _pixelMasksList = new List<GAFPixelMaskDisplayObject>();
 
   final List<IGAFImage> _imagesList = new List<IGAFImage>();
   final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
@@ -57,9 +55,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   CFilter _filterConfig = null;
   num _filterScale = 1.0;
-
-  bool _pivotChanged = false;
-  bool _orientationChanged = false;
 
   //---------------------------------------------------------------------------
 
@@ -93,7 +88,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
        _movieClipList.add(displayObject);
      }
 
-     if (animationObject.maxSize != null && displayObject is IMaxSize) {
+     if (displayObject is IMaxSize && animationObject.maxSize is Point) {
        var x = animationObject.maxSize.x * gafTimeline.scale;
        var y = animationObject.maxSize.y * gafTimeline.scale;
        displayObject.maxSize = new Point<num>(x, y);
@@ -153,38 +148,27 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     _maxSize = value;
   }
 
-  /// The individual frame rate for <code>GAFMovieClip</code>. If this value
-  /// is lower than stage fps -  the <code>GAFMovieClip</code> will skip frames.
+  /// The individual frame rate for this [GAFMovieClip].
+  ///
+  /// If the value is lower than stage fps, then the [GAFMovieClip] will
+  /// skip frames.
 
   num get fps {
-    if (_frameDuration == double.INFINITY) return 0;
-    return 1 / this._frameDuration;
+    return _frameDuration.isInfinite ? 1.0 / _frameDuration : 0.0;
   }
 
   set fps(num value) {
-
-    if (value <= 0) {
-      _frameDuration = double.INFINITY;
-    } else {
-      _frameDuration = 1 / value;
-    }
-
-    for (var movieClip in _movieClipList) {
-      movieClip.fps = value;
-    }
+    _frameDuration = value <= 0.0 ? double.INFINITY : 1.0 / value;
+    _movieClipList.forEach((mc) => mc.fps = fps);
   }
 
-  /// If <code>true</code> animation will be playing in reverse mode
+  /// If ´true´ animation will be playing in reverse mode
 
   bool get reverse => _reverse;
 
   void set reverse(bool value) {
-
     _reverse = value;
-
-    for(var movieClip in _movieClipList) {
-      movieClip._reverse = value;
-    }
+    _movieClipList.forEach((mc) => mc.reverse = value);
   }
 
   /// Indicates whether GAFMovieClip instance should skip frames when
@@ -201,12 +185,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   bool get skipFrames => _skipFrames;
 
   void set skipFrames(bool value) {
-
     _skipFrames = value;
-
-    for(var movieClip in _movieClipList) {
-      movieClip._skipFrames = value;
-    }
+    _movieClipList.forEach((mc) => mc.skipFrames = value);
   }
 
   Matrix get pivotMatrix {
@@ -268,18 +248,21 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   CAnimationSequence setSequence(String id, [bool play = true]) {
 
-    _playingSequence = _gafTimeline.config.animationSequences.getSequenceByID(id);
+    var sequences = _gafTimeline.config.animationSequences;
+    var sequence = sequences.getSequenceByID(id);
 
-    if (_playingSequence != null) {
-      int startFrame = _reverse ? _playingSequence.endFrameNo - 1 : _playingSequence.startFrameNo;
-      if( play) {
+    _playingSequence = sequence;
+
+    if (sequence != null) {
+      int startFrame = _reverse ? sequence.endFrameNo - 1 : sequence.startFrameNo;
+      if (play) {
         this.gotoAndPlay(startFrame);
       } else {
         this.gotoAndStop(startFrame);
       }
     }
 
-    return this._playingSequence;
+    return _playingSequence;
   }
 
   /// Moves the playhead in the timeline of the movie clip play() or play(false).
@@ -395,10 +378,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
     return true;
   }
 
-  void invalidateOrientation() {
-    _orientationChanged = true;
-  }
-
   /// Creates a new instance of GAFMovieClip.
 
   GAFMovieClip copy() {
@@ -468,6 +447,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
           }
         }
 
+        /*
         id = _pixelMasksList.indexOf(child);
         if (id >= 0) {
           _pixelMasksList.removeAt(id);
@@ -478,6 +458,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
             }
           }
         }
+        */
       }
     }
 
@@ -512,9 +493,9 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
       _inPlay = true;
     }
 
-    if (applyToAllChildren && _gafTimeline.config.animationConfigFrames.all.length > 0) {
+    if (applyToAllChildren && _gafTimeline.config.animationFrames.all.length > 0) {
 
-      CAnimationFrame frameConfig = _gafTimeline.config.animationConfigFrames.all[_currentFrame];
+      CAnimationFrame frameConfig = _gafTimeline.config.animationFrames.all[_currentFrame];
 
       if (frameConfig.actions != null) {
         for (CFrameAction action in frameConfig.actions.length) {
@@ -568,7 +549,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
     _inPlay = false;
 
-    if (applyToAllChildren && _gafTimeline.config.animationConfigFrames.all.length > 0) {
+    if (applyToAllChildren && _gafTimeline.config.animationFrames.all.length > 0) {
 
       for (var child in this.children) {
 
@@ -629,9 +610,9 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   void _runActions() {
 
-    if (_gafTimeline.config.animationConfigFrames.all.length == 0) return;
+    if (_gafTimeline.config.animationFrames.all.length == 0) return;
 
-    var actions = _gafTimeline.config.animationConfigFrames.all[_currentFrame].actions;
+    var actions = _gafTimeline.config.animationFrames.all[_currentFrame].actions;
 
     if (actions != null) {
 
@@ -700,7 +681,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
 
   void _clearDisplayList() {
     this.removeChildren();
-    _pixelMasksMap.forEach((k,v) => v.removeChildren());
+    //_pixelMasksMap.forEach((k,v) => v.removeChildren());
   }
 
   void _draw() {
@@ -709,107 +690,55 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
       // Non optimized way when there are debug regions
       _clearDisplayList();
     } else {
-      // Just hide the children to avoid dispatching a lot of events and alloc temporary arrays
-      _displayObjectsMap.forEach((k,v) => v.alpha = 0);
+      // Just hide the children to avoid dispatching a lot of events
+      _displayObjectsMap.forEach((k,v) => v.off = true);
       _movieClipList.forEach((mc) => mc._hidden = true);
     }
 
-    if (_gafTimeline.config.animationConfigFrames.all.length > _currentFrame) {
+    var animationObjects = _gafTimeline.config.animationObjects;
+    var animationFrames = _gafTimeline.config.animationFrames.all;
 
-      int maskIndex = 0;
-      GAFMovieClip movieClip = null;
-      GAFPixelMaskDisplayObject pixelMaskObject = null;
+    if (animationFrames.length > _currentFrame) {
 
-      CAnimationFrame frameConfig = _gafTimeline.config.animationConfigFrames.all[_currentFrame];
-
+      var frameConfig = animationFrames[_currentFrame];
       for (var instance in frameConfig.instances) {
 
-        if (_displayObjectsMap.containsKey(instance.id) == false) continue;
+        var animationObject = animationObjects.getAnimationObject(instance.id);
+        if (animationObject == null) continue;
 
         var displayObject = _displayObjectsMap[instance.id];
-        var objectPivotMatrix = _getTransformMatrix(displayObject, HELPER_MATRIX);
-        movieClip = displayObject is GAFMovieClip ? displayObject : null;
+        if (displayObject == null) continue;
 
-        if (movieClip != null) {
-          if (movieClip.alpha < 0) {
-            movieClip._reset();
-          } else if (movieClip._reseted && movieClip._started) {
-            movieClip._play(true);
+        if (displayObject is GAFMovieClip) {
+          if (displayObject.alpha < 0.0) {  // TODO: this is impossible!
+            displayObject._reset();
+          } else if (displayObject._reseted && displayObject._started) {
+            displayObject._play(true);
           }
-          movieClip._hidden = false;
+          displayObject._hidden = false;
         }
 
-        if (instance.alpha <= 0) continue;
+        displayObject.off = animationObject.mask;
+        displayObject.alpha = animationObject.mask ? 0.3 : instance.alpha;
+        displayObject.transformationMatrix.copyFrom(instance.matrix);
+        displayObject.transformationMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
+        displayObject.transformationMatrix.prepend(displayObject.pivotMatrix);
+        displayObject.addTo(this);
 
-        displayObject.alpha = instance.alpha;
-
-        //if display object is not a mask
-        if (_gafTimeline.config.animationObjects.getAnimationObject(instance.id).mask == false) {
-
-          //if display object is under mask
-          if (false && instance.maskID.length > 0) {
-
-            // TODO: fix this
-
-            pixelMaskObject = _pixelMasksMap[instance.maskID];
-            if (pixelMaskObject != null) {
-              /*
+        if (animationObject.mask == false) {
+          displayObject.setFilterConfig(instance.filter, _gafTimeline.scale);
+          if (instance.maskID.length > 0) {
+            /*
+            //pixelMaskObject = _pixelMasksMap[instance.maskID];
+            //if (pixelMaskObject != null) {
               pixelMaskObject.addChild(displayObject);
-              maskIndex++;
-
-              instance.applyTransformMatrix(displayObject.transformationMatrix, objectPivotMatrix, _scale);
+              instance.applyTransformMatrix(displayObject.transformationMatrix, displayObject.pivotMatrix, _gafTimeline.scale);
               displayObject.invalidateOrientation();
               displayObject.setFilterConfig(null);
               if (maskIndex == 1) this.addChild(pixelMaskObject);
-              */
             }
-
-          } else  {
-
-            // TODO: fix this
-
-            //if display object is not masked
-            //if (pixelMaskObject != null ) {
-            //  maskIndex = 0;
-            //  pixelMaskObject = null;
-            //}
-
-            instance.applyTransformMatrix(displayObject.transformationMatrix, objectPivotMatrix, _gafTimeline.scale);
-            displayObject.invalidateOrientation();
-            displayObject.setFilterConfig(instance.filter, _gafTimeline.scale);
-
-            this.addChild(displayObject as DisplayObject);
+            */
           }
-
-          if (movieClip != null && movieClip._started) {
-            movieClip._play(true);
-          }
-
-        } else {
-
-          maskIndex = 0;
-
-          if (_displayObjectsMap.containsKey(instance.id)) {
-
-            IGAFDisplayObject maskObject = _displayObjectsMap[instance.id];
-            CAnimationFrameInstance maskInstance = frameConfig.getInstanceByID(instance.id);
-
-            if (maskInstance != null) {
-              _getTransformMatrix(maskObject, HELPER_MATRIX);
-              maskInstance.applyTransformMatrix(maskObject.transformationMatrix, HELPER_MATRIX, _gafTimeline.scale);
-              maskObject.invalidateOrientation();
-            } else {
-              throw new StateError("Unable to find mask with ID " + instance.id);
-            }
-
-            if (maskObject is GAFMovieClip) {
-              if (maskObject._started) movieClip._play(true);
-            }
-          }
-          /*else
-          {
-            throw new StateError("Unable to find mask with ID " + instance.id);
-          }*/
         }
       }
     }
@@ -818,29 +747,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   }
 
   void _reset() {
-
     _gotoAndStop((_reverse ? _finalFrame : _startFrame) + 1);
     _reseted = true;
     _currentTime = 0;
     _lastFrameTime = 0;
-
-    for(int i = 0; i < _movieClipList.length; i++) {
-      _movieClipList[i]._reset();
-    }
-  }
-
-  Matrix _getTransformMatrix(IGAFDisplayObject displayObject, [Matrix matrix = null]) {
-    if (matrix == null) matrix = new Matrix.fromIdentity();
-    matrix.copyFrom(displayObject.pivotMatrix);
-    return matrix;
-  }
-
-  //[Inline]
-  void _updateTransformMatrix() {
-    if (_orientationChanged) {
-      this.transformationMatrix = this.transformationMatrix;
-      _orientationChanged = false;
-    }
+    _movieClipList.forEach((mc) => mc._reset());
   }
 
   //--------------------------------------------------------------------------
@@ -848,7 +759,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, IGAFDis
   void _changeCurrentFrame(bool isSkipping) {
 
     var resetInvisibleChildren = false;
-
     var frameCount = _gafTimeline.config.framesCount;
 
     _nextFrame = _currentFrame + (_reverse ? -1 : 1);
