@@ -2,16 +2,23 @@ part of stagexl_gaf;
 
 class CAnimationFrames {
 
-  final List<CAnimationFrame> frames  = new List<CAnimationFrame>();
+  final List<CAnimationFrame> _frames;
+
+  CAnimationFrames()
+      : _frames  = new List<CAnimationFrame>();
+
+  //---------------------------------------------------------------------------
+
+  List<CAnimationFrame> get all => _frames;
 
   //---------------------------------------------------------------------------
 
   void addFrame(CAnimationFrame frame) {
-    frames.add(frame);
+    _frames.add(frame);
   }
 
   CAnimationFrame getFrame(int frameNumber) {
-    for (var frame in frames) {
+    for (var frame in _frames) {
       if (frame.frameNumber == frameNumber) return frame;
     }
     return null;

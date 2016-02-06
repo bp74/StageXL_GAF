@@ -7,7 +7,7 @@ class CTextureAtlas {
 
   CTextureAtlas(Map<String, BitmapData> texturesMap, this.textureAtlasConfig) {
 
-    for (var element in textureAtlasConfig.elements.elements) {
+    for (var element in textureAtlasConfig.elements.all) {
 
       var renderTextureQuad = texturesMap[element.atlasID].renderTextureQuad;
       var textureAtlas = textureAtlasMap.putIfAbsent(element.atlasID, () => new TextureAtlas());
@@ -30,7 +30,7 @@ class CTextureAtlas {
 
     var textureAtlasElement = textureAtlasConfig.elements.getElement(id);
     if (textureAtlasElement != null) {
-      var texture =  _getTextureByIDAndAtlasID(id, textureAtlasElement.atlasID);
+      var texture =  getTextureByIDAndAtlasID(id, textureAtlasElement.atlasID);
       var pivotMatrix = textureAtlasElement.pivotMatrix;
       var scale9Grid = textureAtlasElement.scale9Grid;
       if (scale9Grid != null) {
@@ -45,7 +45,7 @@ class CTextureAtlas {
 
   //--------------------------------------------------------------------------
 
-  BitmapData _getTextureByIDAndAtlasID(String id, String atlasID) {
+  BitmapData getTextureByIDAndAtlasID(String id, String atlasID) {
     var textureAtlas = textureAtlasMap[atlasID];
     var texture =  textureAtlas.getBitmapData(id);
     return texture;

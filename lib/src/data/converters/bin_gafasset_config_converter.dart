@@ -108,7 +108,7 @@ class BinGAFAssetConfigConverter {
   void checkForMissedRegions(GAFTimelineConfig timelineConfig) {
 
     if (timelineConfig.textureAtlas != null && timelineConfig.textureAtlas.contentScaleFactor.elements != null) {
-      for (CAnimationObject ao in timelineConfig.animationObjects.animationObjectsMap.values) {
+      for (CAnimationObject ao in timelineConfig.animationObjects.all) {
         if (ao.type == CAnimationObject.TYPE_TEXTURE && timelineConfig.textureAtlas.contentScaleFactor.elements .getElement(ao.regionID) == null) {
           timelineConfig.addWarning(WarningConstants.REGION_NOT_FOUND);
           break;
@@ -217,7 +217,7 @@ class BinGAFAssetConfigConverter {
 
     for (GAFTimelineConfig timeline in _config.timelines) {
 
-      for (CAnimationFrame frame in timeline.animationConfigFrames.frames) {
+      for (CAnimationFrame frame in timeline.animationConfigFrames.all) {
         for (CAnimationFrameInstance frameInstance in frame.instances) {
           CAnimationObject animationObject = timeline.animationObjects.getAnimationObject(frameInstance.id);
           if (animationObject.mask) {
@@ -475,7 +475,7 @@ class BinGAFAssetConfigConverter {
       timelineConfig.animationConfigFrames.addFrame(prevFrame.clone(n));
     }
 
-    for (currentFrame in timelineConfig.animationConfigFrames.frames) {
+    for (currentFrame in timelineConfig.animationConfigFrames.all) {
       for (instance in currentFrame.instances) {
         if (blurFilters.containsKey(instance.id) && instance.filter != null) {
           blurFilter = instance.filter.getBlurFilter();

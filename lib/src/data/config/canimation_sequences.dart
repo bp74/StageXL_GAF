@@ -13,7 +13,7 @@ class CAnimationSequences {
 
   //--------------------------------------------------------------------------
 
-  Iterable<CAnimationSequence> get sequences => _sequences;
+  Iterable<CAnimationSequence> get all => _sequences;
 
   //--------------------------------------------------------------------------
 

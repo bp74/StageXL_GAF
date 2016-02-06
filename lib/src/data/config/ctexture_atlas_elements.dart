@@ -13,7 +13,7 @@ class CTextureAtlasElements {
 
   //--------------------------------------------------------------------------
 
-  Iterable<CTextureAtlasElement> get elements => _elements;
+  Iterable<CTextureAtlasElement> get all => _elements;
 
   //--------------------------------------------------------------------------
 

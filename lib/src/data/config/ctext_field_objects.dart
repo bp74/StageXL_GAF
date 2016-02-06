@@ -9,7 +9,7 @@ class CTextFieldObjects {
 
   //--------------------------------------------------------------------------
 
-  Iterable<CTextFieldObject> get textFieldObjects => _textFieldObjectsMap.values;
+  Iterable<CTextFieldObject> get all => _textFieldObjectsMap.values;
 
   //--------------------------------------------------------------------------
 

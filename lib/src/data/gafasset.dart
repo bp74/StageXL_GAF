@@ -1,52 +1,31 @@
-/**
- * Created by Nazar on 11.06.2015.
- */
 part of stagexl_gaf;
 
-/** @ */
 class GAFAsset {
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
+
+  final GAFAssetConfig config;
+
+  final List<GAFTimeline> _timelines = new List<GAFTimeline>();
+  final Map<String, GAFTimeline> _timelinesMap = new Map<String, GAFTimeline>();
+  final Map<String, GAFTimeline> _timelinesByLinkage = new Map<String, GAFTimeline>();
+
+  num scale = 1.0;
+  num csf = 1.0;
 
   //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
 
-  GAFAssetConfig _config;
-
-  List<GAFTimeline> _timelines;
-  Map<String, GAFTimeline> _timelinesMap = new Map<String, GAFTimeline>();
-  Map<String, GAFTimeline> _timelinesByLinkage = new Map<String, GAFTimeline>();
-
-  num _scale;
-  num _csf;
-
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
-  //--------------------------------------------------------------------------
-
-  GAFAsset(GAFAssetConfig config) {
-    _config = config;
-    _scale = config.defaultScale;
-    _csf = config.defaultContentScaleFactor;
-    _timelines = new List<GAFTimeline>();
+  GAFAsset(this.config) {
+    this.scale = config.defaultScale;
+    this.csf = config.defaultContentScaleFactor;
   }
 
   //--------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
+
+  String get id => config.id;
+  List<GAFTimeline> get timelines => _timelines;
+
   //--------------------------------------------------------------------------
 
   void addGAFTimeline(GAFTimeline timeline) {
-    // use namespace gaf_internal;
     if (!_timelinesMap.containsKey(timeline.id)) {
       _timelinesMap[timeline.id] = timeline;
       _timelines.add(timeline);
@@ -58,59 +37,39 @@ class GAFAsset {
     }
   }
 
-  /**
-		 * Returns <code>GAFTimeline</code> from gaf asset by linkage
-		 * @param linkage linkage in a *.fla file library
-		 * @return <code>GAFTimeline</code> from gaf asset
-		 */
+  /// Returns [GAFTimeline] from gaf asset by linkage
+  ///
+  /// @param linkage linkage in a *.fla file library
 
   GAFTimeline getGAFTimelineByLinkage(String linkage) {
     return _timelinesByLinkage[linkage];
   }
 
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
+  /// Returns <code>GAFTimeline</code> from gaf asset by ID
+  ///
+  /// @param id internal timeline id
 
-  /** @
-		 * Returns <code>GAFTimeline</code> from gaf asset by ID
-		 * @param id internal timeline id
-		 * @return <code>GAFTimeline</code> from gaf asset
-		 */
-
-  GAFTimeline _getGAFTimelineByID(String id) {
+  GAFTimeline getGAFTimelineByID(String id) {
     return _timelinesMap[id];
   }
 
+  //--------------------------------------------------------------------------
+
   IGAFTexture _getCustomRegion(String linkage, [num scale, num csf]) {
 
-    if (scale == null) scale = this._scale;
-    if (csf == null) csf = this._csf;
+    scale = scale ?? this.scale;
+    csf = csf ?? this.csf;
 
-    IGAFTexture gafTexture;
-    CTextureAtlasScale atlasScale;
-    CTextureAtlasCSF atlasCSF;
-    CTextureAtlasElement element;
+    IGAFTexture gafTexture = null;
 
-    int tasl = _config.allTextureAtlases.length;
-
-    for (int i = 0; i < tasl; i++) {
-      atlasScale = _config.allTextureAtlases[i];
-
+    for(var atlasScale in config.allTextureAtlases) {
       if (atlasScale.scale == scale) {
-        int tacsfl = atlasScale.allContentScaleFactors.length;
-
-        for (int j = 0; j < tacsfl; j++) {
-          atlasCSF = atlasScale.allContentScaleFactors[j];
-
+        for(var atlasCSF in atlasScale.allContentScaleFactors) {
           if (atlasCSF.csf == csf) {
-            element = atlasCSF.elements.getElementByLinkage(linkage);
-
+            var element = atlasCSF.elements.getElementByLinkage(linkage);
             if (element != null) {
-              BitmapData texture = atlasCSF.atlas._getTextureByIDAndAtlasID(element.id, element.atlasID);
-              Matrix pivotMatrix = element.pivotMatrix;
+              var texture = atlasCSF.atlas._getTextureByIDAndAtlasID(element.id, element.atlasID);
+              var pivotMatrix = element.pivotMatrix;
               if (element.scale9Grid != null) {
                 gafTexture = new GAFScale9Texture(id, texture, pivotMatrix, element.scale9Grid);
               } else {
@@ -130,53 +89,16 @@ class GAFAsset {
 
   /** @ */
   num _getValidScale(num value) {
-    int index = MathUtility.getItemIndex(this._config.scaleValues, value);
+    int index = MathUtility.getItemIndex(this.config.scaleValues, value);
     if (index != -1) {
-      return this._config.scaleValues[index];
+      return this.config.scaleValues[index];
     }
     return null;
   }
 
   /** @ */
   bool _hasCSF(num value) {
-    return MathUtility.getItemIndex(this._config.csfValues, value) >= 0;
+    return MathUtility.getItemIndex(config.csfValues, value) >= 0;
   }
 
-  //--------------------------------------------------------------------------
-  //
-  // OVERRIDDEN METHODS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  EVENT HANDLERS
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  /**
-		 * Returns all <code>GAFTimeline's</code> from gaf asset as <code>List/code>
-		 * @return <code>GAFTimeline's</code> from gaf asset
-		 */
-  List<GAFTimeline> get timelines => _timelines;
-
-  String get id => _config.id;
-
-  num get scale => _scale;
-
-  set scale(num value) {
-    _scale = value;
-  }
-
-  num get csf => _csf;
-
-  set csf(num value) {
-    _csf = value;
-  }
 }
