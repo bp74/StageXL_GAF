@@ -9,8 +9,8 @@ import 'dart:typed_data';
 import 'package:stagexl/stagexl.dart';
 import 'src/utils.dart';
 
-part 'src/core/gafbundle_loader.dart';
-part 'src/core/gaftimelines_manager.dart';
+part 'src/core/gaf_bundle_loader.dart';
+part 'src/core/gaf_timelines_manager.dart';
 
 part 'src/data/config/canimation_frame.dart';
 part 'src/data/config/canimation_frame_instance.dart';
@@ -44,25 +44,25 @@ part 'src/data/tagfx/tagfx.dart';
 part 'src/data/tagfx/tagfxbase.dart';
 part 'src/data/tagfx/tagfxsource_bitmap_data.dart';
 
-part 'src/data/gafasset.dart';
-part 'src/data/gafasset_config.dart';
-part 'src/data/gafbundle.dart'; // ???
-part 'src/data/gafdebug_information.dart';
-part 'src/data/gafgfxdata.dart';
-part 'src/data/gaftimeline.dart';
-part 'src/data/gaftimeline_config.dart';
+part 'src/data/gaf_asset.dart';
+part 'src/data/gaf_asset_config.dart';
+part 'src/data/gaf_bundle.dart'; // ???
+part 'src/data/gaf_debug_information.dart';
+part 'src/data/gaf_gfxdata.dart';
+part 'src/data/gaf_timeline.dart';
+part 'src/data/gaf_timeline_config.dart';
 
-part 'src/display/gafdisplay_object.dart';
-part 'src/display/gafimage.dart';
-part 'src/display/gafmovie_clip.dart';
-part 'src/display/gaftext_field.dart';
-part 'src/display/gaftext_field_text_editor.dart';
-part 'src/display/gaftexture.dart';
-part 'src/display/i_max_size.dart';
+part 'src/display/gaf_display_object.dart';
+part 'src/display/gaf_image.dart';
+part 'src/display/gaf_movie_clip.dart';
+part 'src/display/gaf_text_field.dart';
+part 'src/display/gaf_text_field_text_editor.dart';
+part 'src/display/gaf_texture.dart';
+part 'src/display/max_size.dart';
 
-part 'src/sound/gafsound_channel.dart';
-part 'src/sound/gafsound_data.dart';
-part 'src/sound/gafsound_manager.dart';
+part 'src/sound/gaf_sound_channel.dart';
+part 'src/sound/gaf_sound_data.dart';
+part 'src/sound/gaf_sound_manager.dart';
 
 
 

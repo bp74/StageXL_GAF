@@ -3,7 +3,7 @@ part of stagexl_gaf;
 /// GAFImage represents static GAF display object that is part of
 /// the [GAFMovieClip].
 
-class GAFImage extends Bitmap implements IMaxSize {
+class GAFImage extends Bitmap implements MaxSize {
 
   GAFTexture _assetTexture;
 
