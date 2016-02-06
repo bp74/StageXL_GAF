@@ -23,8 +23,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   final GAFTimeline _gafTimeline;
 
-  final Map<String, DisplayObject> _displayObjectsMap = new Map<String, DisplayObject>();
-  final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
+  final Map<String, DisplayObject> _displayObjects = new Map<String, DisplayObject>();
+  final List<GAFMovieClip> _movieClips = new List<GAFMovieClip>();
 
   CAnimationSequence _playingSequence;
   Point _maxSize;
@@ -74,7 +74,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
      } else if (animationObject.type == CAnimationObject.TYPE_TIMELINE) {
        var timeline = gafTimeline.gafAsset.getGAFTimelineByID(regionID);
        displayObject = new GAFMovieClip(timeline, this.fps);
-       _movieClipList.add(displayObject);
+       _movieClips.add(displayObject);
      }
 
      if (displayObject is MaxSize && animationObject.maxSize is Point) {
@@ -83,7 +83,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
        displayObject.maxSize = new Point<num>(x, y);
      }
 
-     _displayObjectsMap[instanceID] = displayObject;
+     _displayObjects[instanceID] = displayObject;
 
      if (gafTimeline.config.namedParts != null) {
        var instanceName = gafTimeline.config.namedParts[instanceID];
@@ -138,7 +138,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   set fps(num value) {
     _frameDuration = value <= 0.0 ? double.INFINITY : 1.0 / value;
-    _movieClipList.forEach((mc) => mc.fps = fps);
+    _movieClips.forEach((mc) => mc.fps = fps);
   }
 
   /// If ´true´ animation will be playing in reverse mode
@@ -147,7 +147,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   void set reverse(bool value) {
     _reverse = value;
-    _movieClipList.forEach((mc) => mc.reverse = value);
+    _movieClips.forEach((mc) => mc.reverse = value);
   }
 
   /// Indicates whether GAFMovieClip instance should skip frames when
@@ -165,7 +165,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   void set skipFrames(bool value) {
     _skipFrames = value;
-    _movieClipList.forEach((mc) => mc.skipFrames = value);
+    _movieClips.forEach((mc) => mc.skipFrames = value);
   }
 
   //--------------------------------------------------------------------------
@@ -176,7 +176,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   /// @param id Child ID
 
   DisplayObject getChildByID(String id) {
-    return _displayObjectsMap[id];
+    return _displayObjects[id];
   }
 
   /// Returns the mask display object that exists with the specified ID.
@@ -185,7 +185,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   /// @param id Mask ID
 
   DisplayObject getMaskByID(String id) {
-    return _displayObjectsMap[id];
+    return _displayObjects[id];
   }
 
   /// Clear playing sequence. If animation already in play just continue
@@ -241,7 +241,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     _started = true;
 
     if (applyToAllChildren) {
-      for (var movieClip in _movieClipList) {
+      for (var movieClip in _movieClips) {
         movieClip._started = true;
       }
     }
@@ -263,7 +263,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     _started = false;
 
     if (applyToAllChildren) {
-      for (var movieClip in _movieClipList) {
+      for (var movieClip in _movieClips) {
         movieClip._started = false;
       }
     }
@@ -296,7 +296,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   void loopAll(bool loop) {
     this.loop = loop;
-    _movieClipList.forEach((mc) => mc.loop = loop);
+    _movieClips.forEach((mc) => mc.loop = loop);
   }
 
   /// Advances all objects by a certain time (in seconds).
@@ -326,8 +326,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
       }
     }
 
-    for (int i = 0; i < _movieClipList.length; i++) {
-      _movieClipList[i].advanceTime(passedTime);
+    for (var movieClip in _movieClips) {
+      movieClip.advanceTime(passedTime);
     }
 
     return true;
@@ -370,7 +370,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
         }
       }
 
-      for (var movieClip in _movieClipList) {
+      for (var movieClip in _movieClips) {
         if (calledByUser) {
           movieClip.play(true);
         } else {
@@ -390,7 +390,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     var frames = _gafTimeline.config.animationFrames.all;
 
     if (applyToAllChildren && frames.length > 0) {
-      for (var movieClip in _movieClipList) {
+      for (var movieClip in _movieClips) {
         if (calledByUser) {
           movieClip.stop(true);
         } else {
@@ -482,8 +482,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   void _draw() {
 
-    _displayObjectsMap.forEach((k,v) => v.off = true);
-    _movieClipList.forEach((mc) => mc._hidden = true);
+    _displayObjects.forEach((k,v) => v.off = true);
+    _movieClips.forEach((mc) => mc._hidden = true);
 
     var animationObjects = _gafTimeline.config.animationObjects;
     var animationFrames = _gafTimeline.config.animationFrames.all;
@@ -496,7 +496,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
         var animationObject = animationObjects.getAnimationObject(instance.id);
         if (animationObject == null) continue;
 
-        var displayObject = _displayObjectsMap[instance.id];
+        var displayObject = _displayObjects[instance.id];
         if (displayObject == null) continue;
 
         if (displayObject is GAFMovieClip) {
@@ -523,7 +523,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
         }
 
         if (animationObject.mask == false && instance.maskID != null) {
-          var mask = _displayObjectsMap[instance.maskID];
+          var mask = _displayObjects[instance.maskID];
           if (mask is Bitmap) {
             // TODO: avoid memory allocations for filter/matrix
             var filter = new AlphaMaskFilter(mask.bitmapData);
@@ -550,7 +550,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     _reseted = true;
     _currentTime = 0;
     _lastFrameTime = 0;
-    _movieClipList.forEach((mc) => mc._reset());
+    _movieClips.forEach((mc) => mc._reset());
   }
 
   //--------------------------------------------------------------------------
@@ -578,16 +578,16 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
     _runActions();
 
-    if(isSkipping == false) {
+    if (isSkipping == false) {
       // Draw will trigger events if any
       _draw();
     } else {
       _checkPlaybackEvents();
     }
 
-    if( resetInvisibleChildren) {
+    if (resetInvisibleChildren) {
       //reset timelines that aren't visible
-      for (var movieClip in _movieClipList) {
+      for (var movieClip in _movieClips) {
         if (movieClip._hidden) movieClip._reset();
       }
     }

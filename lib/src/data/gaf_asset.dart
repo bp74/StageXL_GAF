@@ -71,7 +71,7 @@ class GAFAsset {
         var scale9Grid = element.scale9Grid;
         var pivotMatrix = element.pivotMatrix;
         var renderTextureQuad = atlasCSF.atlas.getRenderTextureQuadByIDAndAtlasID(elementID, atlasID);
-        return new GAFBitmapData(id, scale9Grid, pivotMatrix, renderTextureQuad);
+        return new GAFBitmapData(scale9Grid, pivotMatrix, renderTextureQuad);
       }
     }
 
