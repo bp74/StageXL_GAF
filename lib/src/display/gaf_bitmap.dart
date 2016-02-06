@@ -28,9 +28,9 @@ class GAFBitmap extends Bitmap implements MaxSize {
 
   //--------------------------------------------------------------------------
 
-  /// Creates a new instance of GAFImage.
+  /// Creates a clone of this [GAFBitmap].
 
-  GAFBitmap copy() => new GAFBitmap(_gafBitmapData);
+  GAFBitmap clone() => new GAFBitmap(_gafBitmapData);
 
   /// Change the texture of the [GAFBitmap] to a new one.
 

@@ -1,14 +1,5 @@
 part of stagexl_gaf;
 
-/** Dispatched when playhead reached first frame of sequence */
-// [Event(name="typeSequenceStart", type="starling.events.Event")]
-
-/** Dispatched when playhead reached end frame of sequence */
-// [Event(name="typeSequenceEnd", type="starling.events.Event")]
-
-/** Dispatched whenever the movie has displayed its last frame. */
-// [Event(name="complete", type="starling.events.Event")]
-
 /// The [GAFMovieClip] is an animated display object.
 ///
 /// It has all controls for animation familiar from standard MovieClip
@@ -17,17 +8,22 @@ part of stagexl_gaf;
 
 class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize {
 
-  static final String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
-	static final String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
+  static const String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
+	static const String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
+
+  static const EventStreamProvider<Event> sequenceStartEvent = const EventStreamProvider<Event>(EVENT_TYPE_SEQUENCE_START);
+  static const EventStreamProvider<Event> sequenceEndEvent = const EventStreamProvider<Event>(EVENT_TYPE_SEQUENCE_END);
+  static const EventStreamProvider<Event> completeEvent = const EventStreamProvider<Event>(Event.COMPLETE);
+
+  EventStream<Event> get onSequenceStart => GAFMovieClip.sequenceStartEvent.forTarget(this);
+  EventStream<Event> get onSequenceEnd => GAFMovieClip.sequenceEndEvent.forTarget(this);
+  EventStream<Event> get onComplete => GAFMovieClip.completeEvent.forTarget(this);
 
   //--------------------------------------------------------------------------
 
   final GAFTimeline _gafTimeline;
 
   final Map<String, DisplayObject> _displayObjectsMap = new Map<String, DisplayObject>();
-  final List<DisplayObject> _displayObjectsList = new List<DisplayObject>();
-
-  final List<GAFBitmap> _imagesList = new List<GAFBitmap>();
   final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
 
   CAnimationSequence _playingSequence;
@@ -72,7 +68,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
      if (animationObject.type == CAnimationObject.TYPE_TEXTURE) {
        var texture = gafTimeline.textureAtlas.getTexture(regionID);
        displayObject = new GAFBitmap(texture);
-       _imagesList.add(displayObject);
      } else if (animationObject.type == CAnimationObject.TYPE_TEXTFIELD) {
        var textFieldObject = gafTimeline.config.textFields.getTextFieldObject(regionID);
        displayObject = new GAFTextField(textFieldObject, gafTimeline.scale, gafTimeline.contentScaleFactor);
@@ -89,7 +84,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
      }
 
      _displayObjectsMap[instanceID] = displayObject;
-     _displayObjectsList.add(displayObject);
 
      if (gafTimeline.config.namedParts != null) {
        var instanceName = gafTimeline.config.namedParts[instanceID];
@@ -174,17 +168,12 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     _movieClipList.forEach((mc) => mc.skipFrames = value);
   }
 
-  void set transformationMatrix(Matrix value) {
-    throw new UnimplementedError("transformationMatrix setter");
-  }
-
   //--------------------------------------------------------------------------
 
   /// Returns the child display object that exists with the specified ID.
   /// Use to obtain animation's parts
   ///
   /// @param id Child ID
-  /// @return The child display object with the specified ID
 
   DisplayObject getChildByID(String id) {
     return _displayObjectsMap[id];
@@ -194,7 +183,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   /// Use to obtain animation's masks
   ///
   /// @param id Mask ID
-  /// @return The mask display object with the specified ID
 
   DisplayObject getMaskByID(String id) {
     return _displayObjectsMap[id];
@@ -209,8 +197,6 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   /// Returns id of the sequence where animation is right now. If there
   /// is no sequences - returns null.
-  ///
-  /// @return id of the sequence
 
   String get currentSequence {
     var sequences = _gafTimeline.config.animationSequences;
@@ -222,14 +208,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   ///
   /// @param id Sequence ID
   /// @param play Play or not immediately. <code>true</code> - starts playing from sequence start frame. <code>false</code> - go to sequence start frame and stop
-  /// @return sequence to play
 
   CAnimationSequence setSequence(String id, [bool play = true]) {
 
     var sequences = _gafTimeline.config.animationSequences;
-    var sequence = sequences.getSequenceByID(id);
-
-    _playingSequence = sequence;
+    var sequence = _playingSequence = sequences.getSequenceByID(id);
 
     if (sequence != null) {
       int startFrame = _reverse ? sequence.endFrameNo - 1 : sequence.startFrameNo;
@@ -312,12 +295,8 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   /// Set the [loop] value to the GAFMovieClip instance and for the all children.
 
   void loopAll(bool loop) {
-
     this.loop = loop;
-
-    for (var movieClip in _movieClipList) {
-      movieClip.loop = loop;
-    }
+    _movieClipList.forEach((mc) => mc.loop = loop);
   }
 
   /// Advances all objects by a certain time (in seconds).
@@ -354,9 +333,9 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     return true;
   }
 
-  /// Creates a new instance of GAFMovieClip.
+  /// Creates a clone of this [GAFMovieClip].
 
-  GAFMovieClip copy() {
+  GAFMovieClip clone() {
     return new GAFMovieClip(_gafTimeline, this.fps);
   }
 
@@ -377,10 +356,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
     if (applyToAllChildren && frames.length > 0) {
 
-      CAnimationFrame frameConfig = frames[_currentFrame];
+      var frameConfig = frames[_currentFrame];
+      var actions = frameConfig.actions;
 
-      if (frameConfig.actions != null) {
-        for (CFrameAction action in frameConfig.actions.length) {
+      if (actions != null) {
+        for (CFrameAction action in actions) {
           if (action.type == CFrameAction.STOP || (
               action.type == CFrameAction.GOTO_AND_STOP &&
                   int.parse(action.params[0]) == this.currentFrame)) {
@@ -390,13 +370,11 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
         }
       }
 
-      for (var child in this.children) {
-        if (child is GAFMovieClip) {
-          if (calledByUser) {
-            child.play(true);
-          } else {
-            child._play(true);
-          }
+      for (var movieClip in _movieClipList) {
+        if (calledByUser) {
+          movieClip.play(true);
+        } else {
+          movieClip._play(true);
         }
       }
     }
@@ -407,18 +385,16 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   void _stop([bool applyToAllChildren = false, bool calledByUser = false]) {
 
-    var frames = _gafTimeline.config.animationFrames.all;
-
     _inPlay = false;
 
+    var frames = _gafTimeline.config.animationFrames.all;
+
     if (applyToAllChildren && frames.length > 0) {
-      for (var child in this.children) {
-        if (child is GAFMovieClip) {
-          if (calledByUser) {
-            child.stop(true);
-          } else {
-            child._stop(true);
-          }
+      for (var movieClip in _movieClipList) {
+        if (calledByUser) {
+          movieClip.stop(true);
+        } else {
+          movieClip._stop(true);
         }
       }
     }
@@ -427,13 +403,17 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   void _checkPlaybackEvents() {
 
     if (this.hasEventListener(EVENT_TYPE_SEQUENCE_START)) {
-      var sequence = _gafTimeline.config.animationSequences.getSequenceStart(_currentFrame + 1);
-      if (sequence != null) _dispatchEventWith(EVENT_TYPE_SEQUENCE_START, false, sequence);
+      var type = EVENT_TYPE_SEQUENCE_START;
+      var sequences = _gafTimeline.config.animationSequences;
+      var sequence = sequences.getSequenceStart(_currentFrame + 1);
+      if (sequence != null) _dispatchEventWith(type, false, sequence);
     }
 
     if (this.hasEventListener(EVENT_TYPE_SEQUENCE_END)) {
-      var sequence = _gafTimeline.config.animationSequences.getSequenceEnd(_currentFrame + 1);
-      if (sequence != null) _dispatchEventWith(EVENT_TYPE_SEQUENCE_END, false, sequence);
+      var type = EVENT_TYPE_SEQUENCE_END;
+      var sequences = _gafTimeline.config.animationSequences;
+      var sequence = sequences.getSequenceEnd(_currentFrame + 1);
+      if (sequence != null) _dispatchEventWith(type, false, sequence);
     }
 
     if (this.hasEventListener(Event.COMPLETE)) {
@@ -441,7 +421,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
     }
   }
 
-  void _dispatchEventWith(String type, [bool bubbles = false, Object data = null]) {
+  void _dispatchEventWith(String type, [bool bubbles = false, Object data]) {
     var event = new Event(type, bubbles);
     this.dispatchEvent(event);
     // TODO: create special event which holds [data].
@@ -449,48 +429,30 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
   void _runActions() {
 
-    if (_gafTimeline.config.animationFrames.all.length == 0) return;
+    var animationFrames = _gafTimeline.config.animationFrames.all;
+    if (animationFrames.length == 0) return;
 
-    var actions = _gafTimeline.config.animationFrames.all[_currentFrame].actions;
+    var animationFrame =  animationFrames[_currentFrame];
+    var actions = animationFrame.actions;
+    if (actions == null) return;
 
-    if (actions != null) {
-
-      for(CFrameAction action in actions) {
-
-        switch (action.type) {
-
-          case CFrameAction.STOP:
-            this.stop();
-            break;
-
-          case CFrameAction.PLAY:
-            this.play();
-            break;
-
-          case CFrameAction.GOTO_AND_STOP:
-            this.gotoAndStop(action.params[0]);
-            break;
-
-          case CFrameAction.GOTO_AND_PLAY:
-            this.gotoAndPlay(action.params[0]);
-            break;
-
-          case CFrameAction.DISPATCH_EVENT:
-            String type = action.params[0];
-
-            if (this.hasEventListener(type)) {
-              var data = action.params.length >= 4 ? action.params[3] : null;
-              var cancelable = action.params.length >= 3 ? action.params[2] == "true" : false;
-              var bubbles = action.params.length >= 2 ? action.params[1] == "true" : false;
-              this._dispatchEventWith(type, bubbles, data);
-            }
-
-            if (type == CSound.GAF_PLAY_SOUND /* && GAF.autoPlaySounds */ ) {
-              _gafTimeline.startSound(this.currentFrame);
-            }
-
-            break;
-        }
+    for (CFrameAction action in actions) {
+      var params = action.params;
+      if (action.type == CFrameAction.STOP) {
+        this.stop();
+      } else if (action.type == CFrameAction.PLAY) {
+        this.play();
+      } else if (action.type == CFrameAction.GOTO_AND_STOP) {
+        this.gotoAndStop(params[0]);
+      } else if (action.type == CFrameAction.GOTO_AND_PLAY) {
+        this.gotoAndPlay(params[0]);
+      } else if (action.type == CFrameAction.DISPATCH_EVENT) {
+        var data = params.length >= 4 ? params[3] : null;
+        var cancelable = params.length >= 3 ? params[2] == "true" : false;
+        var bubbles = params.length >= 2 ? params[1] == "true" : false;
+        var type = params.length >= 1 ? params[0] : null;
+        if (hasEventListener(type)) _dispatchEventWith(type, bubbles, data);
+        if (type == CSound.GAF_PLAY_SOUND) _gafTimeline.startSound(currentFrame);
       }
     }
   }
@@ -549,10 +511,10 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
         displayObject.off = animationObject.mask;
         displayObject.alpha = animationObject.mask ? 0.3 : instance.alpha;
         displayObject.filters.clear();
+        displayObject.addTo(this); // TODO: this is slow
 
         displayObject.transformationMatrix.copyFrom(instance.matrix);
         displayObject.transformationMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
-        displayObject.addTo(this); // TODO: this is slow
 
         if (displayObject is GAFBitmap) {
           // TODO: remove this, see GAFBitmapData
@@ -560,7 +522,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
           displayObject.transformationMatrix.prepend(matrix);
         }
 
-        if (animationObject.mask == false && instance.maskID.length > 0) {
+        if (animationObject.mask == false && instance.maskID != null) {
           var mask = _displayObjectsMap[instance.maskID];
           if (mask is Bitmap) {
             // TODO: avoid memory allocations for filter/matrix
@@ -597,15 +559,16 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
     var resetInvisibleChildren = false;
     var frameCount = _gafTimeline.config.framesCount;
+    var sequence = _playingSequence;
 
     _nextFrame = _currentFrame + (_reverse ? -1 : 1);
-    _startFrame = (_playingSequence != null? _playingSequence.startFrameNo : 1) - 1;
-    _finalFrame = (_playingSequence != null ? _playingSequence.endFrameNo : frameCount) - 1;
+    _startFrame = (sequence != null? sequence.startFrameNo : 1) - 1;
+    _finalFrame = (sequence != null ? sequence.endFrameNo : frameCount) - 1;
 
     if (_nextFrame >= _startFrame && _nextFrame <= _finalFrame) {
       _currentFrame = _nextFrame;
       _lastFrameTime += _frameDuration;
-    } else if (!_loop) {
+    } else if (_loop == false) {
       this.stop();
     } else {
       _currentFrame = _reverse ? _finalFrame : _startFrame;

@@ -45,31 +45,34 @@ class BinGAFAssetConfigConverter {
   //int _time;
   bool _isTimeline;
   GAFTimelineConfig _currentTimeline;
-  //bool _async;
   bool _ignoreSounds;
-
-  // --------------------------------------------------------------------------
-  //
-  //  PUBLIC METHODS
-  //
-  //--------------------------------------------------------------------------
 
   BinGAFAssetConfigConverter(String assetID, ByteBuffer bytes)
       : _data = new ByteData.view(bytes),
         _assetID = assetID,
         _textureElementSizes = new Map<String, Rectangle>();
 
-  void convert() {
-    this.parseStart();
+  //--------------------------------------------------------------------------
+
+  GAFAssetConfig get config  => _config;
+
+  String get assetID => _assetID;
+
+  set ignoreSounds(bool ignoreSounds) {
+    _ignoreSounds = ignoreSounds;
+  }
+
+  void set defaultScale(num defaultScale) {
+    _defaultScale = defaultScale;
+  }
+
+  void set defaultCSF(num csf) {
+    _defaultContentScaleFactor = csf;
   }
 
   //--------------------------------------------------------------------------
-  //
-  //  PRIVATE METHODS
-  //
-  //--------------------------------------------------------------------------
 
-  void parseStart() {
+  void convert() {
 
     _config = new GAFAssetConfig(_assetID);
     _config.compression = _readInt();
@@ -211,9 +214,8 @@ class BinGAFAssetConfigConverter {
       timelineConfig.linkage = _readUTF();
     }
 
-    this._config.timelines.add(timelineConfig);
-
-    this._isTimeline = true;
+    _config.timelines.add(timelineConfig);
+    _isTimeline = true;
 
     return timelineConfig;
   }
@@ -318,7 +320,6 @@ class BinGAFAssetConfigConverter {
     int zIndex = 0;
     num alpha = 1.0;
     Matrix matrix = new Matrix.fromIdentity();
-    String maskID = "";
     bool hasMask = false;
     bool hasEffect = false;
     bool hasActions = false;
@@ -326,7 +327,6 @@ class BinGAFAssetConfigConverter {
     bool hasChangesInDisplayList = false;
 
     GAFTimelineConfig timelineConfig = _config.timelines[_config.timelines.length - 1];
-    CAnimationFrameInstance instance = null;
     CAnimationFrame currentFrame = null;
     CBlurFilterData blurFilter = null;
     Map blurFilters = {};
@@ -422,18 +422,10 @@ class BinGAFAssetConfigConverter {
             }
           }
 
-          if (hasMask) {
-            maskID = _readUnsignedInt().toString();
-          } else {
-            maskID = "";
-          }
-
-          instance = new CAnimationFrameInstance(stateID.toString());
-          instance.update(zIndex, matrix, alpha, maskID, filter);
-
-          if (maskID.length > 0 && filter != null) {
-            timelineConfig.addWarning(WarningConstants.FILTERS_UNDER_MASK);
-          }
+          var maskID = hasMask ? _readUnsignedInt().toString() : null;
+          var instanceID = stateID.toString();
+          var instance = new CAnimationFrameInstance(
+              instanceID, zIndex, alpha, maskID, matrix, filter);
 
           currentFrame.addInstance(instance);
         }
@@ -481,7 +473,7 @@ class BinGAFAssetConfigConverter {
     }
 
     for (currentFrame in timelineConfig.animationFrames.all) {
-      for (instance in currentFrame.instances) {
+      for (var instance in currentFrame.instances) {
         if (blurFilters.containsKey(instance.id) && instance.filter != null) {
           blurFilter = instance.filter.getBlurFilter();
           if (blurFilter != null && blurFilter.resolution == 1) {
@@ -508,8 +500,6 @@ class BinGAFAssetConfigConverter {
     }
 
     CTextureAtlasScale textureAtlas = this.getTextureAtlasScale(scale);
-
-    /////////////////////
 
     CTextureAtlasCSF contentScaleFactor;
     int atlasLength = _readByte();
@@ -555,8 +545,6 @@ class BinGAFAssetConfigConverter {
     Point topLeft = null;
     num elementScaleX = 1.0;
     num elementScaleY = 1.0;
-    num elementWidth = 0;
-    num elementHeight = 0;
     bool rotation = false;
     String linkageName = "";
 
@@ -674,32 +662,6 @@ class BinGAFAssetConfigConverter {
     throw new StateError(message);
   }
 
-  //--------------------------------------------------------------------------
-  //
-  //  GETTERS AND SETTERS
-  //
-  //--------------------------------------------------------------------------
-
-  GAFAssetConfig get config  => _config;
-
-  String get assetID => _assetID;
-
-  set ignoreSounds(bool ignoreSounds) {
-    _ignoreSounds = ignoreSounds;
-  }
-
-  void set defaultScale(num defaultScale) {
-    _defaultScale = defaultScale;
-  }
-
-  void set defaultCSF(num csf) {
-    _defaultContentScaleFactor = csf;
-  }
-
-  //--------------------------------------------------------------------------
-  //
-  //  READER METHODS
-  //
   //--------------------------------------------------------------------------
 
   double _readFloat() {
