@@ -1,8 +1,6 @@
 library stagexl_gaf.utils;
 
 import 'dart:math' as math;
-import 'dart:convert';
-import 'dart:typed_data';
 
 part 'utils/copy_array.dart';
 part 'utils/debug_utility.dart';

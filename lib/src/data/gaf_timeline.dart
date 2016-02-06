@@ -47,7 +47,7 @@ class GAFTimeline {
 
   /// Returns GAF Texture by name of an instance inside a timeline.
 
-  GAFTexture getTextureByName(String animationObjectName) {
+  GAFBitmapData getTextureByName(String animationObjectName) {
     String instanceID = _config.getNamedPartID(animationObjectName);
     if (instanceID != null) {
       CAnimationObject part = _config.animationObjects.getAnimationObject(instanceID);

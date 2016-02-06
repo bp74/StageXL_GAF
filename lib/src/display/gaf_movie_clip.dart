@@ -27,7 +27,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
   final Map<String, DisplayObject> _displayObjectsMap = new Map<String, DisplayObject>();
   final List<DisplayObject> _displayObjectsList = new List<DisplayObject>();
 
-  final List<GAFImage> _imagesList = new List<GAFImage>();
+  final List<GAFBitmap> _imagesList = new List<GAFBitmap>();
   final List<GAFMovieClip> _movieClipList = new List<GAFMovieClip>();
 
   CAnimationSequence _playingSequence;
@@ -71,7 +71,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
 
      if (animationObject.type == CAnimationObject.TYPE_TEXTURE) {
        var texture = gafTimeline.textureAtlas.getTexture(regionID);
-       displayObject = new GAFImage(texture);
+       displayObject = new GAFBitmap(texture);
        _imagesList.add(displayObject);
      } else if (animationObject.type == CAnimationObject.TYPE_TEXTFIELD) {
        var textFieldObject = gafTimeline.config.textFields.getTextFieldObject(regionID);
@@ -554,10 +554,10 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
         displayObject.transformationMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
         displayObject.addTo(this); // TODO: this is slow
 
-        if (displayObject is GAFImage) {
-          // TODO: We should remove this by addint the pivot to the vxList
-          var pivotMatrix = displayObject.assetTexture.pivotMatrix;
-          displayObject.transformationMatrix.prepend(pivotMatrix);
+        if (displayObject is GAFBitmap) {
+          // TODO: remove this, see GAFBitmapData
+          var matrix = displayObject.gafBitmapData.transformationMatrix;
+          displayObject.transformationMatrix.prepend(matrix);
         }
 
         if (animationObject.mask == false && instance.maskID.length > 0) {

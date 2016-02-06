@@ -55,12 +55,10 @@ class GAFAsset {
 
   //--------------------------------------------------------------------------
 
-  GAFTexture _getCustomRegion(String linkage, [num scale, num csf]) {
+  GAFBitmapData _getCustomRegion(String linkage, [num scale, num csf]) {
 
     scale = scale ?? this.scale;
     csf = csf ?? this.csf;
-
-    GAFTexture gafTexture = null;
 
     for(var atlasScale in config.allTextureAtlases) {
       if (atlasScale.scale == scale) {
@@ -72,17 +70,15 @@ class GAFAsset {
               var atlasID = element.atlasID;
               var scale9Grid = element.scale9Grid;
               var pivotMatrix = element.pivotMatrix;
-              var texture = atlasCSF.atlas.getTextureByIDAndAtlasID(elementID, atlasID);
-              gafTexture = new GAFTexture(id, texture, pivotMatrix, scale9Grid);
+              var renderTextureQuad = atlasCSF.atlas.getRenderTextureQuadByIDAndAtlasID(elementID, atlasID);
+              return new GAFBitmapData(id, renderTextureQuad, pivotMatrix, scale9Grid);
             }
-            break;
           }
         }
-        break;
       }
     }
 
-    return gafTexture;
+    return null;
   }
 
   /** @ */

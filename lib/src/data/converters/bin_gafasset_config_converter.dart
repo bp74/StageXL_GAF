@@ -583,8 +583,12 @@ class BinGAFAssetConfigConverter {
 
       if (elements.getElement(elementAtlasID) == null) {
         element = new CTextureAtlasElement(elementAtlasID.toString(), atlasID.toString());
-        element.region = new Rectangle((topLeft.x).round(), (topLeft.y), elementWidth, elementHeight).align();
-        element.pivotMatrix = new Matrix(1 / elementScaleX, 0, 0, 1 / elementScaleY, -pivot.x / elementScaleX, -pivot.y / elementScaleY);
+        element.region.left = (topLeft.x).round();
+        element.region.top =  (topLeft.y).round();
+        element.region.right = (topLeft.x + elementWidth).round();
+        element.region.bottom = (topLeft.y + elementHeight).round();
+        element.pivotMatrix.translate(0.0 - pivot.x, 0.0 - pivot.y);
+        element.pivotMatrix.scale(1.0 / elementScaleX, 1.0 / elementScaleY);
         element.scale9Grid = scale9Grid;
         element.linkage = linkageName;
         element.rotated = rotation;

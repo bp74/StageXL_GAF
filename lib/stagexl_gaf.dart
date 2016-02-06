@@ -52,11 +52,11 @@ part 'src/data/gaf_gfxdata.dart';
 part 'src/data/gaf_timeline.dart';
 part 'src/data/gaf_timeline_config.dart';
 
-part 'src/display/gaf_image.dart';
+part 'src/display/gaf_bitmap.dart';
 part 'src/display/gaf_movie_clip.dart';
 part 'src/display/gaf_text_field.dart';
 part 'src/display/gaf_text_field_text_editor.dart';
-part 'src/display/gaf_texture.dart';
+part 'src/display/gaf_bitmap_data.dart';
 part 'src/display/max_size.dart';
 
 part 'src/sound/gaf_sound_channel.dart';

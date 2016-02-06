@@ -26,24 +26,24 @@ class CTextureAtlas {
 
   //--------------------------------------------------------------------------
 
-  GAFTexture getTexture(String id) {
+  GAFBitmapData getTexture(String id) {
 
-    var textureAtlasElement = textureAtlasConfig.elements.getElement(id);
-    if (textureAtlasElement == null) return null;
+    var element = textureAtlasConfig.elements.getElement(id);
+    if (element == null) return null;
 
-    var atlasID = textureAtlasElement.atlasID;
-    var scale9Grid = textureAtlasElement.scale9Grid;
-    var pivotMatrix = textureAtlasElement.pivotMatrix;
-    var texture =  getTextureByIDAndAtlasID(id, atlasID);
-    return new GAFTexture(id, texture, pivotMatrix, scale9Grid);
+    var atlasID = element.atlasID;
+    var scale9Grid = element.scale9Grid;
+    var pivotMatrix = element.pivotMatrix;
+    var renderTextureQuad = getRenderTextureQuadByIDAndAtlasID(id, atlasID);
+    return new GAFBitmapData(id, renderTextureQuad, pivotMatrix, scale9Grid);
   }
 
   //--------------------------------------------------------------------------
 
-  BitmapData getTextureByIDAndAtlasID(String id, String atlasID) {
+  RenderTextureQuad getRenderTextureQuadByIDAndAtlasID(String id, String atlasID) {
     var textureAtlas = textureAtlasMap[atlasID];
-    var texture =  textureAtlas.getBitmapData(id);
-    return texture;
+    var bitmapData = textureAtlas.getBitmapData(id);
+    return bitmapData.renderTextureQuad;
   }
 
 }

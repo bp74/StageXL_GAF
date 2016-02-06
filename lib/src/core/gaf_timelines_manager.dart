@@ -97,7 +97,7 @@ class GAFTimelinesManager {
   /// @return <code>IGAFTexture</code> (custom image) from bundle.
   /// @see com.catalystapps.gaf.data.GAFBundle.getCustomRegion();
 
-  GAFTexture getCustomRegion(String swfName, String linkage, [num scale, num csf]) {
+  GAFBitmapData getCustomRegion(String swfName, String linkage, [num scale, num csf]) {
     GAFBundle gafBundle = _bundlesBySwfName[swfName];
     if (gafBundle != null) {
       return gafBundle.getCustomRegion(swfName, linkage, scale, csf);
