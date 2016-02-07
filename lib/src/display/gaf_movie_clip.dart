@@ -32,8 +32,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   bool _reverse = false;
   bool _skipFrames = true;
 
-  bool _isReseted = true;
-  bool _isStarted = false;
+  bool _isReset = true;
+  bool _isStart = false;
   bool _isPlaying = false;
 
   num _currentTime = 0.0;
@@ -237,11 +237,11 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void play([bool applyToAllChildren = false]) {
 
-    _isStarted = true;
+    _isStart = true;
 
     if (applyToAllChildren) {
       for (var movieClip in _movieClips) {
-        movieClip._isStarted = true;
+        movieClip._isStart = true;
       }
     }
 
@@ -259,11 +259,11 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void stop([bool applyToAllChildren = false]) {
 
-    _isStarted = false;
+    _isStart = false;
 
     if (applyToAllChildren) {
       for (var movieClip in _movieClips) {
-        movieClip._isStarted = false;
+        movieClip._isStart = false;
       }
     }
 
@@ -358,16 +358,13 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
     if (applyToAllChildren && frames.length > 0) {
 
       var frameConfig = frames[_currentFrame];
-      var actions = frameConfig.actions;
 
-      if (actions != null) {
-        for (CFrameAction action in actions) {
-          if (action.type == CFrameAction.STOP || (
-              action.type == CFrameAction.GOTO_AND_STOP &&
-                  int.parse(action.params[0]) == this.currentFrame)) {
-            _isPlaying = false;
-            return;
-          }
+      for (var action in frameConfig.actions) {
+        if (action.type == CFrameAction.STOP || (
+            action.type == CFrameAction.GOTO_AND_STOP &&
+                int.parse(action.params[0]) == this.currentFrame)) {
+          _isPlaying = false;
+          return;
         }
       }
 
@@ -381,7 +378,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
     }
 
     _runActions();
-    _isReseted = false;
+    _isReset = false;
   }
 
   void _stop([bool applyToAllChildren = false, bool calledByUser = false]) {
@@ -508,7 +505,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         if (displayObject is GAFMovieClip) {
           if (instance.alpha < 0.0) {
             displayObject._reset();
-          } else if (displayObject._isReseted && displayObject._isStarted) {
+          } else if (displayObject._isReset && displayObject._isStart) {
             displayObject._play(true);
           }
         }
@@ -549,7 +546,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   void _reset() {
 
     _gotoAndStop((_reverse ? _finalFrame : _startFrame) + 1);
-    _isReseted = true;
+    _isReset = true;
     _currentTime = 0;
     _lastFrameTime = 0;
 
