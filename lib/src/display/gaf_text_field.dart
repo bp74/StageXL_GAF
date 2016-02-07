@@ -1,6 +1,9 @@
 part of stagexl_gaf;
 
-class GAFTextField extends Sprite {
+class GAFTextField extends TextField implements GAFDisplayObject {
+
+  Point<num> maxSize = null;
+
 	// TODO: Implement or replace GAFTextField
 
   GAFTextField(CTextFieldObject config,[num scale=1, num csf=1]): super() {
@@ -9,24 +12,10 @@ class GAFTextField extends Sprite {
 }
 
 /*
-	/**
-	 * @
-	 */
-	 class GAFTextField extends TextInput implements IGAFDebug, IMaxSize, IGAFDisplayObject
+
+  class GAFTextField extends TextInput implements IGAFDebug, IMaxSize, IGAFDisplayObject
 	{
-		//--------------------------------------------------------------------------
-		//
-		//  PUBLIC VARIABLES
-		//
-		//--------------------------------------------------------------------------
-
-		//--------------------------------------------------------------------------
-		//
-		//  PRIVATE VARIABLES
-		//
-		//--------------------------------------------------------------------------
-
-		 static final Matrix HELPER_MATRIX = new Matrix();
+	 static final Matrix HELPER_MATRIX = new Matrix();
 
 		 Matrix _pivotMatrix;
 
@@ -45,11 +34,7 @@ class GAFTextField extends Sprite {
 
 		 CTextFieldObject _config;
 
-		//--------------------------------------------------------------------------
-		//
-		//  CONSTRUCTOR
-		//
-		//--------------------------------------------------------------------------
+ 		//--------------------------------------------------------------------------
 
 		/**
 		 * GAFTextField represents text field that is part of the <code>GAFMovieClip</code>
@@ -196,8 +181,7 @@ class GAFTextField extends Sprite {
 			this.backgroundSkin = bgImage;
 		}
 
-		/** @ */
-		  void setFilterConfig(CFilter value,[num scale=1])
+	  void setFilterConfig(CFilter value,[num scale=1])
 		{
 			if (this._filterConfig != value || this._filterScale != scale)
 			{
@@ -394,19 +378,8 @@ class GAFTextField extends Sprite {
 		}
 
 		//--------------------------------------------------------------------------
-		//
-		//  EVENT HANDLERS
-		//
-		//--------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------
-		//
-		//  GETTERS AND SETTERS
-		//
-		//--------------------------------------------------------------------------
-
-		/** @ */
-		  Matrix get pivotMatrix
+	  Matrix get pivotMatrix
 		{
 			HELPER_MATRIX.copyFrom(this._pivotMatrix);
 
@@ -419,22 +392,14 @@ class GAFTextField extends Sprite {
 			return HELPER_MATRIX;
 		}
 
-		/** @ */
-		  Point get maxSize
+	  Point get maxSize
 		{
 			return this._maxSize;
 		}
 
-		/** @ */
-		  void set maxSize(Point value)
+	  void set maxSize(Point value)
 		{
 			this._maxSize = value;
 		}
-
-		//--------------------------------------------------------------------------
-		//
-		//  STATIC METHODS
-		//
-		//--------------------------------------------------------------------------
 	}
 */

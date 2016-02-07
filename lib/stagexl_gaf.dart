@@ -57,7 +57,7 @@ part 'src/display/gaf_movie_clip.dart';
 part 'src/display/gaf_text_field.dart';
 part 'src/display/gaf_text_field_text_editor.dart';
 part 'src/display/gaf_bitmap_data.dart';
-part 'src/display/max_size.dart';
+part 'src/display/gaf_display_object.dart';
 
 part 'src/sound/gaf_sound_channel.dart';
 part 'src/sound/gaf_sound_data.dart';

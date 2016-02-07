@@ -6,7 +6,7 @@ part of stagexl_gaf;
 /// ([play], [stop], [gotoAndPlay], etc.) and some more like [loop],
 /// [nPlay], [setSequence] that helps manage playback
 
-class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize {
+class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, Animatable {
 
   static const String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
 	static const String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
@@ -77,7 +77,7 @@ class GAFMovieClip extends DisplayObjectContainer implements Animatable, MaxSize
        _movieClips.add(displayObject);
      }
 
-     if (displayObject is MaxSize && animationObject.maxSize is Point) {
+     if (displayObject is GAFDisplayObject && animationObject.maxSize is Point) {
        var x = animationObject.maxSize.x * gafTimeline.scale;
        var y = animationObject.maxSize.y * gafTimeline.scale;
        displayObject.maxSize = new Point<num>(x, y);

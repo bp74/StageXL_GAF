@@ -3,7 +3,7 @@ part of stagexl_gaf;
 /// The [GAFBitmap] display object represents a static image that is
 /// part of the [GAFMovieClip].
 
-class GAFBitmap extends Bitmap implements MaxSize {
+class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
   Point maxSize = null;
 
