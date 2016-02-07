@@ -11,8 +11,6 @@ class CAnimationObject {
   final String type;
   final bool mask;
 
-  Point<num> maxSize = null;
-
   CAnimationObject(this.instanceID, this.regionID, this.type, this.mask);
 
 }
