@@ -26,8 +26,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   final Map<String, DisplayObject> _displayObjects = new Map<String, DisplayObject>();
   final List<GAFMovieClip> _movieClips = new List<GAFMovieClip>();
 
-  CAnimationSequence _playingSequence;
-  Point _maxSize;
+  Point<num> maxSize = null;
 
   bool _loop = true;
   bool _skipFrames = true;
@@ -45,6 +44,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   int _startFrame = 0;
   int _finalFrame = 0;
   int _currentFrame = 0;
+
+  CAnimationSequence _playingSequence = null;
 
   //---------------------------------------------------------------------------
 
@@ -119,12 +120,6 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   set loop(bool loop) {
     _loop = loop;
-  }
-
-  Point get maxSize => _maxSize;
-
-  set maxSize(Point value) {
-    _maxSize = value;
   }
 
   /// The individual frame rate for this [GAFMovieClip].

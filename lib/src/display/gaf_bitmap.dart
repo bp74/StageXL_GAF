@@ -5,7 +5,7 @@ part of stagexl_gaf;
 
 class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
-  Point maxSize = null;
+  Point<num> maxSize = null;
 
   GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData);
 
