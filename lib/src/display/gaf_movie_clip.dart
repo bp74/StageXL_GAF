@@ -21,7 +21,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   //--------------------------------------------------------------------------
 
-  final GAFTimeline _gafTimeline;
+  final GAFTimeline _timeline;
 
   final Map<String, DisplayObject> _displayObjects = new Map<String, DisplayObject>();
   final List<GAFMovieClip> _movieClips = new List<GAFMovieClip>();
@@ -55,42 +55,46 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// @param fps defines the frame rate of the movie clip. If not set, the stage
   /// config frame rate will be used instead.
 
-  GAFMovieClip(GAFTimeline gafTimeline, [int fps])
-      : _gafTimeline = gafTimeline {
+  GAFMovieClip(GAFTimeline timeline, [int fps]) : _timeline = timeline {
 
-   this.fps = fps ?? gafTimeline.config.stageConfig?.fps ?? 25;
+    var config = _timeline.config;
+    var scale = _timeline.scale;
+    var csf = _timeline.contentScaleFactor;
 
-   for (CAnimationObject animationObject in gafTimeline.config.animationObjects.all) {
+    this.fps = fps ?? config.stageConfig?.fps ?? 25;
 
-     var displayObject = null;
-     var regionID = animationObject.regionID;
-     var instanceID = animationObject.instanceID;
+    for (CAnimationObject animationObject in config.animationObjects.all) {
 
-     if (animationObject.type == CAnimationObject.TYPE_TEXTURE) {
-       var texture = gafTimeline.textureAtlas.getTexture(regionID);
-       displayObject = new GAFBitmap(texture);
-     } else if (animationObject.type == CAnimationObject.TYPE_TEXTFIELD) {
-       var textFieldObject = gafTimeline.config.textFields.getTextFieldObject(regionID);
-       displayObject = new GAFTextField(textFieldObject, gafTimeline.scale, gafTimeline.contentScaleFactor);
-     } else if (animationObject.type == CAnimationObject.TYPE_TIMELINE) {
-       var timeline = gafTimeline.gafAsset.getGAFTimelineByID(regionID);
-       displayObject = new GAFMovieClip(timeline, this.fps);
-       _movieClips.add(displayObject);
-     }
+      var displayObject = null;
+      var type = animationObject.type;
+      var regionID = animationObject.regionID;
+      var instanceID = animationObject.instanceID;
 
-     _displayObjects[instanceID] = displayObject;
+      if (type == CAnimationObject.TYPE_TEXTURE) {
+        var texture = _timeline.textureAtlas.getTexture(regionID);
+        displayObject = new GAFBitmap(texture);
+      } else if (type == CAnimationObject.TYPE_TEXTFIELD) {
+        var textFieldObject = config.textFields.getTextFieldObject(regionID);
+        displayObject = new GAFTextField(textFieldObject, scale, csf);
+      } else if (type == CAnimationObject.TYPE_TIMELINE) {
+        var mcTimeline = _timeline.gafAsset.getGAFTimelineByID(regionID);
+        displayObject = new GAFMovieClip(mcTimeline, this.fps);
+        _movieClips.add(displayObject);
+      }
 
-     if (gafTimeline.config.namedParts != null) {
-       var instanceName = gafTimeline.config.namedParts[instanceID];
-       if (instanceName != null) {
-         //this[_config.namedParts[instanceID]] = displayObject;
-         displayObject.name = instanceName;
-       }
-     }
-   }
+      _displayObjects[instanceID] = displayObject;
 
-   _draw();
- }
+      if (config.namedParts != null) {
+        var instanceName = config.namedParts[instanceID];
+        if (instanceName != null) {
+          //this[_config.namedParts[instanceID]] = displayObject;
+          displayObject.name = instanceName;
+        }
+      }
+    }
+
+    _draw();
+  }
 
   //--------------------------------------------------------------------------
 
@@ -101,7 +105,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   /// The total number of frames in the GAFMovieClip instance.
 
-  int get totalFrames => _gafTimeline.config.framesCount;
+  int get totalFrames => _timeline.config.framesCount;
 
   /// Indicates whether GAFMovieClip instance already in play
 
@@ -188,7 +192,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// is no sequences - returns null.
 
   String get currentSequence {
-    var sequences = _gafTimeline.config.animationSequences;
+    var sequences = _timeline.config.animationSequences;
     var sequence = sequences.getSequenceByFrame(this.currentFrame);
     return sequence?.id;
   }
@@ -200,7 +204,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   CAnimationSequence setSequence(String id, [bool play = true]) {
 
-    var sequences = _gafTimeline.config.animationSequences;
+    var sequences = _timeline.config.animationSequences;
     var sequence = _playingSequence = sequences.getSequenceByID(id);
 
     if (sequence != null) {
@@ -325,7 +329,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// Creates a clone of this [GAFMovieClip].
 
   GAFMovieClip clone() {
-    return new GAFMovieClip(_gafTimeline, this.fps);
+    return new GAFMovieClip(_timeline, this.fps);
   }
 
   //--------------------------------------------------------------------------
@@ -337,8 +341,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _play([bool applyToAllChildren = false, bool calledByUser = false]) {
 
-    var config = _gafTimeline.config;
-    var frames = _gafTimeline.config.animationFrames.all;
+    var config = _timeline.config;
+    var frames = _timeline.config.animationFrames.all;
 
     if (_inPlay && !applyToAllChildren) return;
     if (config.framesCount > 1) _inPlay = true;
@@ -376,7 +380,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
     _inPlay = false;
 
-    var frames = _gafTimeline.config.animationFrames.all;
+    var frames = _timeline.config.animationFrames.all;
 
     if (applyToAllChildren && frames.length > 0) {
       for (var movieClip in _movieClips) {
@@ -393,14 +397,14 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
     if (this.hasEventListener(EVENT_TYPE_SEQUENCE_START)) {
       var type = EVENT_TYPE_SEQUENCE_START;
-      var sequences = _gafTimeline.config.animationSequences;
+      var sequences = _timeline.config.animationSequences;
       var sequence = sequences.getSequenceStart(_currentFrame + 1);
       if (sequence != null) _dispatchEventWith(type, false, sequence);
     }
 
     if (this.hasEventListener(EVENT_TYPE_SEQUENCE_END)) {
       var type = EVENT_TYPE_SEQUENCE_END;
-      var sequences = _gafTimeline.config.animationSequences;
+      var sequences = _timeline.config.animationSequences;
       var sequence = sequences.getSequenceEnd(_currentFrame + 1);
       if (sequence != null) _dispatchEventWith(type, false, sequence);
     }
@@ -418,7 +422,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _runActions() {
 
-    var animationFrames = _gafTimeline.config.animationFrames.all;
+    var animationFrames = _timeline.config.animationFrames.all;
     if (animationFrames.length == 0) return;
 
     var animationFrame =  animationFrames[_currentFrame];
@@ -441,7 +445,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         var bubbles = params.length >= 2 ? params[1] == "true" : false;
         var type = params.length >= 1 ? params[0] : null;
         if (hasEventListener(type)) _dispatchEventWith(type, bubbles, data);
-        if (type == CSound.GAF_PLAY_SOUND) _gafTimeline.startSound(currentFrame);
+        if (type == CSound.GAF_PLAY_SOUND) _timeline.startSound(currentFrame);
       }
     }
   }
@@ -449,11 +453,11 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   void _checkAndSetCurrentFrame(dynamic frame) {
 
     if (frame is int) {
-      var frameCount = _gafTimeline.config.framesCount;
+      var frameCount = _timeline.config.framesCount;
       if (frame > frameCount) frame = frameCount;
     } else if (frame is String) {
       String label = frame;
-      frame = _gafTimeline.config.animationSequences.getStartFrameNo(label);
+      frame = _timeline.config.animationSequences.getStartFrameNo(label);
       if (frame == 0) throw new ArgumentError("Frame label '$label' not found");
     } else {
       frame = 1;
@@ -474,8 +478,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
     _displayObjects.forEach((k,v) => v.off = true);
     _movieClips.forEach((mc) => mc._hidden = true);
 
-    var animationObjects = _gafTimeline.config.animationObjects;
-    var animationFrames = _gafTimeline.config.animationFrames.all;
+    var animationObjects = _timeline.config.animationObjects;
+    var animationFrames = _timeline.config.animationFrames.all;
 
     if (animationFrames.length > _currentFrame) {
 
@@ -504,7 +508,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
         var displayObjectMatrix = displayObject.transformationMatrix;
         displayObjectMatrix.copyFrom(instance.matrix);
-        displayObjectMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
+        displayObjectMatrix.scale(_timeline.scale, _timeline.scale);
 
         if (displayObject is GAFBitmap) {
           // TODO: remove this, see GAFBitmapData
@@ -526,7 +530,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         }
 
         var filterConfig = instance.filter;
-        var filterScale = _gafTimeline.scale;
+        var filterScale = _timeline.scale;
         // TODO: apply filters
 
       }
@@ -548,7 +552,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   void _changeCurrentFrame(bool isSkipping) {
 
     var resetInvisibleChildren = false;
-    var frameCount = _gafTimeline.config.framesCount;
+    var frameCount = _timeline.config.framesCount;
     var sequence = _playingSequence;
 
     _nextFrame = _currentFrame + (_reverse ? -1 : 1);
