@@ -28,6 +28,6 @@ Future main() async {
   skeleton.y = 250;
   stage.addChild(skeleton);
   stage.juggler.add(skeleton);
-  skeleton.play();
+  skeleton.play(true);
 
 }

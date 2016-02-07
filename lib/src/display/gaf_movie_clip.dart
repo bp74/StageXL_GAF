@@ -55,7 +55,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// @param fps defines the frame rate of the movie clip. If not set, the stage
   /// config frame rate will be used instead.
 
-  GAFMovieClip(GAFTimeline timeline, [int fps]) : _timeline = timeline {
+  GAFMovieClip(GAFTimeline timeline, [num fps]) : _timeline = timeline {
 
     var config = _timeline.config;
     var scale = _timeline.scale;
@@ -126,7 +126,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// skip frames.
 
   num get fps {
-    return _frameDuration.isInfinite ? 1.0 / _frameDuration : 0.0;
+    return _frameDuration.isInfinite ? 0.0 : 1.0 / _frameDuration;
   }
 
   set fps(num value) {
