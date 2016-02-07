@@ -23,7 +23,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   final GAFTimeline _timeline;
 
-  final Map<String, DisplayObject> _displayObjects = new Map<String, DisplayObject>();
+  final Map<String, GAFDisplayObject> _displayObjects = new Map<String, GAFDisplayObject>();
   final List<GAFMovieClip> _movieClips = new List<GAFMovieClip>();
 
   Point<num> maxSize = null;
