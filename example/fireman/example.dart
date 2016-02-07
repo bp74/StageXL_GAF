@@ -25,6 +25,6 @@ Future main() async {
   var fireman = new GAFMovieClip(gafTimeline);
   stage.addChild(fireman);
   stage.juggler.add(fireman);
-  fireman.play();
+  fireman.play(true);
 
 }
