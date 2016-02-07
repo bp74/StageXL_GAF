@@ -426,10 +426,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
     if (animationFrames.length == 0) return;
 
     var animationFrame =  animationFrames[_currentFrame];
-    var actions = animationFrame.actions;
-    if (actions == null) return;
 
-    for (CFrameAction action in actions) {
+    for (CFrameAction action in animationFrame.actions) {
       var params = action.params;
       if (action.type == CFrameAction.STOP) {
         this.stop();
