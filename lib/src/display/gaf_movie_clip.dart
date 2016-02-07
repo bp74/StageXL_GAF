@@ -131,7 +131,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   set fps(num value) {
     _frameDuration = value <= 0.0 ? double.INFINITY : 1.0 / value;
-    _movieClips.forEach((mc) => mc.fps = value);
+    for (var movieClip in _movieClips) {
+      movieClip.fps = value;
+    }
   }
 
   /// If ´true´ animation will be playing in reverse mode
@@ -140,7 +142,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void set reverse(bool value) {
     _reverse = value;
-    _movieClips.forEach((mc) => mc.reverse = value);
+    for (var movieClip in _movieClips) {
+      movieClip.reverse = value;
+    }
   }
 
   /// Indicates whether GAFMovieClip instance should skip frames when
@@ -158,7 +162,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void set skipFrames(bool value) {
     _skipFrames = value;
-    _movieClips.forEach((mc) => mc.skipFrames = value);
+    for (var movieClip in _movieClips) {
+      movieClip.skipFrames = value;
+    }
   }
 
   //--------------------------------------------------------------------------
@@ -289,7 +295,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void loopAll(bool loop) {
     this.loop = loop;
-    _movieClips.forEach((mc) => mc.loop = loop);
+    for (var movieClip in _movieClips) {
+      movieClip.loop = loop;
+    }
   }
 
   /// Advances all objects by a certain time (in seconds).
@@ -473,10 +481,12 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _draw() {
 
-    _displayObjects.forEach((k,v) => v.off = true);
-
     var animationObjects = _timeline.config.animationObjects;
     var animationFrames = _timeline.config.animationFrames.all;
+
+    for (var displayObject in _displayObjects.values) {
+      displayObject.off = true;
+    }
 
     if (animationFrames.length > _currentFrame) {
 
@@ -537,14 +547,16 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   }
 
   void _reset() {
+
     _gotoAndStop((_reverse ? _finalFrame : _startFrame) + 1);
     _isReseted = true;
     _currentTime = 0;
     _lastFrameTime = 0;
-    _movieClips.forEach((mc) => mc._reset());
-  }
 
-  //--------------------------------------------------------------------------
+    for (var movieClip in _movieClips) {
+      movieClip._reset();
+    }
+  }
 
   void _changeCurrentFrame(bool isSkipping) {
 
