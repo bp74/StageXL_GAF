@@ -502,13 +502,14 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         displayObject.filters.clear();
         displayObject.addTo(this); // TODO: this is slow
 
-        displayObject.transformationMatrix.copyFrom(instance.matrix);
-        displayObject.transformationMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
+        var displayObjectMatrix = displayObject.transformationMatrix;
+        displayObjectMatrix.copyFrom(instance.matrix);
+        displayObjectMatrix.scale(_gafTimeline.scale, _gafTimeline.scale);
 
         if (displayObject is GAFBitmap) {
           // TODO: remove this, see GAFBitmapData
           var matrix = displayObject.bitmapData.transformationMatrix;
-          displayObject.transformationMatrix.prepend(matrix);
+          displayObjectMatrix.prepend(matrix);
         }
 
         if (animationObject.mask == false && instance.maskID != null) {
