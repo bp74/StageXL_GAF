@@ -26,7 +26,7 @@ class CTextureAtlas {
 
   //--------------------------------------------------------------------------
 
-  GAFBitmapData getTexture(String id) {
+  GAFBitmapData getBitmapData(String id) {
 
     var element = textureAtlasConfig.elements.getElement(id);
     if (element == null) return null;
@@ -37,8 +37,6 @@ class CTextureAtlas {
     var renderTextureQuad = getRenderTextureQuadByIDAndAtlasID(id, atlasID);
     return new GAFBitmapData(scale9Grid, pivotMatrix, renderTextureQuad);
   }
-
-  //--------------------------------------------------------------------------
 
   RenderTextureQuad getRenderTextureQuadByIDAndAtlasID(String id, String atlasID) {
     var textureAtlas = textureAtlasMap[atlasID];

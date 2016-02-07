@@ -52,7 +52,7 @@ class GAFTimeline {
     if (instanceID != null) {
       CAnimationObject part = _config.animationObjects.getAnimationObject(instanceID);
       if (part != null) {
-        return this.textureAtlas.getTexture(part.regionID);
+        return this.textureAtlas.getBitmapData(part.regionID);
       }
     }
     return null;
