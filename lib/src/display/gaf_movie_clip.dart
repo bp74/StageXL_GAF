@@ -126,12 +126,12 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// skip frames.
 
   num get fps {
-    return _frameDuration.isInfinite ? 0.0 : 1.0 / _frameDuration;
+    return _frameDuration.isFinite ? 1.0 / _frameDuration : 0.0;
   }
 
   set fps(num value) {
     _frameDuration = value <= 0.0 ? double.INFINITY : 1.0 / value;
-    _movieClips.forEach((mc) => mc.fps = fps);
+    _movieClips.forEach((mc) => mc.fps = value);
   }
 
   /// If ´true´ animation will be playing in reverse mode
@@ -298,7 +298,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   bool advanceTime(num passedTime) {
 
-    if (_inPlay && _frameDuration != double.INFINITY) {
+    if (_inPlay && _frameDuration.isFinite) {
 
       _currentTime += passedTime;
 
