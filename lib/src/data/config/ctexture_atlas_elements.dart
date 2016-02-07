@@ -3,12 +3,12 @@ part of stagexl_gaf;
 class CTextureAtlasElements {
 
   List<CTextureAtlasElement> _elements;
-  Map<String, CTextureAtlasElement> _elementsMap;
+  Map<int, CTextureAtlasElement> _elementsMap;
   Map<String, CTextureAtlasElement> _elementsByLinkage;
 
   CTextureAtlasElements()
       : _elements = new List<CTextureAtlasElement>(),
-        _elementsMap = new Map<String, CTextureAtlasElement>(),
+        _elementsMap = new Map<int, CTextureAtlasElement>(),
         _elementsByLinkage = new Map<String, CTextureAtlasElement>();
 
   //--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ class CTextureAtlasElements {
     }
   }
 
-  CTextureAtlasElement getElement(String id) {
+  CTextureAtlasElement getElement(int id) {
     return _elementsMap[id];
   }
 

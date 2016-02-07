@@ -2,10 +2,10 @@ part of stagexl_gaf;
 
 class CAnimationObjects {
 
-  final Map<String, CAnimationObject> _animationObjectsMap;
+  final Map<int, CAnimationObject> _animationObjectsMap;
 
   CAnimationObjects()
-      : _animationObjectsMap = new Map<String, CAnimationObject>();
+      : _animationObjectsMap = new Map<int, CAnimationObject>();
 
   //--------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class CAnimationObjects {
     }
   }
 
-  CAnimationObject getAnimationObject(String instanceID) {
+  CAnimationObject getAnimationObject(int instanceID) {
     return _animationObjectsMap[instanceID];
   }
 

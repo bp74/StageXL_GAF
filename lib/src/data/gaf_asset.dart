@@ -5,7 +5,7 @@ class GAFAsset {
   final GAFAssetConfig config;
 
   final List<GAFTimeline> _timelines = new List<GAFTimeline>();
-  final Map<String, GAFTimeline> _timelinesMap = new Map<String, GAFTimeline>();
+  final Map<int, GAFTimeline> _timelinesMap = new Map<int, GAFTimeline>();
   final Map<String, GAFTimeline> _timelinesByLinkage = new Map<String, GAFTimeline>();
 
   num scale = 1.0;
@@ -33,7 +33,7 @@ class GAFAsset {
         _timelinesByLinkage[timeline.linkage] = timeline;
       }
     } else {
-      throw new StateError("Bundle error. More then one timeline use id: '" + timeline.id + "'");
+      throw new StateError("Bundle error. More then one timeline use id: '${timeline.id}'");
     }
   }
 
@@ -49,7 +49,7 @@ class GAFAsset {
   ///
   /// @param id internal timeline id
 
-  GAFTimeline getGAFTimelineByID(String id) {
+  GAFTimeline getGAFTimelineByID(int id) {
     return _timelinesMap[id];
   }
 

@@ -48,7 +48,7 @@ class GAFTimeline {
   /// Returns GAF Texture by name of an instance inside a timeline.
 
   GAFBitmapData getTextureByName(String animationObjectName) {
-    String instanceID = _config.getNamedPartID(animationObjectName);
+    int instanceID = _config.getNamedPartID(animationObjectName);
     if (instanceID != null) {
       CAnimationObject part = _config.animationObjects.getAnimationObject(instanceID);
       if (part != null) {
@@ -155,7 +155,7 @@ class GAFTimeline {
       if (frameSoundConfig.action == CFrameSound.ACTION_STOP) {
         GAFSoundManager
             .getInstance()
-            ._stop(frameSoundConfig.soundID, this._config.assetID);
+            ._stop(frameSoundConfig.soundID, _config.assetID);
       } else {
         Sound sound;
         if (frameSoundConfig.linkage != null) {
@@ -163,14 +163,14 @@ class GAFTimeline {
         } else {
           sound = this
               .gafSoundData
-              .getSound(frameSoundConfig.soundID, this._config.assetID);
+              .getSound(frameSoundConfig.soundID, _config.assetID);
         }
         Map soundOptions = {};
         soundOptions["continue"] =
             frameSoundConfig.action == CFrameSound.ACTION_CONTINUE;
         soundOptions["repeatCount"] = frameSoundConfig.repeatCount;
         GAFSoundManager.getInstance()._play(sound, frameSoundConfig.soundID,
-            soundOptions, this._config.assetID);
+            soundOptions, _config.assetID);
       }
     }
   }
@@ -216,7 +216,7 @@ class GAFTimeline {
   /**
 		 * Timeline identifier (name given at animation's upload or assigned by developer)
 		 */
-  String get id => this.config.id;
+  int get id => this.config.id;
 
   /**
 		 * Timeline linkage in a *.fla file library

@@ -2,9 +2,9 @@ part of stagexl_gaf;
 
 class CAnimationFrameInstance {
 
-  final String id;
+  final int id;
   final Matrix matrix;
-  final String maskID;
+  final int maskID;
   final CFilter filter;
   final int zIndex;
   final num alpha;

@@ -37,7 +37,7 @@ class BinGAFAssetConfigConverter {
   num _defaultScale;
   num _defaultContentScaleFactor;
   GAFAssetConfig _config;
-  Map<String, Rectangle> _textureElementSizes; // Point by texture element id
+  Map<int, Rectangle> _textureElementSizes; // Point by texture element id
 
   ByteData _data;
   int _dataPosition = 0;
@@ -50,7 +50,7 @@ class BinGAFAssetConfigConverter {
   BinGAFAssetConfigConverter(String assetID, ByteBuffer bytes)
       : _data = new ByteData.view(bytes),
         _assetID = assetID,
-        _textureElementSizes = new Map<String, Rectangle>();
+        _textureElementSizes = new Map<int, Rectangle>();
 
   //--------------------------------------------------------------------------
 
@@ -92,8 +92,8 @@ class BinGAFAssetConfigConverter {
     if (_config.versionMajor < 4) {
 
       _currentTimeline = new GAFTimelineConfig("${_config.versionMajor}.${_config.versionMinor}");
-      _currentTimeline.id = "0";
-      _currentTimeline.assetID = this._assetID;
+      _currentTimeline.id = 0;
+      _currentTimeline.assetID = _assetID;
       _currentTimeline.framesCount = _readShort();
       _currentTimeline.bounds = _readRectangle();
       _currentTimeline.pivot = _readPoint();
@@ -117,7 +117,7 @@ class BinGAFAssetConfigConverter {
 
     if (timelineConfig.textureAtlas != null && timelineConfig.textureAtlas.contentScaleFactor.elements != null) {
       for (CAnimationObject ao in timelineConfig.animationObjects.all) {
-        if (ao.type == CAnimationObject.TYPE_TEXTURE && timelineConfig.textureAtlas.contentScaleFactor.elements .getElement(ao.regionID) == null) {
+        if (ao.type == CAnimationObject.TYPE_TEXTURE && timelineConfig.textureAtlas.contentScaleFactor.elements.getElement(ao.regionID) == null) {
           timelineConfig.addWarning(WarningConstants.REGION_NOT_FOUND);
           break;
         }
@@ -203,7 +203,7 @@ class BinGAFAssetConfigConverter {
   GAFTimelineConfig readTimeline() {
 
     GAFTimelineConfig timelineConfig = new GAFTimelineConfig("${_config.versionMajor}.${_config.versionMinor}");
-    timelineConfig.id = _readUnsignedInt().toString();
+    timelineConfig.id = _readUnsignedInt();
     timelineConfig.assetID = _config.id;
     timelineConfig.framesCount = _readUnsignedInt();
     timelineConfig.bounds = _readRectangle();
@@ -384,10 +384,9 @@ class BinGAFAssetConfigConverter {
             }
           }
 
-          var maskID = hasMask ? _readUnsignedInt().toString() : null;
-          var instanceID = stateID.toString();
+          var maskID = hasMask ? _readUnsignedInt() : null;
           var instance = new CAnimationFrameInstance(
-              instanceID, zIndex, alpha, maskID, matrix, filter);
+              stateID, zIndex, alpha, maskID, matrix, filter);
 
           currentFrame.addInstance(instance);
         }
@@ -477,7 +476,7 @@ class BinGAFAssetConfigConverter {
 
     for (i = 0; i < atlasLength; i++) {
 
-      String atlasID = _readUnsignedInt().toString();
+      int atlasID = _readUnsignedInt();
       int sourceLength = _readByte();
 
       for (j = 0; j < sourceLength; j++) {
@@ -520,8 +519,8 @@ class BinGAFAssetConfigConverter {
 
       double elementWidth = _readFloat();
       double elementHeight = _readFloat();
-      String atlasID = _readUnsignedInt().toString();
-      String elementAtlasID = _readUnsignedInt().toString();
+      int atlasID = _readUnsignedInt();
+      int elementAtlasID = _readUnsignedInt();
 
       if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2 ||
           tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
@@ -537,7 +536,7 @@ class BinGAFAssetConfigConverter {
       }
 
       if (elements.getElement(elementAtlasID) == null) {
-        element = new CTextureAtlasElement(elementAtlasID.toString(), atlasID.toString());
+        element = new CTextureAtlasElement(elementAtlasID, atlasID);
         element.region.left = (topLeft.x).round();
         element.region.top =  (topLeft.y).round();
         element.region.right = (topLeft.x + elementWidth).round();
@@ -602,7 +601,7 @@ class BinGAFAssetConfigConverter {
     return textureAtlasCSF;
   }
 
-  void updateTextureAtlasSources(CTextureAtlasCSF textureAtlasCSF, String atlasID, String source) {
+  void updateTextureAtlasSources(CTextureAtlasCSF textureAtlasCSF, int atlasID, String source) {
 
     CTextureAtlasSource textureAtlasSource;
     List<CTextureAtlasSource> textureAtlasSources = textureAtlasCSF.sources;
@@ -767,8 +766,8 @@ class BinGAFAssetConfigConverter {
       {
         type = _getAnimationObjectTypeString(_readUnsignedShort());
       }
-      timelineConfig.animationObjects.addAnimationObject(new CAnimationObject(
-          objectID.toString(), regionID.toString(), type, true));
+      timelineConfig.animationObjects.addAnimationObject(
+          new CAnimationObject(objectID, regionID, type, true));
     }
   }
 
@@ -796,8 +795,8 @@ class BinGAFAssetConfigConverter {
       } else {
         type = _getAnimationObjectTypeString(_readUnsignedShort());
       }
-      timelineConfig.animationObjects.addAnimationObject(new CAnimationObject(
-          objectID.toString(), regionID.toString(), type, false));
+      timelineConfig.animationObjects.addAnimationObject(
+          new CAnimationObject(objectID, regionID, type, false));
     }
   }
 
@@ -817,11 +816,9 @@ class BinGAFAssetConfigConverter {
   }
 
   void _readNamedParts(GAFTimelineConfig timelineConfig) {
-    timelineConfig.namedParts = {};
-    int length = _readUnsignedInt();
-    int partID;
-    for (int i = 0; i < length; i++) {
-      partID = _readUnsignedInt();
+    timelineConfig.namedParts = new Map<int, String>();
+    for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
+      var partID = _readUnsignedInt();
       timelineConfig.namedParts[partID] = _readUTF();
     }
   }
@@ -928,7 +925,7 @@ class BinGAFAssetConfigConverter {
 				*/
       textFormat.indent = indent;
 
-      CTextFieldObject textFieldObject = new CTextFieldObject(textFieldID.toString(), text, textFormat, width, height);
+      CTextFieldObject textFieldObject = new CTextFieldObject(textFieldID, text, textFormat, width, height);
       textFieldObject.pivotPoint.x = -pivotX;
       textFieldObject.pivotPoint.y = -pivotY;
       textFieldObject.embedFonts = embedFonts;

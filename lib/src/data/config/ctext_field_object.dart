@@ -2,7 +2,7 @@ part of stagexl_gaf;
 
 class CTextFieldObject {
 
-  String id;
+  int id;
   String text;
   TextFormat textFormat;
   num width;

@@ -6,8 +6,8 @@ class CAnimationObject {
   static const String TYPE_TEXTFIELD = "textField";
   static const String TYPE_TIMELINE = "timeline";
 
-  final String instanceID;
-  final String regionID;
+  final int instanceID;
+  final int regionID;
   final String type;
   final bool mask;
 

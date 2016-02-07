@@ -27,8 +27,8 @@ class GAFGFXData {
   //
   //--------------------------------------------------------------------------
 
-  Map<num, Map<num, Map<String, BitmapData>>> _texturesMap = {};
-  Map<num, Map<num, Map<String, TAGFX>>> _taGFXMap = {};
+  Map<num, Map<num, Map<int, BitmapData>>> _texturesMap = {};
+  Map<num, Map<num, Map<int, TAGFX>>> _taGFXMap = {};
 
   //--------------------------------------------------------------------------
   //
@@ -44,20 +44,20 @@ class GAFGFXData {
   //
   //--------------------------------------------------------------------------
 
-  void addTAGFX(num scale, num csf, String imageID, TAGFX taGFX) {
+  void addTAGFX(num scale, num csf, int imageID, TAGFX taGFX) {
     _taGFXMap[scale] ??= {};
     _taGFXMap[scale][csf] ??= {};
     _taGFXMap[scale][csf][imageID] ??= taGFX;
   }
 
-  Map<String, TAGFX> getTAGFXs(num scale, num csf) {
+  Map<int, TAGFX> getTAGFXs(num scale, num csf) {
     if (_taGFXMap.containsKey(scale)) {
       return _taGFXMap[scale][csf];
     }
     return null;
   }
 
-  TAGFX getTAGFX(num scale, num csf, String imageID) {
+  TAGFX getTAGFX(num scale, num csf, int imageID) {
     if (_taGFXMap.containsKey(scale)) {
       if (_taGFXMap[scale].containsKey(csf)) {
         return _taGFXMap[scale][csf][imageID];
@@ -74,12 +74,12 @@ class GAFGFXData {
 		 * @see #createTexture()
 		 */
   bool createTextures(num scale, num csf) {
-    Map taGFXs = this.getTAGFXs(scale, csf);
+    Map<int, TAGFX> taGFXs = this.getTAGFXs(scale, csf);
     if (taGFXs != null) {
       _texturesMap[scale] ??= {};
       _texturesMap[scale][csf] ??= {};
 
-      for (String imageAtlasID in taGFXs.keys) {
+      for (int imageAtlasID in taGFXs.keys) {
         _texturesMap[scale][csf][imageAtlasID] = taGFXs[imageAtlasID].texture;
       }
       return true;
@@ -96,7 +96,7 @@ class GAFGFXData {
 		 * @return {bool}
 		 * @see #createTextures()
 		 */
-  bool createTexture(num scale, num csf, String imageID) {
+  bool createTexture(num scale, num csf, int imageID) {
     var taGFX = this.getTAGFX(scale, csf, imageID);
     if (taGFX == null) return false;
     _texturesMap[scale] ??= {};
@@ -108,7 +108,7 @@ class GAFGFXData {
   /**
 		 * Returns texture by unique key consist of scale + csf + imageID
 		 */
-  BitmapData getTexture(num scale, num csf, String imageID) {
+  BitmapData getTexture(num scale, num csf, int imageID) {
 
     if (_texturesMap.containsKey(scale)) {
       if (_texturesMap[scale].containsKey(csf)) {
@@ -128,7 +128,7 @@ class GAFGFXData {
   /// Returns textures for specified scale and csf in Map as combination
   /// key-value where key - is imageID and value - is Texture
 
-  Map<String, BitmapData> getTextures(num scale, num csf) {
+  Map<int, BitmapData> getTextures(num scale, num csf) {
     if (_texturesMap.containsKey(scale)) {
       return _texturesMap[scale][csf];
     }

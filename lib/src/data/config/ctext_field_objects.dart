@@ -2,10 +2,10 @@ part of stagexl_gaf;
 
 class CTextFieldObjects {
 
-  final Map<String, CTextFieldObject> _textFieldObjectsMap;
+  final Map<int, CTextFieldObject> _textFieldObjectsMap;
 
   CTextFieldObjects()
-      : _textFieldObjectsMap = new Map<String, CTextFieldObject>();
+      : _textFieldObjectsMap = new Map<int, CTextFieldObject>();
 
   //--------------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class CTextFieldObjects {
     }
   }
 
-  CTextFieldObject getTextFieldObject(String id) {
+  CTextFieldObject getTextFieldObject(int id) {
     return _textFieldObjectsMap[id];
   }
 

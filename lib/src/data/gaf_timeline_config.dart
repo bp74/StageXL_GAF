@@ -17,7 +17,7 @@ class GAFTimelineConfig {
   String _version;
   CStage _stageConfig;
 
-  String _id;
+  int _id;
   String _assetID;
 
   List<CTextureAtlasScale> _allTextureAtlases;
@@ -28,7 +28,7 @@ class GAFTimelineConfig {
   CAnimationSequences _animationSequences;
   CTextFieldObjects _textFields;
 
-  Map _namedParts;
+  Map<int, String> _namedParts;
   String _linkage;
 
   List<GAFDebugInformation> _debugRegions;
@@ -91,8 +91,8 @@ class GAFTimelineConfig {
     }
   }
 
-  String getNamedPartID(String name) {
-    for (String id in _namedParts) {
+  int getNamedPartID(String name) {
+    for (int id in _namedParts.keys) {
       if (_namedParts[id] == name) return id;
     }
     return null;
@@ -146,9 +146,9 @@ class GAFTimelineConfig {
 
   List<String> get warnings => _warnings;
 
-  String get id => _id;
+  int get id => _id;
 
-  set id(String value) {
+  set id(int value) {
     _id = value;
   }
 
@@ -158,9 +158,9 @@ class GAFTimelineConfig {
     _assetID = value;
   }
 
-  Map get namedParts => _namedParts;
+  Map<int, String> get namedParts => _namedParts;
 
-  set namedParts(Map value) {
+  set namedParts(Map<int, String> value) {
     _namedParts = value;
   }
 

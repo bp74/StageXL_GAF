@@ -2,13 +2,13 @@ part of stagexl_gaf;
 
 class CAnimationFrame {
 
-  final Map<String, CAnimationFrameInstance> _instancesMap;
+  final Map<int, CAnimationFrameInstance> _instancesMap;
   final List<CAnimationFrameInstance> _instances;
   final List<CFrameAction> _actions;
   final int frameNumber;
 
   CAnimationFrame(this.frameNumber)
-      : _instancesMap = new Map<String, CAnimationFrameInstance>(),
+      : _instancesMap = new Map<int, CAnimationFrameInstance>(),
         _instances = new List<CAnimationFrameInstance>(),
         _actions = new List<CFrameAction>();
 
