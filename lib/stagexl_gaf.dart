@@ -3,7 +3,6 @@ library stagexl_gaf;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
-import 'dart:math' hide Rectangle, Point;
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';

@@ -2,8 +2,6 @@ part of stagexl_gaf;
 
 class GAFTextField extends TextField implements GAFDisplayObject {
 
-  Point<num> maxSize = null;
-
 	// TODO: Implement or replace GAFTextField
 
   GAFTextField(CTextFieldObject config,[num scale=1, num csf=1]): super() {

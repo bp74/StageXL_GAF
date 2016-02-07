@@ -78,12 +78,6 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
        _movieClips.add(displayObject);
      }
 
-     if (displayObject is GAFDisplayObject && animationObject.maxSize is Point) {
-       var x = animationObject.maxSize.x * gafTimeline.scale;
-       var y = animationObject.maxSize.y * gafTimeline.scale;
-       displayObject.maxSize = new Point<num>(x, y);
-     }
-
      _displayObjects[instanceID] = displayObject;
 
      if (gafTimeline.config.namedParts != null) {

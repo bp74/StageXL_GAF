@@ -220,45 +220,7 @@ class BinGAFAssetConfigConverter {
     return timelineConfig;
   }
 
-  void readMaskMaxSizes() {
-
-    for (GAFTimelineConfig timeline in _config.timelines) {
-
-      for (CAnimationFrame frame in timeline.animationFrames.all) {
-        for (CAnimationFrameInstance frameInstance in frame.instances) {
-          CAnimationObject animationObject = timeline.animationObjects.getAnimationObject(frameInstance.id);
-          if (animationObject.mask) {
-
-            if (animationObject.maxSize == null) {
-              animationObject.maxSize = new Point(0, 0);
-            }
-
-            Point maxSize = animationObject.maxSize;
-
-            if (animationObject.type == CAnimationObject.TYPE_TEXTURE) {
-              sHelperRectangle.copyFrom(_textureElementSizes[animationObject.regionID]);
-            } else if (animationObject.type == CAnimationObject.TYPE_TIMELINE) {
-              GAFTimelineConfig maskTimeline;
-              for (maskTimeline in _config.timelines) {
-                if (maskTimeline.id == frameInstance.id) break;
-              }
-              sHelperRectangle.copyFrom(maskTimeline.bounds);
-            } else if (animationObject.type == CAnimationObject.TYPE_TEXTFIELD) {
-              CTextFieldObject textField = timeline.textFields.getTextFieldObject(animationObject.regionID);
-              sHelperRectangle.setTo(-textField.pivotPoint.x, -textField.pivotPoint.y, textField.width, textField.height);
-            }
-
-            frameInstance.matrix.transformRectangle(sHelperRectangle, sHelperRectangle);
-            maxSize.setTo(max(maxSize.x, (sHelperRectangle.width)).abs(), max(maxSize.y, (sHelperRectangle.height)).abs());
-          }
-        }
-      }
-    }
-  }
-
   void endParsing() {
-
-    this.readMaskMaxSizes();
 
     if (_config.defaultScale is! num) {
       int itemIndex = 0;

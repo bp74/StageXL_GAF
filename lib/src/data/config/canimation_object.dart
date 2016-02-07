@@ -11,16 +11,8 @@ class CAnimationObject {
   final String type;
   final bool mask;
 
-  Point _maxSize = null;
+  Point<num> maxSize = null;
 
   CAnimationObject(this.instanceID, this.regionID, this.type, this.mask);
-
-  //---------------------------------------------------------------------------
-
-  Point get maxSize => _maxSize;
-
-  void set maxSize(Point value) {
-    _maxSize = value;
-  }
 
 }
