@@ -1,7 +1,7 @@
 StageXL_GAF
 ===========
 
-The GAF Spine runtime for the StageXL library.
+The GAF runtime for the StageXL library.
 
 http://gafmedia.com/
 
