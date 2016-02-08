@@ -26,8 +26,6 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   final Map<int, GAFDisplayObject> _displayObjects = new Map<int, GAFDisplayObject>();
   final List<GAFMovieClip> _movieClips = new List<GAFMovieClip>();
 
-  Point<num> maxSize = null;
-
   bool _loop = true;
   bool _reverse = false;
   bool _skipFrames = true;
@@ -500,7 +498,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         displayObject.visible = animationObject.mask ? false : true;
         displayObject.alpha = animationObject.mask ? 0.3 : instance.alpha;
         displayObject.filters.clear();
-        displayObject.addTo(this); // TODO: this is slow
+        this.addChild(displayObject);
 
         if (displayObject is GAFMovieClip) {
           if (instance.alpha < 0.0) {
