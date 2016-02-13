@@ -88,10 +88,8 @@ class BinGAFAssetConfigConverter {
     }
 
     if (_config.versionMajor < 4) {
-
-      _currentTimeline = new GAFTimelineConfig("${_config.versionMajor}.${_config.versionMinor}");
-      _currentTimeline.id = 0;
-      _currentTimeline.assetID = _assetID;
+      var version = "${_config.versionMajor}.${_config.versionMinor}";
+      _currentTimeline = new GAFTimelineConfig(0, _assetID, version);
       _currentTimeline.framesCount = _readShort();
       _currentTimeline.bounds = _readRectangle();
       _currentTimeline.pivot = _readPoint();
@@ -188,17 +186,17 @@ class BinGAFAssetConfigConverter {
 
   GAFTimelineConfig readTimeline() {
 
-    GAFTimelineConfig timelineConfig = new GAFTimelineConfig("${_config.versionMajor}.${_config.versionMinor}");
-    timelineConfig.id = _readUnsignedInt();
-    timelineConfig.assetID = _config.id;
+    var id = _readUnsignedInt();
+    var assetID = _config.id;
+    var version = "${_config.versionMajor}.${_config.versionMinor}";
+    var timelineConfig = new GAFTimelineConfig(id, assetID, version);
+
     timelineConfig.framesCount = _readUnsignedInt();
     timelineConfig.bounds = _readRectangle();
     timelineConfig.pivot = _readPoint();
-    bool hasLinkage = _readBool();
 
-    if (hasLinkage) {
-      timelineConfig.linkage = _readUTF();
-    }
+    var hasLinkage = _readBool();
+    if (hasLinkage) timelineConfig.linkage = _readUTF();
 
     _config.timelines.add(timelineConfig);
     _isTimeline = true;
@@ -700,7 +698,6 @@ class BinGAFAssetConfigConverter {
   }
 
   void _readNamedParts(GAFTimelineConfig timelineConfig) {
-    timelineConfig.namedParts = new Map<int, String>();
     for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
       var partID = _readUnsignedInt();
       timelineConfig.namedParts[partID] = _readUTF();
@@ -825,19 +822,17 @@ class BinGAFAssetConfigConverter {
   }
 
   void _readSounds(GAFAssetConfig config) {
-    CSound soundData;
-    int count = _readShort();
-    for (int i = 0; i < count; i++) {
-      soundData = new CSound();
-      soundData.soundID = _readShort();
-      soundData.linkageName = _readUTF();
-      soundData.source = _readUTF();
-      soundData.format = _readByte();
-      soundData.rate = _readByte();
-      soundData.sampleSize = _readByte();
-      soundData.stereo = _readBool();
-      soundData.sampleCount = _readUnsignedInt();
-      config.addSound(soundData);
+    for (int i = 0, l = _readShort(); i < l; i++) {
+      var sound = new CSound();
+      sound.soundID = _readShort();
+      sound.linkageName = _readUTF();
+      sound.source = _readUTF();
+      sound.format = _readByte();
+      sound.rate = _readByte();
+      sound.sampleSize = _readByte();
+      sound.stereo = _readBool();
+      sound.sampleCount = _readUnsignedInt();
+      config.sounds.add(sound);
     }
   }
 

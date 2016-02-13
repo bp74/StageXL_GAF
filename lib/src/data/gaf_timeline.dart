@@ -52,23 +52,6 @@ class GAFTimeline {
   }
 
   //--------------------------------------------------------------------------
-/*
-  CTextureAtlasCSF getCSFConfig(num scale, num csf) {
-    CTextureAtlasScale scaleConfig = config.getTextureAtlasForScale(scale);
-    if (scaleConfig != null) {
-      CTextureAtlasCSF csfConfig = scaleConfig.getTextureAtlasForCSF(csf);
-      if (csfConfig != null) {
-        return csfConfig;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-*/
-
-  //--------------------------------------------------------------------------
 
   /// Timeline identifier (name given at animation's upload or assigned by developer)
 
@@ -82,82 +65,4 @@ class GAFTimeline {
 
   String get assetID => this.config.assetID;
 
-  /*
-  CTextureAtlas get textureAtlas {
-
-    CTextureAtlasScale scaleConfig = config.getTextureAtlasForScale(scale);
-    if (scaleConfig != null) {
-      CTextureAtlasCSF csfConfig = scaleConfig.getTextureAtlasForCSF(csf);
-
-        if (config.textureAtlas == null) return null;
-    if (config.textureAtlas.contentScaleFactor.atlas == null) {
-      this.loadInVideoMemory(CONTENT_DEFAULT);
-    }
-
-    return config.textureAtlas.contentScaleFactor.atlas;
-  }
-*/
-  ////////////////////////////////////////////////////////////////////////////
-
-  /// Texture atlas scale that will be used for [GAFMovieClip] creation.
-  /// To create <code>GAFMovieClip's</code> with different scale assign appropriate
-  /// scale to <code>GAFTimeline</code> and only after that instantiate <code>GAFMovieClip</code>.
-  /// Possible values are values from converted animation config. They are depends
-  /// from project settings on site converter
-/*
-  num get scale => gafAsset.scale;
-
-  set scale(num value) {
-
-    if (gafAsset.config.scaleValues.contains(value) == false) {
-      throw new StateError(ErrorConstants.SCALE_NOT_FOUND);
-    } else {
-      gafAsset.scale = scale;
-    }
-
-    if (config.textureAtlas == null) return;
-
-    num csf = this.contentScaleFactor;
-    CTextureAtlasScale taScale = config.getTextureAtlasForScale(scale);
-
-    if (taScale != null) {
-      config.textureAtlas = taScale;
-      CTextureAtlasCSF taCSF = config.textureAtlas.getTextureAtlasForCSF(csf);
-
-      if (taCSF != null) {
-        config.textureAtlas.contentScaleFactor = taCSF;
-      } else {
-        throw new StateError("There is no csf $csf in timeline config for scalse $scale");
-      }
-    } else {
-      throw new StateError("There is no scale $scale in timeline config");
-    }
-  }
-
-  /// Texture atlas content scale factor (that as csf) will be used for
-  /// <code>GAFMovieClip</code> creation. To create <code>GAFMovieClip's</code>
-  /// with different csf assign appropriate csf to <code>GAFTimeline</code> and
-  /// only after that instantiate <code>GAFMovieClip</code>.
-  /// Possible values are values from converted animation config.
-  /// They are depends from project settings on site converter
-
-  num get contentScaleFactor => gafAsset.csf;
-
-  set contentScaleFactor(num csf) {
-
-    if (gafAsset.config.csfValues.contains(csf)) {
-      gafAsset.csf = csf;
-    }
-
-    if (config.textureAtlas == null) return;
-
-    CTextureAtlasCSF taCSF = config.textureAtlas.getTextureAtlasForCSF(csf);
-
-    if (taCSF != null) {
-      config.textureAtlas.contentScaleFactor = taCSF;
-    } else {
-      throw new StateError("There is no csf $csf in timeline config");
-    }
-  }
-*/
 }
