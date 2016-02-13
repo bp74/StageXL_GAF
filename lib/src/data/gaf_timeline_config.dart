@@ -2,18 +2,6 @@ part of stagexl_gaf;
 
 class GAFTimelineConfig {
 
-  //--------------------------------------------------------------------------
-  //
-  //  PUBLIC VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
-  //--------------------------------------------------------------------------
-  //
-  //  PRIVATE VARIABLES
-  //
-  //--------------------------------------------------------------------------
-
   String _version;
   CStage _stageConfig;
 
@@ -31,18 +19,12 @@ class GAFTimelineConfig {
   Map<int, String> _namedParts;
   String _linkage;
 
-  List<GAFDebugInformation> _debugRegions;
-
   List<String> _warnings;
   int _framesCount = 0;
   Rectangle _bounds;
   Point _pivot;
   Map _sounds;
 
-  //--------------------------------------------------------------------------
-  //
-  //  CONSTRUCTOR
-  //
   //--------------------------------------------------------------------------
 
   GAFTimelineConfig(String version) {
@@ -59,16 +41,6 @@ class GAFTimelineConfig {
   //  PUBLIC METHODS
   //
   //--------------------------------------------------------------------------
-
-  CTextureAtlasScale getTextureAtlasForScale(num scale) {
-    for (CTextureAtlasScale cTextureAtlas in _allTextureAtlases) {
-      if (_isEquivalent(cTextureAtlas.scale, scale)) {
-        return cTextureAtlas;
-      }
-    }
-
-    return null;
-  }
 
   void addSound(Map data, int frame) {
     var soundID = data["id"];
@@ -137,12 +109,6 @@ class GAFTimelineConfig {
   }
 
   String get version => _version;
-
-  List<GAFDebugInformation> get debugRegions => _debugRegions;
-
-  set debugRegions(List<GAFDebugInformation> debugRegions) {
-    _debugRegions = debugRegions;
-  }
 
   List<String> get warnings => _warnings;
 

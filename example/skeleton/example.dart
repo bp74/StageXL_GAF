@@ -18,9 +18,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  var converter = new GAFBundleLoader();
-  var gafBundle = await converter.load('assets/skeleton/skeleton.gaf');
-  var gafTimeline = gafBundle.getGAFTimeline('skeleton');
+  GAFAsset gafAsset = await GAFAsset.load('assets/skeleton/skeleton.gaf', 1, 1);
+  GAFTimeline gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
   var skeleton = new GAFMovieClip(gafTimeline);
   skeleton.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);

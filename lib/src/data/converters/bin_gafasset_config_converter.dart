@@ -114,7 +114,6 @@ class BinGAFAssetConfigConverter {
   }
 
   void checkForMissedRegions(GAFTimelineConfig timelineConfig) {
-
     if (timelineConfig.textureAtlas != null && timelineConfig.textureAtlas.contentScaleFactor.elements != null) {
       for (CAnimationObject ao in timelineConfig.animationObjects.all) {
         if (ao.type == CAnimationObject.TYPE_TEXTURE && timelineConfig.textureAtlas.contentScaleFactor.elements.getElement(ao.regionID) == null) {
@@ -139,7 +138,7 @@ class BinGAFAssetConfigConverter {
       case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS:
       case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2:
       case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3:
-        readTextureAtlasConfig(tagID);
+        _readTextureAtlasConfig(tagID);
         break;
 
       case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS:
@@ -248,7 +247,7 @@ class BinGAFAssetConfigConverter {
 
     for (CTextureAtlasScale textureAtlasScale in _config.allTextureAtlases) {
       for (CTextureAtlasCSF textureAtlasCSF in textureAtlasScale.allContentScaleFactors) {
-        if (_isEquivalent(_config.defaultContentScaleFactor, textureAtlasCSF.csf)) {
+        if (_isEquivalent(_config.defaultContentScaleFactor, textureAtlasCSF.contentScaleFactor)) {
           textureAtlasScale.contentScaleFactor = textureAtlasCSF;
           break;
         }
@@ -449,124 +448,6 @@ class BinGAFAssetConfigConverter {
     readNextTag();
   }
 
-  void readTextureAtlasConfig(int tagID) {
-
-    int i;
-    int j;
-
-    num scale = _readFloat();
-
-    if (_config.scaleValues.indexOf(scale) == -1) {
-      _config.scaleValues.add(scale);
-    }
-
-    CTextureAtlasScale textureAtlas = this.getTextureAtlasScale(scale);
-
-    CTextureAtlasCSF contentScaleFactor;
-    int atlasLength = _readByte();
-
-    CTextureAtlasElements elements;
-    if (textureAtlas.allContentScaleFactors.length > 0) {
-      elements = textureAtlas.allContentScaleFactors[0].elements;
-    }
-
-    if (elements == null) {
-      elements = new CTextureAtlasElements();
-    }
-
-    for (i = 0; i < atlasLength; i++) {
-
-      int atlasID = _readUnsignedInt();
-      int sourceLength = _readByte();
-
-      for (j = 0; j < sourceLength; j++) {
-        String source = _readUTF();
-        double csf = _readFloat();
-
-        if (_config.csfValues.indexOf(csf) == -1) {
-          _config.csfValues.add(csf);
-        }
-
-        contentScaleFactor = this.getTextureAtlasCSF(scale, csf);
-        updateTextureAtlasSources(contentScaleFactor, atlasID, source);
-
-        if (contentScaleFactor.elements == null) {
-          contentScaleFactor.elements = elements;
-        }
-      }
-    }
-
-    /////////////////////
-
-    int elementsLength = _readUnsignedInt();
-    CTextureAtlasElement element = null;
-    bool hasScale9Grid = false;
-    Rectangle scale9Grid = null;
-    Point pivot = null;
-    Point topLeft = null;
-    num elementScaleX = 1.0;
-    num elementScaleY = 1.0;
-    bool rotation = false;
-    String linkageName = "";
-
-    for (i = 0; i < elementsLength; i++) {
-      pivot = _readPoint();
-      topLeft = _readPoint();
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS ||
-          tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2) {
-        elementScaleX = elementScaleY = _readFloat();
-      }
-
-      double elementWidth = _readFloat();
-      double elementHeight = _readFloat();
-      int atlasID = _readUnsignedInt();
-      int elementAtlasID = _readUnsignedInt();
-
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2 ||
-          tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
-        hasScale9Grid = _readBool();
-        scale9Grid = hasScale9Grid ? _readRectangle() : null;
-      }
-
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
-        elementScaleX = _readFloat();
-        elementScaleY = _readFloat();
-        rotation = _readBool();
-        linkageName = _readUTF();
-      }
-
-      if (elements.getElement(elementAtlasID) == null) {
-        element = new CTextureAtlasElement(elementAtlasID, atlasID);
-        element.region.left = (topLeft.x).round();
-        element.region.top =  (topLeft.y).round();
-        element.region.right = (topLeft.x + elementWidth).round();
-        element.region.bottom = (topLeft.y + elementHeight).round();
-        element.pivotMatrix.translate(0.0 - pivot.x, 0.0 - pivot.y);
-        element.pivotMatrix.scale(1.0 / elementScaleX, 1.0 / elementScaleY);
-        element.scale9Grid = scale9Grid;
-        element.linkage = linkageName;
-        element.rotated = rotation;
-        elements.addElement(element);
-
-        if (element.rotated) {
-          sHelperRectangle.setTo(0, 0, elementHeight, elementWidth);
-        } else {
-          sHelperRectangle.setTo(0, 0, elementWidth, elementHeight);
-        }
-        sHelperMatrix.copyFrom(element.pivotMatrix);
-        num invertScale = 1 / scale;
-        sHelperMatrix.scale(invertScale, invertScale);
-        sHelperMatrix.transformRectangle(sHelperRectangle, sHelperRectangle);
-
-        if (!_textureElementSizes.containsKey(elementAtlasID)) {
-          _textureElementSizes[elementAtlasID] = sHelperRectangle.clone();
-        } else {
-          _textureElementSizes[elementAtlasID] = _textureElementSizes[elementAtlasID].boundingBox(sHelperRectangle);
-        }
-      }
-    }
-  }
-
   CTextureAtlasScale getTextureAtlasScale(num scale) {
 
     CTextureAtlasScale textureAtlasScale;
@@ -704,6 +585,123 @@ class BinGAFAssetConfigConverter {
     var width = _readUnsignedShort();
     var height = _readUnsignedShort();
     config.stageConfig = new CStage(fps, color, width, height);
+  }
+
+
+  void _readTextureAtlasConfig(int tagID) {
+
+    num scale = _readFloat();
+
+    if (_config.scaleValues.indexOf(scale) == -1) {
+      _config.scaleValues.add(scale);
+    }
+
+    CTextureAtlasScale textureAtlas = this.getTextureAtlasScale(scale);
+    CTextureAtlasCSF contentScaleFactor;
+
+    int atlasLength = _readByte();
+
+    CTextureAtlasElements elements;
+
+    if (textureAtlas.allContentScaleFactors.length > 0) {
+      elements = textureAtlas.allContentScaleFactors[0].elements;
+    }
+
+    if (elements == null) {
+      elements = new CTextureAtlasElements();
+    }
+
+    for (int i = 0; i < atlasLength; i++) {
+
+      int atlasID = _readUnsignedInt();
+      int sourceLength = _readByte();
+
+      for (int j = 0; j < sourceLength; j++) {
+        String source = _readUTF();
+        double csf = _readFloat();
+
+        if (_config.csfValues.indexOf(csf) == -1) {
+          _config.csfValues.add(csf);
+        }
+
+        contentScaleFactor = this.getTextureAtlasCSF(scale, csf);
+        updateTextureAtlasSources(contentScaleFactor, atlasID, source);
+
+        if (contentScaleFactor.elements == null) {
+          contentScaleFactor.elements = elements;
+        }
+      }
+    }
+
+    /////////////////////
+
+    int elementsLength = _readUnsignedInt();
+    CTextureAtlasElement element = null;
+    bool hasScale9Grid = false;
+    Rectangle scale9Grid = null;
+    Point pivot = null;
+    Point topLeft = null;
+    num elementScaleX = 1.0;
+    num elementScaleY = 1.0;
+    bool rotation = false;
+    String linkageName = "";
+
+    for (int i = 0; i < elementsLength; i++) {
+      pivot = _readPoint();
+      topLeft = _readPoint();
+      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS ||
+          tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2) {
+        elementScaleX = elementScaleY = _readFloat();
+      }
+
+      double elementWidth = _readFloat();
+      double elementHeight = _readFloat();
+      int atlasID = _readUnsignedInt();
+      int elementAtlasID = _readUnsignedInt();
+
+      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2 ||
+          tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
+        hasScale9Grid = _readBool();
+        scale9Grid = hasScale9Grid ? _readRectangle() : null;
+      }
+
+      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
+        elementScaleX = _readFloat();
+        elementScaleY = _readFloat();
+        rotation = _readBool();
+        linkageName = _readUTF();
+      }
+
+      if (elements.getElement(elementAtlasID) == null) {
+        element = new CTextureAtlasElement(elementAtlasID, atlasID);
+        element.region.left = (topLeft.x).round();
+        element.region.top =  (topLeft.y).round();
+        element.region.right = (topLeft.x + elementWidth).round();
+        element.region.bottom = (topLeft.y + elementHeight).round();
+        element.pivotMatrix.translate(0.0 - pivot.x, 0.0 - pivot.y);
+        element.pivotMatrix.scale(1.0 / elementScaleX, 1.0 / elementScaleY);
+        element.scale9Grid = scale9Grid;
+        element.linkage = linkageName;
+        element.rotated = rotation;
+        elements.addElement(element);
+
+        if (element.rotated) {
+          sHelperRectangle.setTo(0, 0, elementHeight, elementWidth);
+        } else {
+          sHelperRectangle.setTo(0, 0, elementWidth, elementHeight);
+        }
+        sHelperMatrix.copyFrom(element.pivotMatrix);
+        num invertScale = 1 / scale;
+        sHelperMatrix.scale(invertScale, invertScale);
+        sHelperMatrix.transformRectangle(sHelperRectangle, sHelperRectangle);
+
+        if (!_textureElementSizes.containsKey(elementAtlasID)) {
+          _textureElementSizes[elementAtlasID] = sHelperRectangle.clone();
+        } else {
+          _textureElementSizes[elementAtlasID] = _textureElementSizes[elementAtlasID].boundingBox(sHelperRectangle);
+        }
+      }
+    }
   }
 
   String _readDropShadowFilter(CFilter filter) {

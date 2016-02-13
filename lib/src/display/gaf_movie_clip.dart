@@ -69,7 +69,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
       var instanceID = animationObject.instanceID;
 
       if (type == CAnimationObject.TYPE_TEXTURE) {
-        var bitmapData = _timeline.textureAtlas.getBitmapData(regionID);
+        var bitmapData = _timeline.getBitmapDataByID(regionID);
         displayObject = new GAFBitmap(bitmapData);
       } else if (type == CAnimationObject.TYPE_TEXTFIELD) {
         var textFieldObject = config.textFields.getTextFieldObject(regionID);

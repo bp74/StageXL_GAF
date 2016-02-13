@@ -14,7 +14,7 @@ class CTextureAtlasScale {
 
   CTextureAtlasCSF getTextureAtlasForCSF(num csf) {
     for (CTextureAtlasCSF textureAtlas in allContentScaleFactors) {
-      if (_isEquivalent(textureAtlas.csf, csf)) return textureAtlas;
+      if (_isEquivalent(textureAtlas.contentScaleFactor, csf)) return textureAtlas;
     }
     return null;
   }

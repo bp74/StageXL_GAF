@@ -18,9 +18,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  var converter = new GAFBundleLoader();
-  var gafBundle = await converter.load('assets/fireman/fireman.gaf');
-  var gafTimeline = gafBundle.getGAFTimeline('fireman');
+  var gafAsset = await GAFAsset.load('assets/fireman/fireman.gaf', 1, 1);
+  var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
   var fireman = new GAFMovieClip(gafTimeline);
   stage.addChild(fireman);

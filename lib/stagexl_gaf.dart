@@ -2,14 +2,11 @@ library stagexl_gaf;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html;
+import 'dart:html' show HttpRequest;
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:stagexl/stagexl.dart';
-
-part 'src/core/gaf_bundle_loader.dart';
-part 'src/core/gaf_timelines_manager.dart';
 
 part 'src/data/config/canimation_frame.dart';
 part 'src/data/config/canimation_frame_instance.dart';
@@ -28,7 +25,6 @@ part 'src/data/config/csound.dart';
 part 'src/data/config/cstage.dart';
 part 'src/data/config/ctext_field_object.dart';
 part 'src/data/config/ctext_field_objects.dart';
-part 'src/data/config/ctexture_atlas.dart';
 part 'src/data/config/ctexture_atlas_csf.dart';
 part 'src/data/config/ctexture_atlas_element.dart';
 part 'src/data/config/ctexture_atlas_elements.dart';
@@ -39,15 +35,11 @@ part 'src/data/converters/bin_gafasset_config_converter.dart';
 part 'src/data/converters/error_constants.dart';
 part 'src/data/converters/warning_constants.dart';
 
-part 'src/data/tagfx/tagfx.dart';
-part 'src/data/tagfx/tagfxbase.dart';
-part 'src/data/tagfx/tagfxsource_bitmap_data.dart';
-
 part 'src/data/gaf_asset.dart';
 part 'src/data/gaf_asset_config.dart';
-part 'src/data/gaf_bundle.dart'; // ???
-part 'src/data/gaf_debug_information.dart';
-part 'src/data/gaf_gfxdata.dart';
+part 'src/data/gaf_texture_atlas.dart';
+part 'src/data/gaf_texture_atlas_format.dart';
+part 'src/data/gaf_texture_atlas_loader.dart';
 part 'src/data/gaf_timeline.dart';
 part 'src/data/gaf_timeline_config.dart';
 

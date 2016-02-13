@@ -9,6 +9,9 @@ dependencies:
   browser: any
   archive: any
   stagexl: '>=0.13.2 <0.14.0'
+dependency_overrides:
+  stagexl:
+    path: D:\GitHub\bp74\StageXL
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives"]
