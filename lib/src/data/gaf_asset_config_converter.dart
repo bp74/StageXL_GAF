@@ -1,6 +1,6 @@
 part of stagexl_gaf;
 
-class BinGAFAssetConfigConverter {
+class GAFAssetConfigConverter {
 
   static const int SIGNATURE_GAF = 0x00474146;
   static const int SIGNATURE_GAC = 0x00474143;
@@ -28,51 +28,35 @@ class BinGAFAssetConfigConverter {
   static const int FILTER_DROP_SHADOW = 0;
   static const int FILTER_BLUR = 1;
   static const int FILTER_GLOW = 2;
+  static const int FILTER_BEVEL = 3;           // suppressed by GAFConverter
+  static const int FILTER_GRADIENT_GLOW = 4;   // suppressed by GAFConverter
+  static const int FILTER_CONVOLUTION = 5;     // suppressed by GAFConverter
   static const int FILTER_COLOR_MATRIX = 6;
+  static const int FILTER_GRADIENT_BEVEL = 7;  // suppressed by GAFConverter
 
   static final Rectangle sHelperRectangle = new Rectangle<num>(0, 0, 0, 0);
   static final Matrix sHelperMatrix = new Matrix.fromIdentity();
 
-  String _assetID;
-  num _defaultDisplayScale;
-  num _defaultContentScale;
-  GAFAssetConfig _config;
+  final String assetID;
+  final bool ignoreSounds;
+  final ByteBuffer byteBuffer;
 
   ByteData _data;
   int _dataPosition = 0;
-
-  //int _time;
-  bool _isTimeline;
+  GAFAssetConfig _config;
   GAFTimelineConfig _currentTimeline;
-  bool _ignoreSounds;
+  bool _isTimeline;
 
-  BinGAFAssetConfigConverter(String assetID, ByteBuffer bytes)
-      : _data = new ByteData.view(bytes),
-        _assetID = assetID;
+  GAFAssetConfigConverter(this.assetID, this.ignoreSounds, this.byteBuffer);
 
   //--------------------------------------------------------------------------
 
-  GAFAssetConfig get config  => _config;
+  GAFAssetConfig convert() {
 
-  String get assetID => _assetID;
+    _data = new ByteData.view(this.byteBuffer);
+    _dataPosition = 0;
 
-  set ignoreSounds(bool ignoreSounds) {
-    _ignoreSounds = ignoreSounds;
-  }
-
-  void set defaultDisplayScale(num value) {
-    _defaultDisplayScale = value;
-  }
-
-  void set defaultContentScale(num value) {
-    _defaultContentScale = value;
-  }
-
-  //--------------------------------------------------------------------------
-
-  void convert() {
-
-    _config = new GAFAssetConfig(_assetID);
+    _config = new GAFAssetConfig(this.assetID);
     _config.compression = _readInt();
     _config.versionMajor = _readByte();
     _config.versionMinor = _readByte();
@@ -89,7 +73,7 @@ class BinGAFAssetConfigConverter {
 
     if (_config.versionMajor < 4) {
       var version = "${_config.versionMajor}.${_config.versionMinor}";
-      _currentTimeline = new GAFTimelineConfig(0, _assetID, version);
+      _currentTimeline = new GAFTimelineConfig(0, assetID, version);
       _currentTimeline.framesCount = _readShort();
       _currentTimeline.bounds = _readRectangle();
       _currentTimeline.pivot = _readPoint();
@@ -107,6 +91,8 @@ class BinGAFAssetConfigConverter {
     }
 
     this.readNextTag();
+
+    return _config;
   }
 
   void readNextTag() {
@@ -116,61 +102,60 @@ class BinGAFAssetConfigConverter {
 
     switch (tagID) {
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_STAGE:
+      case TAG_DEFINE_STAGE:
         _readStageConfig(_config);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS:
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2:
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3:
+      case TAG_DEFINE_ATLAS:
+      case TAG_DEFINE_ATLAS2:
+      case TAG_DEFINE_ATLAS3:
         _readTextureAtlasConfig(tagID);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS:
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS2:
+      case TAG_DEFINE_ANIMATION_MASKS:
+      case TAG_DEFINE_ANIMATION_MASKS2:
         _readAnimationMasks(tagID, _currentTimeline);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS:
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS2:
+      case TAG_DEFINE_ANIMATION_OBJECTS:
+      case TAG_DEFINE_ANIMATION_OBJECTS2:
         _readAnimationObjects(tagID, _currentTimeline);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_FRAMES:
-      case BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_FRAMES2:
+      case TAG_DEFINE_ANIMATION_FRAMES:
+      case TAG_DEFINE_ANIMATION_FRAMES2:
         readAnimationFrames(tagID);
         return;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_NAMED_PARTS:
+      case TAG_DEFINE_NAMED_PARTS:
         _readNamedParts(_currentTimeline);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_SEQUENCES:
+      case TAG_DEFINE_SEQUENCES:
         _readAnimationSequences(_currentTimeline);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_TEXT_FIELDS:
+      case TAG_DEFINE_TEXT_FIELDS:
         _readTextFields(_currentTimeline);
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_SOUNDS:
-        if (!_ignoreSounds) {
-          _readSounds(_config);
-        } else {
+      case TAG_DEFINE_SOUNDS:
+        if (ignoreSounds) {
           _dataPosition += tagLength;
+        } else {
+          _readSounds(_config);
         }
         break;
 
-      case BinGAFAssetConfigConverter.TAG_DEFINE_TIMELINE:
+      case TAG_DEFINE_TIMELINE:
         _currentTimeline = readTimeline();
         break;
 
-      case BinGAFAssetConfigConverter.TAG_END:
+      case TAG_END:
         if (_isTimeline) {
           _isTimeline = false;
         } else {
           _dataPosition = _data.lengthInBytes;
-          this.endParsing();
           return;
         }
         break;
@@ -204,33 +189,6 @@ class BinGAFAssetConfigConverter {
     return timelineConfig;
   }
 
-  void endParsing() {
-
-    if (_config.defaultDisplayScale is! num) {
-      int itemIndex = 0;
-      if (_defaultDisplayScale is num) {
-        itemIndex = _config.displayScaleValues.indexOf(_defaultDisplayScale);
-        if (itemIndex < 0) {
-          parseError("${_defaultDisplayScale} + ${ErrorConstants.SCALE_NOT_FOUND}");
-          return;
-        }
-      }
-      _config.defaultDisplayScale = _config.displayScaleValues[itemIndex];
-    }
-
-    if (_config.defaultContentScale is! num) {
-      int itemIndex = 0;
-      if (_defaultContentScale is num) {
-        itemIndex = _config.contentScaleValues.indexOf(_defaultContentScale);
-        if (itemIndex < 0) {
-          parseError("${_defaultContentScale} + ${ErrorConstants.CSF_NOT_FOUND}");
-          return;
-        }
-      }
-      _config.defaultContentScale = _config.contentScaleValues[itemIndex];
-    }
-  }
-
   void readAnimationFrames(int tagID, [int startIndex = 0, num framesCount, CAnimationFrame prevFrame]) {
 
     if (framesCount is! num) {
@@ -251,17 +209,15 @@ class BinGAFAssetConfigConverter {
     bool hasColorTransform = false;
     bool hasChangesInDisplayList = false;
 
-    GAFTimelineConfig timelineConfig = _config.timelines[_config.timelines.length - 1];
+    GAFTimelineConfig timelineConfig = _config.timelines.last;
     CAnimationFrame currentFrame = null;
-    CBlurFilterData blurFilter = null;
-    Map blurFilters = {};
     CFilter filter = null;
 
     for (int i = startIndex; i < framesCount; i++) {
 
       frameNumber = _readUnsignedInt();
 
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_FRAMES) {
+      if (tagID == TAG_DEFINE_ANIMATION_FRAMES) {
         hasChangesInDisplayList = true;
         hasActions = false;
       } else {
@@ -305,49 +261,31 @@ class BinGAFAssetConfigConverter {
           }
 
           if (hasEffect) {
+
             filter ??= new CFilter();
             filterLength = _readByte();
 
             for (int k = 0; k < filterLength; k++) {
               filterType = _readUnsignedInt();
-              String warning;
+              String warning = null;
 
-              switch (filterType) {
-
-                case BinGAFAssetConfigConverter.FILTER_DROP_SHADOW:
-                  warning = _readDropShadowFilter(filter);
-                  break;
-
-                case BinGAFAssetConfigConverter.FILTER_BLUR:
-                  warning = _readBlurFilter(filter);
-                  blurFilter = filter.filterDatas.last as CBlurFilterData;
-                  if (blurFilter.blurX >= 2 && blurFilter.blurY >= 2) {
-                    if (!blurFilters.containsKey(stateID)) {
-                      blurFilters[stateID] = blurFilter;
-                    }
-                  } else {
-                    blurFilters[stateID] = null;
-                  }
-                  break;
-
-                case BinGAFAssetConfigConverter.FILTER_GLOW:
-                  warning = _readGlowFilter(filter);
-                  break;
-
-                case BinGAFAssetConfigConverter.FILTER_COLOR_MATRIX:
-                  warning = _readColorMatrixFilter(filter);
-                  break;
-
-                default:
-                  print(WarningConstants.UNSUPPORTED_FILTERS);
-                  break;
+              if (filterType == FILTER_DROP_SHADOW) {
+                warning = _readDropShadowFilter(filter);
+              } else if (filterType == FILTER_BLUR) {
+                warning = _readBlurFilter(filter);
+              } else if (filterType == FILTER_GLOW) {
+                warning = _readGlowFilter(filter);
+              } else if (filterType == FILTER_COLOR_MATRIX) {
+                warning = _readColorMatrixFilter(filter);
+              } else {
+                print(WarningConstants.UNSUPPORTED_FILTERS);
               }
-
               timelineConfig.addWarning(warning);
             }
           }
 
           var maskID = hasMask ? _readUnsignedInt() : null;
+
           var instance = new CAnimationFrameInstance(
               stateID, zIndex, alpha, maskID, matrix, filter);
 
@@ -378,7 +316,7 @@ class BinGAFAssetConfigConverter {
               params[0] == CSound.GAF_PLAY_SOUND &&
               params.length > 3) {
 
-            if (_ignoreSounds) continue; //do not add sound events if they're ignored
+            if (ignoreSounds) continue; //do not add sound events if they're ignored
             Map data = JSON.decode(action.params[3]);
             timelineConfig.addSound(data, frameNumber);
           }
@@ -394,19 +332,6 @@ class BinGAFAssetConfigConverter {
 
     for (int n = prevFrame.frameNumber + 1; n <= timelineConfig.framesCount; n++) {
       timelineConfig.animationFrames.addFrame(prevFrame.clone(n));
-    }
-
-    for (currentFrame in timelineConfig.animationFrames.all) {
-      for (var instance in currentFrame.instances) {
-        if (blurFilters.containsKey(instance.id) && instance.filter != null) {
-          blurFilter = instance.filter.getBlurFilter();
-          if (blurFilter != null && blurFilter.resolution == 1) {
-            blurFilter.blurX *= 0.5;
-            blurFilter.blurY *= 0.5;
-            blurFilter.resolution = 0.75;
-          }
-        }
-      }
     }
 
     readNextTag();
@@ -642,7 +567,7 @@ class BinGAFAssetConfigConverter {
     for (int i = 0; i < length; i++) {
       objectID = _readUnsignedInt();
       regionID = _readUnsignedInt();
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS) {
+      if (tagID == GAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS) {
         type = CAnimationObject.TYPE_TEXTURE;
       } else // BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_MASKS2
       {
@@ -672,7 +597,7 @@ class BinGAFAssetConfigConverter {
     for (int i = 0; i < length; i++) {
       objectID = _readUnsignedInt();
       regionID = _readUnsignedInt();
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS) {
+      if (tagID == GAFAssetConfigConverter.TAG_DEFINE_ANIMATION_OBJECTS) {
         type = CAnimationObject.TYPE_TEXTURE;
       } else {
         type = _getAnimationObjectTypeString(_readUnsignedShort());

@@ -3,12 +3,10 @@ part of stagexl_gaf;
 class GAFAsset {
 
   final GAFAssetConfig config;
-  final List<GAFTimeline> _timelines;
-  final List<GAFTextureAtlas> _textureAtlases;
+  final List<GAFTimeline> timelines = new List<GAFTimeline>();
+  final List<GAFTextureAtlas> textureAtlases = new List<GAFTextureAtlas>();
 
-  GAFAsset(this.config)
-      : _timelines = new List<GAFTimeline>(),
-        _textureAtlases = new List<GAFTextureAtlas>();
+  GAFAsset(this.config);
 
   //--------------------------------------------------------------------------
 
@@ -28,34 +26,32 @@ class GAFAsset {
     var gafAssetID = gafUrl.substring(startIndex, endIndex);
     var gafRequest = HttpRequest.request(gafUrl, responseType: "arraybuffer");
     var gafBinary = (await gafRequest).response as ByteBuffer;
+    var gafConverter = new GAFAssetConfigConverter(gafAssetID, false, gafBinary);
+    var gafAssetConfig = gafConverter.convert();
+    var gafAsset = new GAFAsset(gafAssetConfig);
 
-    var converter = new BinGAFAssetConfigConverter(gafAssetID, gafBinary);
-    converter.defaultDisplayScale = displayScale;
-    converter.defaultContentScale = contentScale;
-    converter.ignoreSounds = true; // TODO: should be configurable
-    converter.convert();
-
-    var gafAsset = new GAFAsset(converter.config);
+    displayScale = displayScale ?? gafAsset.config.defaultDisplayScale;
+    contentScale = contentScale ?? gafAsset.config.defaultContentScale;
 
     // load gaf timelines
 
     for (GAFTimelineConfig gafTimelineConfig in gafAsset.config.timelines) {
       var gafTimeline = new GAFTimeline(gafAsset, gafTimelineConfig);
-      gafTimeline.displayScale = displayScale ?? gafAsset.config.defaultDisplayScale;
-      gafTimeline.contentScale = contentScale ?? gafAsset.config.defaultContentScale;
-      gafAsset._timelines.add(gafTimeline);
+      gafTimeline.displayScale = displayScale;
+      gafTimeline.contentScale = contentScale;
+      gafAsset.timelines.add(gafTimeline);
     }
 
     // load gaf texture atlases
 
     for (CTextureAtlas ta in gafAsset.config.textureAtlases) {
-      if (displayScale is num && displayScale != ta.displayScale) continue;
       for (CTextureAtlasContent taContent in ta.contents) {
-        if (contentScale is num && contentScale != taContent.contentScale) continue;
+        if (taContent.displayScale != displayScale) continue;
+        if (taContent.contentScale != contentScale) continue;
         for (CTextureAtlasSource taSource in taContent.sources) {
           var gafTextureAtlas = new GAFTextureAtlas(ta, taContent, taSource);
           await gafTextureAtlas.load(folderURL);
-          gafAsset._textureAtlases.add(gafTextureAtlas);
+          gafAsset.textureAtlases.add(gafTextureAtlas);
         }
       }
     }
@@ -81,28 +77,27 @@ class GAFAsset {
   //--------------------------------------------------------------------------
 
   String get id => config.id;
-  List<GAFTimeline> get timelines => _timelines;
 
   //--------------------------------------------------------------------------
 
   GAFTimeline getGAFTimelineByID(int id) {
-    for (var timeline in _timelines) {
+    for (var timeline in this.timelines) {
       if (timeline.id == id) return timeline;
     }
     return null;
   }
 
   GAFTimeline getGAFTimelineByLinkage(String linkage) {
-    for (var timeline in _timelines) {
+    for (var timeline in this.timelines) {
       if (timeline.linkage == linkage) return timeline;
     }
     return null;
   }
 
   GAFBitmapData getGAFBitmapData(num displayScale, num contentScale, int regionID) {
-    for (var ta in _textureAtlases) {
-      if (ta.configScale.displayScale != displayScale) continue;
-      if (ta.configScale.contentScale != contentScale) continue;
+    for (var ta in this.textureAtlases) {
+      if (ta.configContent.displayScale != displayScale) continue;
+      if (ta.configContent.contentScale != contentScale) continue;
       var gafBitmapData = ta.getGAFBitmapData(regionID);
       if (gafBitmapData != null) return gafBitmapData;
     }

@@ -18,7 +18,7 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  GAFAsset gafAsset = await GAFAsset.load('assets/skeleton/skeleton.gaf', 1, 1);
+  GAFAsset gafAsset = await GAFAsset.load('assets/skeleton/skeleton.gaf', 1, 2);
   GAFTimeline gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
   var skeleton = new GAFMovieClip(gafTimeline);
