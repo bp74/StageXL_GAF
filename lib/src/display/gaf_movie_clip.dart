@@ -414,11 +414,13 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
     }
 
     if (this.hasEventListener(Event.COMPLETE)) {
-      if (_currentFrame == _finalFrame) _dispatchEventWith(Event.COMPLETE);
+      if (_currentFrame == _finalFrame) {
+        _dispatchEventWith(Event.COMPLETE, false, null);
+      }
     }
   }
 
-  void _dispatchEventWith(String type, [bool bubbles = false, Object data]) {
+  void _dispatchEventWith(String type, bool bubbles, Object data) {
     var event = new Event(type, bubbles);
     this.dispatchEvent(event);
     // TODO: create special event which holds [data].
@@ -443,7 +445,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         this.gotoAndPlay(params[0]);
       } else if (action.type == CFrameAction.DISPATCH_EVENT) {
         var data = params.length >= 4 ? params[3] : null;
-        var cancelable = params.length >= 3 ? params[2] == "true" : false;
+        //var cancelable = params.length >= 3 ? params[2] == "true" : false;
         var bubbles = params.length >= 2 ? params[1] == "true" : false;
         var type = params.length >= 1 ? params[0] : null;
         if (hasEventListener(type)) _dispatchEventWith(type, bubbles, data);
@@ -532,9 +534,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
           }
         }
 
-        var filterConfig = instance.filter;
-        var filterScale = _timeline.displayScale;
         // TODO: apply filters
+        // var filterConfig = instance.filter;
+        // var filterScale = _timeline.displayScale;
 
       }
     }

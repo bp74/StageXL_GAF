@@ -1,9 +1,10 @@
 part of stagexl_gaf;
 
-/// <p>GAFTimeline represents converted GAF file. It is like a library symbol
-/// in Flash IDE that contains all information about GAF animation.
-/// It is used to create <code>GAFMovieClip</code> that is ready animation
-/// object to be used in starling display list</p>
+/// [GAFTimeline] represents converted GAF file. It is like a library symbol
+/// in Flash IDE that contains all information about the GAF animation.
+///
+/// It is used to create [GAFMovieClip] that is ready animation
+/// object to be used in starling display list.
 
 class GAFTimeline {
 
@@ -24,31 +25,20 @@ class GAFTimeline {
   }
 
   void startSound(int frame) {
-    /*
-    CFrameSound frameSoundConfig = config.getSound(frame);
-    if (frameSoundConfig != null) {
-      // use namespace gaf_internal;
-
-      if (frameSoundConfig.action == CFrameSound.ACTION_STOP) {
-        GAFSoundManager
-            .getInstance()
-            ._stop(frameSoundConfig.soundID, config.assetID);
-      } else {
-        Sound sound;
-        if (frameSoundConfig.linkage != null) {
-          sound = this.gafSoundData.getSoundByLinkage(frameSoundConfig.linkage);
-        } else {
-          sound = this.gafSoundData.getSound(frameSoundConfig.soundID, config.assetID);
-        }
-        Map soundOptions = {};
-        soundOptions["continue"] =
-            frameSoundConfig.action == CFrameSound.ACTION_CONTINUE;
-        soundOptions["repeatCount"] = frameSoundConfig.repeatCount;
-        GAFSoundManager.getInstance()._play(sound, frameSoundConfig.soundID,
-            soundOptions, config.assetID);
-      }
+    var frameSound = config.getSound(frame);
+    if (frameSound == null) {
+      // do nothing
+    } else if (frameSound.action == CFrameSound.ACTION_STOP) {
+      //GAFSoundManager.getInstance()._stop(frameSound.soundID, config.assetID);
+    } else {
+      //Sound sound = frameSound.linkage != null
+      //    ? gafAsset.getSoundByLinkage(frameSound.linkage)
+      //    : gafAsset.getSound(frameSound.soundID, config.assetID);
+      //Map soundOptions = {};
+      //soundOptions["continue"] = frameSound.action == CFrameSound.ACTION_CONTINUE;
+      //soundOptions["repeatCount"] = frameSound.repeatCount;
+      //GAFSoundManager.getInstance()._play(sound, frameSound.soundID, soundOptions, config.assetID);
     }
-    */
   }
 
   //--------------------------------------------------------------------------

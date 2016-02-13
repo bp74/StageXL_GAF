@@ -664,6 +664,9 @@ class GAFAssetConfigConverter {
       textFieldObject.displayAsPassword = displayAsPassword;
       textFieldObject.maxChars = maxChars;
       timelineConfig.textFields.addTextFieldObject(textFieldObject);
+
+      // make analyzer happy
+      "$blockIndent, $bullet, $kerning, $letterSpacing, $target, $url";
     }
   }
 

@@ -5,7 +5,6 @@ part of stagexl_gaf;
 
 class GAFSoundManager {
 
-  num _volume = 1.0;
 	Map<String, Map<int, List<GAFSoundChannel>>> _soundChannels = {};
 
   static GAFSoundManager _getInstance;
@@ -29,8 +28,6 @@ class GAFSoundManager {
   /// @param volume the volume of the sound
 
   void setVolume(num volume) {
-
-    _volume = volume;
 
     for (String swfName in _soundChannels.keys) {
       for (int soundID in _soundChannels[swfName].keys) {
@@ -61,8 +58,8 @@ class GAFSoundManager {
 
   void _play(Sound sound, int soundID, Map soundOptions, String swfName) {
 
-    bool continueSound = soundOptions.containsKey("continue") ? soundOptions["continue"] : false;
-    int repeatCount = soundOptions.containsKey("repeatCount") ? soundOptions["repeatCount"] : 1;
+    bool continueSound = soundOptions["continue"] ?? false;
+    // int repeatCount = soundOptions["repeatCount"] ?? 1;
 
     if (continueSound
 			&& _soundChannels.containsKey(swfName)

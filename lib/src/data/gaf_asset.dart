@@ -5,6 +5,7 @@ class GAFAsset {
   final GAFAssetConfig config;
   final List<GAFTimeline> timelines = new List<GAFTimeline>();
   final List<GAFTextureAtlas> textureAtlases = new List<GAFTextureAtlas>();
+  //final List<GAFSound> sounds = new List<GAFSound>();
 
   GAFAsset(this.config);
 
@@ -30,12 +31,12 @@ class GAFAsset {
     var gafAssetConfig = gafConverter.convert();
     var gafAsset = new GAFAsset(gafAssetConfig);
 
-    displayScale = displayScale ?? gafAsset.config.defaultDisplayScale;
-    contentScale = contentScale ?? gafAsset.config.defaultContentScale;
+    displayScale = displayScale ?? gafAssetConfig.defaultDisplayScale;
+    contentScale = contentScale ?? gafAssetConfig.defaultContentScale;
 
     // load gaf timelines
 
-    for (GAFTimelineConfig gafTimelineConfig in gafAsset.config.timelines) {
+    for (GAFTimelineConfig gafTimelineConfig in gafAssetConfig.timelines) {
       var gafTimeline = new GAFTimeline(gafAsset, gafTimelineConfig);
       gafTimeline.displayScale = displayScale;
       gafTimeline.contentScale = contentScale;
@@ -44,7 +45,7 @@ class GAFAsset {
 
     // load gaf texture atlases
 
-    for (CTextureAtlas ta in gafAsset.config.textureAtlases) {
+    for (CTextureAtlas ta in gafAssetConfig.textureAtlases) {
       for (CTextureAtlasContent taContent in ta.contents) {
         if (taContent.displayScale != displayScale) continue;
         if (taContent.contentScale != contentScale) continue;
@@ -58,18 +59,11 @@ class GAFAsset {
 
     // load gaf sounds
 
-    /*
-    List<CSound> csounds = converter.config.sounds;
-
-    if (csounds != null && _ignoreSounds == false) {
-      for (int i = 0; i < csounds.length; i++) {
-        var soundUrl = folderURL + csounds[i].source;
-        csounds[i].source = soundUrl;
-        csounds[i].sound = await Sound.load(soundUrl);
-        soundData.addSound(csounds[i], converter.config.id);
-      }
+    for (CSound csound in gafAssetConfig.sounds) {
+      //var sound = await Sound.load(folderURL + csound.source);
+      //var gafSound = new GAFSound(csound, sound);
+      //gafAsset.sounds.add(gafSound);
     }
-    */
 
     return gafAsset;
   }
