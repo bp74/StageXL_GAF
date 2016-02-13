@@ -37,7 +37,6 @@ class BinGAFAssetConfigConverter {
   num _defaultDisplayScale;
   num _defaultContentScale;
   GAFAssetConfig _config;
-  Map<int, Rectangle> _textureElementSizes; // Point by texture element id
 
   ByteData _data;
   int _dataPosition = 0;
@@ -49,8 +48,7 @@ class BinGAFAssetConfigConverter {
 
   BinGAFAssetConfigConverter(String assetID, ByteBuffer bytes)
       : _data = new ByteData.view(bytes),
-        _assetID = assetID,
-        _textureElementSizes = new Map<int, Rectangle>();
+        _assetID = assetID;
 
   //--------------------------------------------------------------------------
 
@@ -417,15 +415,15 @@ class BinGAFAssetConfigConverter {
   }
 
   CTextureAtlas getTextureAtlas(num displayScale) {
-    for (var textureAtlas in _config.allTextureAtlases) {
+    for (var textureAtlas in _config.textureAtlases) {
       if (textureAtlas.displayScale == displayScale) return textureAtlas;
     }
     var textureAtlas = new CTextureAtlas(displayScale);
-    _config.allTextureAtlases.add(textureAtlas);
+    _config.textureAtlases.add(textureAtlas);
     return textureAtlas;
   }
 
-  CTextureAtlasContent getTextureAtlasSale(num displayScale, num contentScale) {
+  CTextureAtlasContent getTextureAtlasContent(num displayScale, num contentScale) {
     var textureAtlas = this.getTextureAtlas(displayScale);
     var textureAtlasScale = textureAtlas.getTextureAtlasContent(contentScale);
     if (textureAtlasScale == null) {
@@ -433,14 +431,6 @@ class BinGAFAssetConfigConverter {
       textureAtlas.contents.add(textureAtlasScale);
     }
     return textureAtlasScale;
-  }
-
-  void updateTextureAtlasSources(CTextureAtlasContent textureAtlasScale, int atlasID, String source) {
-    for (var textureAtlasSource in textureAtlasScale.sources) {
-      if (textureAtlasSource.id == atlasID) return;
-    }
-    var textureAtlasSource = new CTextureAtlasSource(atlasID, source);
-    textureAtlasScale.sources.add(textureAtlasSource);
   }
 
   void parseError(String message) {
@@ -530,70 +520,40 @@ class BinGAFAssetConfigConverter {
     config.stageConfig = new CStage(fps, color, width, height);
   }
 
-
   void _readTextureAtlasConfig(int tagID) {
 
-    num scale = _readFloat();
+    var displayScale = _readFloat();
+    var textureAtlas = this.getTextureAtlas(displayScale);
 
-    if (_config.displayScaleValues.indexOf(scale) == -1) {
-      _config.displayScaleValues.add(scale);
-    }
+    var dsValues = _config.displayScaleValues;
+    if (dsValues.indexOf(displayScale) == -1) dsValues.add(displayScale);
 
-    CTextureAtlas textureAtlas = this.getTextureAtlas(scale);
-    CTextureAtlasContent textureAtlasContent;
-
-    int atlasLength = _readByte();
-
-    CTextureAtlasElements elements;
-
-    if (textureAtlas.contents.length > 0) {
-      elements = textureAtlas.contents[0].elements;
-    }
-
-    if (elements == null) {
-      elements = new CTextureAtlasElements();
-    }
-
-    for (int i = 0; i < atlasLength; i++) {
-
+    for (int i = 0, al = _readByte(); i < al; i++) {
       int atlasID = _readUnsignedInt();
-      int sourceLength = _readByte();
-
-      for (int j = 0; j < sourceLength; j++) {
-        String source = _readUTF();
-        double csf = _readFloat();
-
-        if (_config.contentScaleValues.indexOf(csf) == -1) {
-          _config.contentScaleValues.add(csf);
-        }
-
-        textureAtlasContent = this.getTextureAtlasSale(scale, csf);
-        updateTextureAtlasSources(textureAtlasContent, atlasID, source);
-
-        if (textureAtlasContent.elements == null) {
-          textureAtlasContent.elements = elements;
+      for (int j = 0, sl = _readByte(); j < sl; j++) {
+        var source = _readUTF();
+        var contentScale = _readFloat();
+        var csValues = _config.contentScaleValues;
+        if (csValues.indexOf(contentScale) == -1) csValues.add(contentScale);
+        var taContent = this.getTextureAtlasContent(displayScale, contentScale);
+        if (taContent.sources.every((s) => s.id != atlasID)) {
+          taContent.sources.add(new CTextureAtlasSource(atlasID, source));
         }
       }
     }
 
-    /////////////////////
+    for (int i = 0, el = _readUnsignedInt(); i < el; i++) {
 
-    int elementsLength = _readUnsignedInt();
-    CTextureAtlasElement element = null;
-    bool hasScale9Grid = false;
-    Rectangle scale9Grid = null;
-    Point pivot = null;
-    Point topLeft = null;
-    num elementScaleX = 1.0;
-    num elementScaleY = 1.0;
-    bool rotation = false;
-    String linkageName = "";
+      Point pivot = _readPoint();
+      Point topLeft = _readPoint();
+      bool hasScale9Grid = false;
+      Rectangle scale9Grid = null;
+      num elementScaleX = 1.0;
+      num elementScaleY = 1.0;
+      bool rotation = false;
+      String linkageName = "";
 
-    for (int i = 0; i < elementsLength; i++) {
-      pivot = _readPoint();
-      topLeft = _readPoint();
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS ||
-          tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2) {
+      if (tagID == TAG_DEFINE_ATLAS || tagID == TAG_DEFINE_ATLAS2) {
         elementScaleX = elementScaleY = _readFloat();
       }
 
@@ -602,21 +562,20 @@ class BinGAFAssetConfigConverter {
       int atlasID = _readUnsignedInt();
       int elementAtlasID = _readUnsignedInt();
 
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS2 ||
-          tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
+      if (tagID == TAG_DEFINE_ATLAS2 || tagID == TAG_DEFINE_ATLAS3) {
         hasScale9Grid = _readBool();
         scale9Grid = hasScale9Grid ? _readRectangle() : null;
       }
 
-      if (tagID == BinGAFAssetConfigConverter.TAG_DEFINE_ATLAS3) {
+      if (tagID == TAG_DEFINE_ATLAS3) {
         elementScaleX = _readFloat();
         elementScaleY = _readFloat();
         rotation = _readBool();
         linkageName = _readUTF();
       }
 
-      if (elements.getElement(elementAtlasID) == null) {
-        element = new CTextureAtlasElement(elementAtlasID, atlasID);
+      if (textureAtlas.elements.getElement(elementAtlasID) == null) {
+        var element = new CTextureAtlasElement(elementAtlasID, atlasID);
         element.region.left = (topLeft.x).round();
         element.region.top =  (topLeft.y).round();
         element.region.right = (topLeft.x + elementWidth).round();
@@ -626,23 +585,7 @@ class BinGAFAssetConfigConverter {
         element.scale9Grid = scale9Grid;
         element.linkage = linkageName;
         element.rotated = rotation;
-        elements.addElement(element);
-
-        if (element.rotated) {
-          sHelperRectangle.setTo(0, 0, elementHeight, elementWidth);
-        } else {
-          sHelperRectangle.setTo(0, 0, elementWidth, elementHeight);
-        }
-        sHelperMatrix.copyFrom(element.pivotMatrix);
-        num invertScale = 1 / scale;
-        sHelperMatrix.scale(invertScale, invertScale);
-        sHelperMatrix.transformRectangle(sHelperRectangle, sHelperRectangle);
-
-        if (!_textureElementSizes.containsKey(elementAtlasID)) {
-          _textureElementSizes[elementAtlasID] = sHelperRectangle.clone();
-        } else {
-          _textureElementSizes[elementAtlasID] = _textureElementSizes[elementAtlasID].boundingBox(sHelperRectangle);
-        }
+        textureAtlas.elements.addElement(element);
       }
     }
   }

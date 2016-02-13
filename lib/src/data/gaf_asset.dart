@@ -48,7 +48,7 @@ class GAFAsset {
 
     // load gaf texture atlases
 
-    for (CTextureAtlas ta in gafAsset.config.allTextureAtlases) {
+    for (CTextureAtlas ta in gafAsset.config.textureAtlases) {
       if (displayScale is num && displayScale != ta.displayScale) continue;
       for (CTextureAtlasContent taContent in ta.contents) {
         if (contentScale is num && contentScale != taContent.contentScale) continue;
@@ -99,23 +99,12 @@ class GAFAsset {
     return null;
   }
 
-  /*
-  GAFTextureAtlas getGAFTextureAtlas(num scale, num csf) {
-    for (var textureAtlas in _textureAtlases) {
-      if (textureAtlas.contentScaleFactor.scale != scale) continue;
-      if (textureAtlas.contentScaleFactor.csf != csf) continue;
-      return textureAtlas;
-    }
-    return null;
-  }
-  */
-
   GAFBitmapData getGAFBitmapData(num displayScale, num contentScale, int regionID) {
     for (var ta in _textureAtlases) {
       if (ta.configScale.displayScale != displayScale) continue;
       if (ta.configScale.contentScale != contentScale) continue;
-      var bitmapData = ta.getBitmapData(regionID);
-      if (bitmapData != null) return bitmapData;
+      var gafBitmapData = ta.getGAFBitmapData(regionID);
+      if (gafBitmapData != null) return gafBitmapData;
     }
     return null;
   }

@@ -75,7 +75,7 @@ class GAFAssetConfig {
 
   List<GAFTimelineConfig> get timelines => _timelines;
 
-  List<CTextureAtlas> get allTextureAtlases => _allTextureAtlases;
+  List<CTextureAtlas> get textureAtlases => _allTextureAtlases;
 
   CStage get stageConfig => _stageConfig;
 
