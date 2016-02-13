@@ -34,8 +34,8 @@ class BinGAFAssetConfigConverter {
   static final Matrix sHelperMatrix = new Matrix.fromIdentity();
 
   String _assetID;
-  num _defaultScale;
-  num _defaultContentScaleFactor;
+  num _defaultDisplayScale;
+  num _defaultContentScale;
   GAFAssetConfig _config;
   Map<int, Rectangle> _textureElementSizes; // Point by texture element id
 
@@ -62,12 +62,12 @@ class BinGAFAssetConfigConverter {
     _ignoreSounds = ignoreSounds;
   }
 
-  void set defaultScale(num defaultScale) {
-    _defaultScale = defaultScale;
+  void set defaultDisplayScale(num value) {
+    _defaultDisplayScale = value;
   }
 
-  void set defaultCSF(num csf) {
-    _defaultContentScaleFactor = csf;
+  void set defaultContentScale(num value) {
+    _defaultContentScale = value;
   }
 
   //--------------------------------------------------------------------------
@@ -102,26 +102,15 @@ class BinGAFAssetConfigConverter {
     } else {
 
       for (int i = 0, l = _readUnsignedInt(); i < l; i++) {
-        _config.scaleValues.add(_readFloat());
+        _config.displayScaleValues.add(_readFloat());
       }
 
       for (int i = 0, l = _readUnsignedInt(); i < l; i++) {
-        _config.csfValues.add(_readFloat());
+        _config.contentScaleValues.add(_readFloat());
       }
     }
 
     this.readNextTag();
-  }
-
-  void checkForMissedRegions(GAFTimelineConfig timelineConfig) {
-    if (timelineConfig.textureAtlas != null && timelineConfig.textureAtlas.contentScaleFactor.elements != null) {
-      for (CAnimationObject ao in timelineConfig.animationObjects.all) {
-        if (ao.type == CAnimationObject.TYPE_TEXTURE && timelineConfig.textureAtlas.contentScaleFactor.elements.getElement(ao.regionID) == null) {
-          timelineConfig.addWarning(WarningConstants.REGION_NOT_FOUND);
-          break;
-        }
-      }
-    }
   }
 
   void readNextTag() {
@@ -221,49 +210,28 @@ class BinGAFAssetConfigConverter {
 
   void endParsing() {
 
-    if (_config.defaultScale is! num) {
+    if (_config.defaultDisplayScale is! num) {
       int itemIndex = 0;
-      if (_defaultScale is num) {
-        itemIndex = _config.scaleValues.indexOf(_defaultScale);
+      if (_defaultDisplayScale is num) {
+        itemIndex = _config.displayScaleValues.indexOf(_defaultDisplayScale);
         if (itemIndex < 0) {
-          parseError("${_defaultScale} + ${ErrorConstants.SCALE_NOT_FOUND}");
+          parseError("${_defaultDisplayScale} + ${ErrorConstants.SCALE_NOT_FOUND}");
           return;
         }
       }
-      _config.defaultScale = _config.scaleValues[itemIndex];
+      _config.defaultDisplayScale = _config.displayScaleValues[itemIndex];
     }
 
-    if (_config.defaultContentScaleFactor is! num) {
+    if (_config.defaultContentScale is! num) {
       int itemIndex = 0;
-      if (_defaultContentScaleFactor is num) {
-        itemIndex = _config.csfValues.indexOf(_defaultContentScaleFactor);
+      if (_defaultContentScale is num) {
+        itemIndex = _config.contentScaleValues.indexOf(_defaultContentScale);
         if (itemIndex < 0) {
-          parseError("${_defaultContentScaleFactor} + ${ErrorConstants.CSF_NOT_FOUND}");
+          parseError("${_defaultContentScale} + ${ErrorConstants.CSF_NOT_FOUND}");
           return;
         }
       }
-      _config.defaultContentScaleFactor = _config.csfValues[itemIndex];
-    }
-
-    for (CTextureAtlasScale textureAtlasScale in _config.allTextureAtlases) {
-      for (CTextureAtlasCSF textureAtlasCSF in textureAtlasScale.allContentScaleFactors) {
-        if (_isEquivalent(_config.defaultContentScaleFactor, textureAtlasCSF.contentScaleFactor)) {
-          textureAtlasScale.contentScaleFactor = textureAtlasCSF;
-          break;
-        }
-      }
-    }
-
-    for (GAFTimelineConfig timelineConfig in _config.timelines) {
-      timelineConfig.allTextureAtlases = _config.allTextureAtlases;
-      for (CTextureAtlasScale textureAtlasScale in _config.allTextureAtlases) {
-        if (_isEquivalent(_config.defaultScale, textureAtlasScale.scale)) {
-          timelineConfig.textureAtlas = textureAtlasScale;
-        }
-      }
-
-      timelineConfig.stageConfig = this._config.stageConfig;
-      this.checkForMissedRegions(timelineConfig);
+      _config.defaultContentScale = _config.contentScaleValues[itemIndex];
     }
   }
 
@@ -448,56 +416,31 @@ class BinGAFAssetConfigConverter {
     readNextTag();
   }
 
-  CTextureAtlasScale getTextureAtlasScale(num scale) {
-
-    CTextureAtlasScale textureAtlasScale;
-    List<CTextureAtlasScale> textureAtlasScales = _config.allTextureAtlases;
-
-    int l = textureAtlasScales.length;
-    for (int i = 0; i < l; i++) {
-      if (_isEquivalent(textureAtlasScales[i].scale, scale)) {
-        textureAtlasScale = textureAtlasScales[i];
-        break;
-      }
+  CTextureAtlas getTextureAtlas(num displayScale) {
+    for (var textureAtlas in _config.allTextureAtlases) {
+      if (textureAtlas.displayScale == displayScale) return textureAtlas;
     }
+    var textureAtlas = new CTextureAtlas(displayScale);
+    _config.allTextureAtlases.add(textureAtlas);
+    return textureAtlas;
+  }
 
+  CTextureAtlasContent getTextureAtlasSale(num displayScale, num contentScale) {
+    var textureAtlas = this.getTextureAtlas(displayScale);
+    var textureAtlasScale = textureAtlas.getTextureAtlasContent(contentScale);
     if (textureAtlasScale == null) {
-      textureAtlasScale = new CTextureAtlasScale(scale);
-      textureAtlasScales.add(textureAtlasScale);
+      textureAtlasScale = new CTextureAtlasContent(contentScale, displayScale);
+      textureAtlas.contents.add(textureAtlasScale);
     }
-
     return textureAtlasScale;
   }
 
-  CTextureAtlasCSF getTextureAtlasCSF(num scale, num csf) {
-
-    CTextureAtlasScale textureAtlasScale = this.getTextureAtlasScale(scale);
-    CTextureAtlasCSF textureAtlasCSF = textureAtlasScale.getTextureAtlasForCSF(csf);
-
-    if (textureAtlasCSF == null) {
-      textureAtlasCSF = new CTextureAtlasCSF(csf, scale);
-      textureAtlasScale.allContentScaleFactors.add(textureAtlasCSF);
+  void updateTextureAtlasSources(CTextureAtlasContent textureAtlasScale, int atlasID, String source) {
+    for (var textureAtlasSource in textureAtlasScale.sources) {
+      if (textureAtlasSource.id == atlasID) return;
     }
-
-    return textureAtlasCSF;
-  }
-
-  void updateTextureAtlasSources(CTextureAtlasCSF textureAtlasCSF, int atlasID, String source) {
-
-    CTextureAtlasSource textureAtlasSource;
-    List<CTextureAtlasSource> textureAtlasSources = textureAtlasCSF.sources;
-
-    for (int i = 0; i < textureAtlasSources.length; i++) {
-      if (textureAtlasSources[i].id == atlasID) {
-        textureAtlasSource = textureAtlasSources[i];
-        break;
-      }
-    }
-
-    if (textureAtlasSource == null) {
-      textureAtlasSource = new CTextureAtlasSource(atlasID, source);
-      textureAtlasSources.add(textureAtlasSource);
-    }
+    var textureAtlasSource = new CTextureAtlasSource(atlasID, source);
+    textureAtlasScale.sources.add(textureAtlasSource);
   }
 
   void parseError(String message) {
@@ -592,19 +535,19 @@ class BinGAFAssetConfigConverter {
 
     num scale = _readFloat();
 
-    if (_config.scaleValues.indexOf(scale) == -1) {
-      _config.scaleValues.add(scale);
+    if (_config.displayScaleValues.indexOf(scale) == -1) {
+      _config.displayScaleValues.add(scale);
     }
 
-    CTextureAtlasScale textureAtlas = this.getTextureAtlasScale(scale);
-    CTextureAtlasCSF contentScaleFactor;
+    CTextureAtlas textureAtlas = this.getTextureAtlas(scale);
+    CTextureAtlasContent textureAtlasContent;
 
     int atlasLength = _readByte();
 
     CTextureAtlasElements elements;
 
-    if (textureAtlas.allContentScaleFactors.length > 0) {
-      elements = textureAtlas.allContentScaleFactors[0].elements;
+    if (textureAtlas.contents.length > 0) {
+      elements = textureAtlas.contents[0].elements;
     }
 
     if (elements == null) {
@@ -620,15 +563,15 @@ class BinGAFAssetConfigConverter {
         String source = _readUTF();
         double csf = _readFloat();
 
-        if (_config.csfValues.indexOf(csf) == -1) {
-          _config.csfValues.add(csf);
+        if (_config.contentScaleValues.indexOf(csf) == -1) {
+          _config.contentScaleValues.add(csf);
         }
 
-        contentScaleFactor = this.getTextureAtlasCSF(scale, csf);
-        updateTextureAtlasSources(contentScaleFactor, atlasID, source);
+        textureAtlasContent = this.getTextureAtlasSale(scale, csf);
+        updateTextureAtlasSources(textureAtlasContent, atlasID, source);
 
-        if (contentScaleFactor.elements == null) {
-          contentScaleFactor.elements = elements;
+        if (textureAtlasContent.elements == null) {
+          textureAtlasContent.elements = elements;
         }
       }
     }
@@ -955,7 +898,4 @@ class BinGAFAssetConfigConverter {
     }
   }
 
-  bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
-    return (a - epsilon < b) && (a + epsilon > b);
-  }
 }

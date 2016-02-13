@@ -8,9 +8,6 @@ class GAFTimelineConfig {
   int _id;
   String _assetID;
 
-  List<CTextureAtlasScale> _allTextureAtlases;
-  CTextureAtlasScale _textureAtlas;
-
   CAnimationFrames _animationFrames;
   CAnimationObjects _animationObjects;
   CAnimationSequences _animationSequences;
@@ -72,12 +69,6 @@ class GAFTimelineConfig {
 
   //--------------------------------------------------------------------------
 
-  CTextureAtlasScale get textureAtlas => _textureAtlas;
-
-  set textureAtlas(CTextureAtlasScale textureAtlas) {
-    _textureAtlas = textureAtlas;
-  }
-
   CAnimationObjects get animationObjects => _animationObjects;
 
   set animationObjects(CAnimationObjects animationObjects) {
@@ -100,12 +91,6 @@ class GAFTimelineConfig {
 
   set textFields(CTextFieldObjects textFields) {
     _textFields = textFields;
-  }
-
-  List<CTextureAtlasScale> get allTextureAtlases => _allTextureAtlases;
-
-  set allTextureAtlases(List<CTextureAtlasScale> allTextureAtlases) {
-    _allTextureAtlases = allTextureAtlases;
   }
 
   String get version => _version;
@@ -136,12 +121,6 @@ class GAFTimelineConfig {
     _linkage = value;
   }
 
-  CStage get stageConfig => _stageConfig;
-
-  set stageConfig(CStage stageConfig) {
-    _stageConfig = stageConfig;
-  }
-
   int get framesCount => _framesCount;
 
   set framesCount(int value) {
@@ -160,9 +139,4 @@ class GAFTimelineConfig {
     _pivot = value;
   }
 
-  //--------------------------------------------------------------------------
-
-  bool _isEquivalent(num a, num b, [num epsilon=0.0001]) {
-    return (a - epsilon < b) && (a + epsilon > b);
-  }
 }

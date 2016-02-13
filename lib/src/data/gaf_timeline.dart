@@ -10,8 +10,8 @@ class GAFTimeline {
   final GAFAsset gafAsset;
   final GAFTimelineConfig config;
 
-  num scale = 1.0;
-  num contentScaleFactor = 1.0;
+  num displayScale = 1.0;
+  num contentScale = 1.0;
 
   GAFTimeline(this.gafAsset, this.config);
 
@@ -20,9 +20,7 @@ class GAFTimeline {
   /// Returns GAF Texture by name of an instance inside a timeline.
 
   GAFBitmapData getBitmapDataByID(int regionID) {
-    var scale = this.scale;
-    var csf = this.contentScaleFactor;
-    return gafAsset.getGAFBitmapData(scale, csf, regionID);
+    return gafAsset.getGAFBitmapData(displayScale, contentScale, regionID);
   }
 
   void startSound(int frame) {

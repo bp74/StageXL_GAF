@@ -25,10 +25,10 @@ part 'src/data/config/csound.dart';
 part 'src/data/config/cstage.dart';
 part 'src/data/config/ctext_field_object.dart';
 part 'src/data/config/ctext_field_objects.dart';
-part 'src/data/config/ctexture_atlas_csf.dart';
+part 'src/data/config/ctexture_atlas.dart';
 part 'src/data/config/ctexture_atlas_element.dart';
 part 'src/data/config/ctexture_atlas_elements.dart';
-part 'src/data/config/ctexture_atlas_scale.dart';
+part 'src/data/config/ctexture_atlas_content.dart';
 part 'src/data/config/ctexture_atlas_source.dart';
 
 part 'src/data/converters/bin_gafasset_config_converter.dart';
@@ -38,8 +38,6 @@ part 'src/data/converters/warning_constants.dart';
 part 'src/data/gaf_asset.dart';
 part 'src/data/gaf_asset_config.dart';
 part 'src/data/gaf_texture_atlas.dart';
-part 'src/data/gaf_texture_atlas_format.dart';
-part 'src/data/gaf_texture_atlas_loader.dart';
 part 'src/data/gaf_timeline.dart';
 part 'src/data/gaf_timeline_config.dart';
 

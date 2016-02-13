@@ -55,11 +55,12 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   GAFMovieClip(GAFTimeline timeline, [num fps]) : _timeline = timeline {
 
+    var displayScale = _timeline.displayScale;
+    var contentScale = _timeline.contentScale;
+    var gafAsset = _timeline.gafAsset;
     var config = _timeline.config;
-    var scale = _timeline.scale;
-    var csf = _timeline.contentScaleFactor;
 
-    this.fps = fps ?? config.stageConfig?.fps ?? 25;
+    this.fps = fps ?? gafAsset.config.stageConfig?.fps ?? 25;
 
     for (CAnimationObject animationObject in config.animationObjects.all) {
 
@@ -73,7 +74,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         displayObject = new GAFBitmap(bitmapData);
       } else if (type == CAnimationObject.TYPE_TEXTFIELD) {
         var textFieldObject = config.textFields.getTextFieldObject(regionID);
-        displayObject = new GAFTextField(textFieldObject, scale, csf);
+        displayObject = new GAFTextField(textFieldObject, displayScale, contentScale);
       } else if (type == CAnimationObject.TYPE_TIMELINE) {
         var mcTimeline = _timeline.gafAsset.getGAFTimelineByID(regionID);
         displayObject = new GAFMovieClip(mcTimeline, this.fps);
@@ -510,7 +511,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
         var displayObjectMatrix = displayObject.transformationMatrix;
         displayObjectMatrix.copyFrom(instance.matrix);
-        displayObjectMatrix.scale(_timeline.scale, _timeline.scale);
+        displayObjectMatrix.scale(_timeline.displayScale, _timeline.displayScale);
 
         if (displayObject is GAFBitmap) {
           // TODO: remove this, see GAFBitmapData
@@ -532,7 +533,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         }
 
         var filterConfig = instance.filter;
-        var filterScale = _timeline.scale;
+        var filterScale = _timeline.displayScale;
         // TODO: apply filters
 
       }

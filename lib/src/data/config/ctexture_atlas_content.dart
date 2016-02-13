@@ -1,12 +1,13 @@
 part of stagexl_gaf;
 
-class CTextureAtlasCSF {
+class CTextureAtlasContent {
 
-  final num scale;
-  final num contentScaleFactor;
+  final num displayScale;
+  final num contentScale;
+
   final List<CTextureAtlasSource> sources = new List<CTextureAtlasSource>();
 
   CTextureAtlasElements elements = null;
 
-  CTextureAtlasCSF(this.contentScaleFactor, this.scale);
+  CTextureAtlasContent(this.contentScale, this.displayScale);
 }

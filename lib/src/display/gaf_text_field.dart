@@ -2,9 +2,10 @@ part of stagexl_gaf;
 
 class GAFTextField extends TextField implements GAFDisplayObject {
 
-	// TODO: Implement or replace GAFTextField
+  // TODO: Implement or replace GAFTextField
 
-  GAFTextField(CTextFieldObject config,[num scale=1, num csf=1]): super() {
+  GAFTextField(CTextFieldObject config,
+      [num displayScale = 1, num contentScale = 1]) : super() {
 
   }
 }

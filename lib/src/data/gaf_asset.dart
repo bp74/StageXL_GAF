@@ -12,7 +12,7 @@ class GAFAsset {
 
   //--------------------------------------------------------------------------
 
-  static Future<GAFAsset> load(String gafUrl, [num scale, num contentScaleFactor]) async {
+  static Future<GAFAsset> load(String gafUrl, [num displayScale, num contentScale]) async {
 
     var cutURL = gafUrl.split("?")[0];
     var lastIndex = cutURL.lastIndexOf("/");
@@ -30,8 +30,8 @@ class GAFAsset {
     var gafBinary = (await gafRequest).response as ByteBuffer;
 
     var converter = new BinGAFAssetConfigConverter(gafAssetID, gafBinary);
-    converter.defaultScale = scale;
-    converter.defaultCSF = contentScaleFactor;
+    converter.defaultDisplayScale = displayScale;
+    converter.defaultContentScale = contentScale;
     converter.ignoreSounds = true; // TODO: should be configurable
     converter.convert();
 
@@ -41,23 +41,20 @@ class GAFAsset {
 
     for (GAFTimelineConfig gafTimelineConfig in gafAsset.config.timelines) {
       var gafTimeline = new GAFTimeline(gafAsset, gafTimelineConfig);
-      gafTimeline.scale = scale ?? gafAsset.config.defaultScale;
-      gafTimeline.contentScaleFactor = contentScaleFactor ?? gafAsset.config.defaultContentScaleFactor;
+      gafTimeline.displayScale = displayScale ?? gafAsset.config.defaultDisplayScale;
+      gafTimeline.contentScale = contentScale ?? gafAsset.config.defaultContentScale;
       gafAsset._timelines.add(gafTimeline);
     }
 
     // load gaf texture atlases
 
-    for (CTextureAtlasScale cScale in gafAsset.config.allTextureAtlases) {
-      if (scale is num && scale != cScale.scale) continue;
-      for (CTextureAtlasCSF cCSF in cScale.allContentScaleFactors) {
-        if (contentScaleFactor is num && contentScaleFactor != cCSF.contentScaleFactor) continue;
-        for (CTextureAtlasSource cSource in cCSF.sources) {
-          var textureAtlasFormat = new GAFTextureAtlasFormat(cCSF, cSource);
-          var textureAtlasLoader = new GAFTextureAtlasLoader(folderURL);
-          print("load:  cSource: ${cSource.source}");
-          var textureAtlas = await textureAtlasFormat.load(textureAtlasLoader);
-          var gafTextureAtlas = new GAFTextureAtlas(cScale, cCSF, cSource, textureAtlas);
+    for (CTextureAtlas ta in gafAsset.config.allTextureAtlases) {
+      if (displayScale is num && displayScale != ta.displayScale) continue;
+      for (CTextureAtlasContent taContent in ta.contents) {
+        if (contentScale is num && contentScale != taContent.contentScale) continue;
+        for (CTextureAtlasSource taSource in taContent.sources) {
+          var gafTextureAtlas = new GAFTextureAtlas(ta, taContent, taSource);
+          await gafTextureAtlas.load(folderURL);
           gafAsset._textureAtlases.add(gafTextureAtlas);
         }
       }
@@ -113,10 +110,10 @@ class GAFAsset {
   }
   */
 
-  GAFBitmapData getGAFBitmapData(num scale, num csf, int regionID) {
+  GAFBitmapData getGAFBitmapData(num displayScale, num contentScale, int regionID) {
     for (var ta in _textureAtlases) {
-      if (ta.scale.scale != scale) continue;
-      if (ta.contentScaleFactor.contentScaleFactor != csf) continue;
+      if (ta.configScale.displayScale != displayScale) continue;
+      if (ta.configScale.contentScale != contentScale) continue;
       var bitmapData = ta.getBitmapData(regionID);
       if (bitmapData != null) return bitmapData;
     }

@@ -9,23 +9,23 @@ class GAFAssetConfig {
   int _versionMajor;
   int _versionMinor;
   int _fileLength;
-  List<num> _scaleValues;
-  List<num> _csfValues;
-  num _defaultScale;
-  num _defaultContentScaleFactor;
+  List<num> _displayScaleValues;
+  List<num> _contentScaleValues;
+  num _defaultDisplayScale;
+  num _defaultContentScale;
 
   CStage _stageConfig;
 
   List<GAFTimelineConfig> _timelines;
-  List<CTextureAtlasScale> _allTextureAtlases;
+  List<CTextureAtlas> _allTextureAtlases;
   List<CSound> _sounds;
 
   GAFAssetConfig(String id) {
     _id = id;
-    _scaleValues = new List<num>();
-    _csfValues = new List<num>();
+    _displayScaleValues = new List<num>();
+    _contentScaleValues = new List<num>();
     _timelines = new List<GAFTimelineConfig>();
-    _allTextureAtlases = new List<CTextureAtlasScale>();
+    _allTextureAtlases = new List<CTextureAtlas>();
   }
 
   void addSound(CSound soundData) {
@@ -57,25 +57,25 @@ class GAFAssetConfig {
     _fileLength = value;
   }
 
-  List<num> get scaleValues => _scaleValues;
+  List<num> get displayScaleValues => _displayScaleValues;
 
-  List<num> get csfValues => _csfValues;
+  List<num> get contentScaleValues => _contentScaleValues;
 
-  num get defaultScale => _defaultScale;
+  num get defaultDisplayScale => _defaultDisplayScale;
 
-  set defaultScale(num value) {
-    _defaultScale = value;
+  set defaultDisplayScale(num value) {
+    _defaultDisplayScale = value;
   }
 
-  num get defaultContentScaleFactor => _defaultContentScaleFactor;
+  num get defaultContentScale => _defaultContentScale;
 
-  set defaultContentScaleFactor(num value) {
-    _defaultContentScaleFactor = value;
+  set defaultContentScale(num value) {
+    _defaultContentScale = value;
   }
 
   List<GAFTimelineConfig> get timelines => _timelines;
 
-  List<CTextureAtlasScale> get allTextureAtlases => _allTextureAtlases;
+  List<CTextureAtlas> get allTextureAtlases => _allTextureAtlases;
 
   CStage get stageConfig => _stageConfig;
 
