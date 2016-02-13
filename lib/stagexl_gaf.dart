@@ -27,7 +27,6 @@ part 'src/config/ctext_field_object.dart';
 part 'src/config/ctext_field_objects.dart';
 part 'src/config/ctexture_atlas.dart';
 part 'src/config/ctexture_atlas_element.dart';
-part 'src/config/ctexture_atlas_elements.dart';
 part 'src/config/ctexture_atlas_content.dart';
 part 'src/config/ctexture_atlas_source.dart';
 

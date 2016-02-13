@@ -461,7 +461,7 @@ class GAFAssetConfigConverter {
       double elementWidth = _readFloat();
       double elementHeight = _readFloat();
       int atlasID = _readUnsignedInt();
-      int elementAtlasID = _readUnsignedInt();
+      int elementID = _readUnsignedInt();
 
       if (tagID == TAG_DEFINE_ATLAS2 || tagID == TAG_DEFINE_ATLAS3) {
         hasScale9Grid = _readBool();
@@ -475,8 +475,8 @@ class GAFAssetConfigConverter {
         linkageName = _readUTF();
       }
 
-      if (textureAtlas.elements.getElement(elementAtlasID) == null) {
-        var element = new CTextureAtlasElement(elementAtlasID, atlasID);
+      if (textureAtlas.getTextureAtlasElementByID(elementID) == null) {
+        var element = new CTextureAtlasElement(elementID, atlasID);
         element.region.left = (topLeft.x).round();
         element.region.top =  (topLeft.y).round();
         element.region.right = (topLeft.x + elementWidth).round();
@@ -486,7 +486,7 @@ class GAFAssetConfigConverter {
         element.scale9Grid = scale9Grid;
         element.linkage = linkageName;
         element.rotated = rotation;
-        textureAtlas.elements.addElement(element);
+        textureAtlas.elements.add(element);
       }
     }
   }

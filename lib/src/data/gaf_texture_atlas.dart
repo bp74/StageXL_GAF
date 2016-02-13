@@ -17,7 +17,7 @@ class GAFTextureAtlas {
     if (bitmapDataFile == "no_atlas") return;
     var bitmapData = await BitmapData.load(path + bitmapDataFile);
 
-    for (var element in config.elements.all) {
+    for (var element in config.elements) {
 
       if (element.atlasID != configSource.id) continue;
 
