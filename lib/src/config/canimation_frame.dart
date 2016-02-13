@@ -45,11 +45,7 @@ class CAnimationFrame {
   }
 
   void sortInstances() {
-    _instances.sort((instance1, instance2) {
-      if (instance1.zIndex < instance2.zIndex) return -1;
-      if (instance1.zIndex > instance2.zIndex) return 1;
-      return 0;
-    });
+    _instances.sort((i1, i2) => i1.zIndex - i2.zIndex);
   }
 
   CAnimationFrameInstance getInstanceByID(String id) {

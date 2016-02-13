@@ -7,7 +7,6 @@ class CBlurFilterData implements CFilterData {
   num angle = 0.0;
   num distance = 0.0;
   num strength = 0.0;
-  num alpha = 1.0;
   num resolution = 1.0;
   int color = 0;
   bool inner = false;
@@ -22,7 +21,6 @@ class CBlurFilterData implements CFilterData {
     filterData.angle = this.angle;
     filterData.distance = this.distance;
     filterData.strength = this.strength;
-    filterData.alpha = this.alpha;
     filterData.resolution = this.resolution;
     filterData.color = this.color;
     filterData.inner = this.inner;

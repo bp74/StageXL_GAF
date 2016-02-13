@@ -14,17 +14,17 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 500, height: 500);
+  var stage = new Stage(canvas, width: 400, height: 400);
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  GAFAsset gafAsset = await GAFAsset.load('assets/skeleton/skeleton.gaf', 1, 2);
-  GAFTimeline gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
+  var gafAsset = await GAFAsset.load('assets/skeleton/skeleton.gaf', 1, 2);
+  var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
   var skeleton = new GAFMovieClip(gafTimeline);
   skeleton.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);
-  skeleton.x = 250;
-  skeleton.y = 250;
+  skeleton.x = 200;
+  skeleton.y = 220;
   stage.addChild(skeleton);
   stage.juggler.add(skeleton);
   skeleton.play(true);

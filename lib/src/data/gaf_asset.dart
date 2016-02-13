@@ -98,7 +98,7 @@ class GAFAsset {
     for (var ta in this.textureAtlases) {
       if (ta.configContent.displayScale != displayScale) continue;
       if (ta.configContent.contentScale != contentScale) continue;
-      var gafBitmapData = ta.getGAFBitmapData(regionID);
+      var gafBitmapData = ta.gafBitmapDatas[regionID];
       if (gafBitmapData != null) return gafBitmapData;
     }
     return null;

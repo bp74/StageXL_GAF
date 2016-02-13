@@ -12,7 +12,6 @@ class GAFTimelineConfig {
   final CTextFieldObjects textFields = new CTextFieldObjects();
   final Map<int, String> namedParts = new Map<int, String>();
   final Map<int, CFrameSound> sounds = new Map<int, CFrameSound>();
-  final List<String> warnings = new List<String>();
 
   String linkage = "";
   int framesCount = 0;
@@ -33,14 +32,6 @@ class GAFTimelineConfig {
 
   CFrameSound getSound(int frame) {
     return sounds[frame];
-  }
-
-  void addWarning(String text) {
-    if (text == null) return;
-    if (warnings.indexOf(text) == -1) {
-      print(text);
-      warnings.add(text);
-    }
   }
 
   int getNamedPartID(String name) {

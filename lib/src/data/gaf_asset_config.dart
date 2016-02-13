@@ -5,11 +5,13 @@ class GAFAssetConfig {
   static final int MAX_VERSION = 5;
 
   final String id;
-  final List<num> displayScaleValues;
-  final List<num> contentScaleValues;
-  final List<GAFTimelineConfig> timelines;
-  final List<CTextureAtlas> textureAtlases;
-  final List<CSound> sounds;
+  final CStage stageConfig = new CStage();
+
+  final List<num> displayScaleValues = new List<num>();
+  final List<num> contentScaleValues = new List<num>();
+  final List<GAFTimelineConfig> timelines = new List<GAFTimelineConfig>();
+  final List<CTextureAtlas> textureAtlases = new List<CTextureAtlas>();
+  final List<CSound> sounds = new List<CSound>();
 
   int compression = 0;
   int versionMajor = 0;
@@ -18,13 +20,6 @@ class GAFAssetConfig {
   num defaultDisplayScale = 1.0;
   num defaultContentScale = 1.0;
 
-  CStage stageConfig = null;
-
-  GAFAssetConfig(this.id)
-      : this.displayScaleValues = new List<num>(),
-        this.contentScaleValues = new List<num>(),
-        this.timelines = new List<GAFTimelineConfig>(),
-        this.textureAtlases = new List<CTextureAtlas>(),
-        this.sounds = new List<CSound>();
+  GAFAssetConfig(this.id);
 
 }

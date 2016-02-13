@@ -10,8 +10,8 @@ class CFrameAction {
 
   final int type;
   final String scope;
-  final List<String> params;
+  final List<String> params = new List<String>();
 
-  CFrameAction(this.type, this.scope, this.params);
+  CFrameAction(this.type, this.scope);
 
 }

@@ -31,14 +31,13 @@ class CFilter {
   }
 
   void addGlowFilter(
-      num blurX, num blurY, int color, num alpha,
+      num blurX, num blurY, int color,
       [num strength = 1, bool inner = false, bool knockout = false]) {
 
     CBlurFilterData filterData = new CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
     filterData.color = color;
-    filterData.alpha = alpha;
     filterData.strength = strength;
     filterData.inner = inner;
     filterData.knockout = knockout;
@@ -46,14 +45,13 @@ class CFilter {
   }
 
   void addDropShadowFilter(
-      num blurX, num blurY, int color, num alpha, num angle, num distance,
+      num blurX, num blurY, int color, num angle, num distance,
       [num strength = 1, bool inner = false, bool knockout = false]) {
 
     CBlurFilterData filterData = new CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
     filterData.color = color;
-    filterData.alpha = alpha;
     filterData.angle = angle;
     filterData.distance = distance;
     filterData.strength = strength;

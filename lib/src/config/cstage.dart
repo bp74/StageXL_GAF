@@ -1,12 +1,8 @@
 part of stagexl_gaf;
 
 class CStage {
-
-  final int fps;
-  final int color;
-  final int width;
-  final int height;
-
-  CStage(this.fps, this.color, this.width, this.height);
-
+  int fps = 25;
+  int color = Color.White;
+  int width = 0;
+  int height = 0;
 }

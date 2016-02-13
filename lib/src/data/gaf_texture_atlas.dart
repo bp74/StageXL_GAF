@@ -13,36 +13,39 @@ class GAFTextureAtlas {
 
   Future load(String path) async {
 
-    var textureAtlasUrl = configSource.source;
-    if (textureAtlasUrl == "no_atlas") return;
-
-    var bitmapData = await BitmapData.load(path + textureAtlasUrl);
-    var source = bitmapData.renderTextureQuad;
-    var scale = configContent.contentScale;
+    var bitmapDataFile = configSource.source;
+    if (bitmapDataFile == "no_atlas") return;
+    var bitmapData = await BitmapData.load(path + bitmapDataFile);
 
     for (var element in config.elements.all) {
+
       if (element.atlasID != configSource.id) continue;
+
       var region = element.region;
       var scale9Grid = element.scale9Grid;
-      var pivotMatrix = element.pivotMatrix;
+      var matrix = element.matrix;
       var rotation = element.rotated ? 1 : 0;
-      var frameX = (region.left * scale).round();
-      var frameY = (region.top * scale).round();
-      var frameWidth = (region.width * scale).round();
-      var frameHeight = (region.height * scale).round();
-      var frame = new Rectangle<int>(frameX, frameY, frameWidth, frameHeight);
-      var offset = new Rectangle<int>(0, 0, region.width, region.height);
-      var quad = new RenderTextureQuad.slice(source, frame, offset, rotation);
-      var quadScale = quad.withPixelRatio(scale);
-      var gafBitmapData = new GAFBitmapData(scale9Grid, pivotMatrix, quadScale);
-      gafBitmapDatas[element.id] = gafBitmapData;
+      var scale = configContent.contentScale;
+      var rtq = bitmapData.renderTextureQuad;
+
+      var srcLeft = (region.left * scale).round();
+      var srcTop = (region.top * scale).round();
+      var srcWidth = (region.width * scale).round();
+      var srcHeight = (region.height * scale).round();
+      var src = new Rectangle<int>(srcLeft, srcTop, srcWidth, srcHeight);
+
+      var ofsLeft = 0;
+      var ofsTop = 0;
+      var ofsWidth =  element.rotated ? region.height : region.width;
+      var ofsHeight =  element.rotated ? region.width : region.height;
+      var ofs = new Rectangle<int>(ofsLeft, ofsTop, ofsWidth, ofsHeight);
+
+      var quad = new RenderTextureQuad.slice(rtq, src, ofs, rotation);
+      var quadPR = quad.withPixelRatio(scale);
+      var gafBitmapData = new GAFBitmapData(scale9Grid, matrix, quadPR);
+
+      this.gafBitmapDatas[element.id] = gafBitmapData;
     }
-  }
-
-  //---------------------------------------------------------------------------
-
-  GAFBitmapData getGAFBitmapData(int id) {
-    return this.gafBitmapDatas[id];
   }
 
 }
