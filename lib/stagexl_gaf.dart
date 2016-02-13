@@ -15,8 +15,6 @@ part 'src/config/canimation_object.dart';
 part 'src/config/canimation_objects.dart';
 part 'src/config/canimation_sequence.dart';
 part 'src/config/canimation_sequences.dart';
-part 'src/config/cblur_filter_data.dart';
-part 'src/config/ccolor_matrix_filter_data.dart';
 part 'src/config/cfilter.dart';
 part 'src/config/cfilter_data.dart';
 part 'src/config/cframe_action.dart';
