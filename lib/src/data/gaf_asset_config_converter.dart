@@ -643,18 +643,18 @@ class GAFAssetConfigConverter {
           indent: indent,
           leading: leading);
 
-      var textFieldObject = new CTextFieldObject(textFieldID, text, textFormat, width, height);
-      textFieldObject.pivotPoint.x = -pivotX;
-      textFieldObject.pivotPoint.y = -pivotY;
-      textFieldObject.embedFonts = embedFonts;
-      textFieldObject.multiline = multiline;
-      textFieldObject.wordWrap = wordWrap;
-      textFieldObject.restrict = restrict;
-      textFieldObject.editable = editable;
-      textFieldObject.selectable = selectable;
-      textFieldObject.displayAsPassword = displayAsPassword;
-      textFieldObject.maxChars = maxChars;
-      timelineConfig.textFieldObjects.add(textFieldObject);
+      var textField = new CTextField(textFieldID, text, textFormat, width, height);
+      textField.pivotPoint.x = -pivotX;
+      textField.pivotPoint.y = -pivotY;
+      textField.embedFonts = embedFonts;
+      textField.multiline = multiline;
+      textField.wordWrap = wordWrap;
+      textField.restrict = restrict;
+      textField.editable = editable;
+      textField.selectable = selectable;
+      textField.displayAsPassword = displayAsPassword;
+      textField.maxChars = maxChars;
+      timelineConfig.textFields.add(textField);
 
       // make analyzer happy
       "$blockIndent, $bullet, $kerning, $letterSpacing, $target, $url";

@@ -18,7 +18,7 @@ part 'src/config/cframe_action.dart';
 part 'src/config/cframe_sound.dart';
 part 'src/config/csound.dart';
 part 'src/config/cstage.dart';
-part 'src/config/ctext_field_object.dart';
+part 'src/config/ctext_field.dart';
 part 'src/config/ctexture_atlas.dart';
 part 'src/config/ctexture_atlas_element.dart';
 part 'src/config/ctexture_atlas_content.dart';

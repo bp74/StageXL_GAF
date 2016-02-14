@@ -2,14 +2,14 @@ part of stagexl_gaf;
 
 class GAFTimelineConfig {
 
-  final String version;
   final int id;
   final String assetID;
+  final String version;
 
   final List<CAnimationFrame> animationFrames = new List<CAnimationFrame>();
   final List<CAnimationObject> animationObjects = new List <CAnimationObject>();
   final List<CAnimationSequence> animationSequences = new List<CAnimationSequence>();
-  final List<CTextFieldObject> textFieldObjects = new List<CTextFieldObject>();
+  final List<CTextField> textFields = new List<CTextField>();
   final Map<int, String> namedParts = new Map<int, String>();
   final Map<int, CFrameSound> sounds = new Map<int, CFrameSound>();
 
@@ -50,8 +50,8 @@ class GAFTimelineConfig {
     return null;
   }
 
-  CTextFieldObject getTextFieldObject(int textFieldID) {
-    for (var textField in textFieldObjects) {
+  CTextField getTextField(int textFieldID) {
+    for (var textField in textFields) {
       if (textField.id == textFieldID) return textField;
     }
     return null;

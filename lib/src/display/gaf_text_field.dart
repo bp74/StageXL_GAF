@@ -4,7 +4,7 @@ class GAFTextField extends TextField implements GAFDisplayObject {
 
   // TODO: Implement or replace GAFTextField
 
-  GAFTextField(CTextFieldObject config,
+  GAFTextField(CTextField config,
       [num displayScale = 1, num contentScale = 1]) : super() {
 
   }

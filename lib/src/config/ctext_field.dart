@@ -1,6 +1,6 @@
 part of stagexl_gaf;
 
-class CTextFieldObject {
+class CTextField {
 
   int id;
   String text;
@@ -19,6 +19,6 @@ class CTextFieldObject {
   String restrict = null;
   Point pivotPoint = null;
 
-  CTextFieldObject(this.id, this.text, this.textFormat, this.width, this.height);
+  CTextField(this.id, this.text, this.textFormat, this.width, this.height);
 
 }
