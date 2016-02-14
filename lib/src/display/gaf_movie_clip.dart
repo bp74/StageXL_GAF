@@ -479,7 +479,6 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _draw() {
 
-    var animationObjects = _timeline.config.animationObjects;
     var animationFrames = _timeline.config.animationFrames.all;
 
     for (var displayObject in _displayObjects.values) {
@@ -491,15 +490,12 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
       var frameConfig = animationFrames[_currentFrame];
       for (var instance in frameConfig.instances) {
 
-        var animationObject = animationObjects.getAnimationObject(instance.id);
-        if (animationObject == null) continue;
-
         var displayObject = _displayObjects[instance.id];
         if (displayObject == null) continue;
 
         displayObject.off = false;
-        displayObject.visible = animationObject.mask ? false : true;
-        displayObject.alpha = animationObject.mask ? 0.3 : instance.alpha;
+        displayObject.visible = true;
+        displayObject.alpha = instance.alpha;
         displayObject.filters.clear();
         this.addChild(displayObject);
 
@@ -521,7 +517,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
           displayObjectMatrix.prepend(matrix);
         }
 
-        if (animationObject.mask == false && instance.maskID != null) {
+        if (instance.maskID != null) {
           var mask = _displayObjects[instance.maskID];
           if (mask is Bitmap) {
             // TODO: avoid memory allocations for filter/matrix
@@ -529,6 +525,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
             filter.matrix.copyFromAndInvert(displayObject.transformationMatrix);
             filter.matrix.prepend(mask.transformationMatrix);
             displayObject.filters.add(filter);
+            mask.visible = false;
           } else {
             throw new StateError("MovieClip masks not yet supported.");
           }
