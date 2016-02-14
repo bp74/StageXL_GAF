@@ -315,13 +315,13 @@ class GAFAssetConfigConverter {
       if (prevFrame != null) {
         currentFrame = prevFrame.clone(frameNumber);
         for (int n = prevFrame.frameNumber + 1; n < currentFrame.frameNumber; n++) {
-          timelineConfig.animationFrames.addFrame(prevFrame.clone(n));
+          timelineConfig.animationFrames.add(prevFrame.clone(n));
         }
       } else {
         currentFrame = new CAnimationFrame(frameNumber);
         if (currentFrame.frameNumber > 1) {
           for (int n = 1; n < currentFrame.frameNumber; n++) {
-            timelineConfig.animationFrames.addFrame(new CAnimationFrame(n));
+            timelineConfig.animationFrames.add(new CAnimationFrame(n));
           }
         }
       }
@@ -401,12 +401,12 @@ class GAFAssetConfigConverter {
         }
       }
 
-      timelineConfig.animationFrames.addFrame(currentFrame);
+      timelineConfig.animationFrames.add(currentFrame);
       prevFrame = currentFrame;
     }
 
     for (int n = prevFrame.frameNumber + 1; n <= timelineConfig.framesCount; n++) {
-      timelineConfig.animationFrames.addFrame(prevFrame.clone(n));
+      timelineConfig.animationFrames.add(prevFrame.clone(n));
     }
 
     _readNextTag();
@@ -529,7 +529,7 @@ class GAFAssetConfigConverter {
       var type = tagID == TAG_DEFINE_ANIMATION_MASKS ? 0 : _readUnsignedShort();
       var typeString = _getAnimationObjectTypeString(type);
       var value = new CAnimationObject(objectID, regionID, typeString, true);
-      timelineConfig.animationObjects.addAnimationObject(value);
+      timelineConfig.animationObjects.add(value);
     }
   }
 
@@ -540,7 +540,7 @@ class GAFAssetConfigConverter {
       var type = tagID == TAG_DEFINE_ANIMATION_OBJECTS ? 0 : _readUnsignedShort();
       var typeString = _getAnimationObjectTypeString(type);
       var value = new CAnimationObject(objectID, regionID, typeString, false);
-      timelineConfig.animationObjects.addAnimationObject(value);
+      timelineConfig.animationObjects.add(value);
     }
   }
 
@@ -550,7 +550,7 @@ class GAFAssetConfigConverter {
       var startFrameNo = _readShort();
       var endFrameNo = _readShort();
       var value = new CAnimationSequence(sequenceID, startFrameNo, endFrameNo);
-      timelineConfig.animationSequences.addSequence(value);
+      timelineConfig.animationSequences.add(value);
     }
   }
 
@@ -654,7 +654,7 @@ class GAFAssetConfigConverter {
       textFieldObject.selectable = selectable;
       textFieldObject.displayAsPassword = displayAsPassword;
       textFieldObject.maxChars = maxChars;
-      timelineConfig.textFields.addTextFieldObject(textFieldObject);
+      timelineConfig.textFieldObjects.add(textFieldObject);
 
       // make analyzer happy
       "$blockIndent, $bullet, $kerning, $letterSpacing, $target, $url";

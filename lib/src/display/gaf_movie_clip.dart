@@ -62,7 +62,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
     this.fps = fps ?? gafAsset.config.stageConfig?.fps ?? 25;
 
-    for (CAnimationObject animationObject in config.animationObjects.all) {
+    for (CAnimationObject animationObject in config.animationObjects) {
 
       var displayObject = null;
       var type = animationObject.type;
@@ -73,7 +73,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         var bitmapData = _timeline.getBitmapDataByID(regionID);
         displayObject = new GAFBitmap(bitmapData);
       } else if (type == CAnimationObject.TYPE_TEXTFIELD) {
-        var textFieldObject = config.textFields.getTextFieldObject(regionID);
+        var textFieldObject = config.getTextFieldObject(regionID);
         displayObject = new GAFTextField(textFieldObject, displayScale, contentScale);
       } else if (type == CAnimationObject.TYPE_TIMELINE) {
         var mcTimeline = _timeline.gafAsset.getGAFTimelineByID(regionID);
@@ -197,8 +197,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   /// is no sequences - returns null.
 
   String get currentSequence {
-    var sequences = _timeline.config.animationSequences;
-    var sequence = sequences.getSequenceByFrame(this.currentFrame);
+    var sequence = _timeline.config.getSequenceByFrame(this.currentFrame);
     return sequence?.id;
   }
 
@@ -209,8 +208,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   CAnimationSequence setSequence(String id, [bool play = true]) {
 
-    var sequences = _timeline.config.animationSequences;
-    var sequence = _playingSequence = sequences.getSequenceByID(id);
+    var sequence = _playingSequence = _timeline.config.getSequence(id);
 
     if (sequence != null) {
       int startFrame = _reverse ? sequence.endFrameNo - 1 : sequence.startFrameNo;
@@ -349,7 +347,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   void _play([bool applyToAllChildren = false, bool calledByUser = false]) {
 
     var config = _timeline.config;
-    var frames = _timeline.config.animationFrames.all;
+    var frames = _timeline.config.animationFrames;
 
     if (_isPlaying && applyToAllChildren == false || this.off) return;
     if (config.framesCount > 1) _isPlaying = true;
@@ -384,7 +382,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
     _isPlaying = false;
 
-    var frames = _timeline.config.animationFrames.all;
+    var frames = _timeline.config.animationFrames;
 
     if (applyToAllChildren && frames.length > 0) {
       for (var movieClip in _movieClips) {
@@ -399,17 +397,17 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _checkPlaybackEvents() {
 
+    var config = _timeline.config;
+
     if (this.hasEventListener(EVENT_TYPE_SEQUENCE_START)) {
       var type = EVENT_TYPE_SEQUENCE_START;
-      var sequences = _timeline.config.animationSequences;
-      var sequence = sequences.getSequenceStart(_currentFrame + 1);
+      var sequence = config.getSequenceByStartFrame(_currentFrame + 1);
       if (sequence != null) _dispatchEventWith(type, false, sequence);
     }
 
     if (this.hasEventListener(EVENT_TYPE_SEQUENCE_END)) {
       var type = EVENT_TYPE_SEQUENCE_END;
-      var sequences = _timeline.config.animationSequences;
-      var sequence = sequences.getSequenceEnd(_currentFrame + 1);
+      var sequence = config.getSequenceByEndFrame(_currentFrame + 1);
       if (sequence != null) _dispatchEventWith(type, false, sequence);
     }
 
@@ -428,7 +426,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _runActions() {
 
-    var animationFrames = _timeline.config.animationFrames.all;
+    var animationFrames = _timeline.config.animationFrames;
     if (animationFrames.length == 0) return;
 
     var animationFrame =  animationFrames[_currentFrame];
@@ -460,9 +458,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
       var frameCount = _timeline.config.framesCount;
       if (frame > frameCount) frame = frameCount;
     } else if (frame is String) {
-      String label = frame;
-      frame = _timeline.config.animationSequences.getStartFrameNo(label);
-      if (frame == 0) throw new ArgumentError("Frame label '$label' not found");
+      var sequence = _timeline.config.getSequence(frame as String);
+      if (sequence == null) throw new ArgumentError("Frame label '$frame' not found");
+      frame = sequence.startFrameNo;
     } else {
       frame = 1;
     }
@@ -479,12 +477,11 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   void _draw() {
 
-    var animationFrames = _timeline.config.animationFrames.all;
-
     for (var displayObject in _displayObjects.values) {
       displayObject.off = true;
     }
 
+    var animationFrames = _timeline.config.animationFrames;
     if (animationFrames.length > _currentFrame) {
 
       var frameConfig = animationFrames[_currentFrame];
