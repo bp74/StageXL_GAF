@@ -12,12 +12,4 @@ class CAnimationFrameInstance {
   CAnimationFrameInstance(
       this.id, this.zIndex, this.alpha, this.maskID, this.matrix, this.filter);
 
-  //---------------------------------------------------------------------------
-
-  Matrix getTransformMatrix(Matrix pivotMatrix, num scale) {
-    var matrix = this.matrix.clone();
-    matrix.scale(scale, scale);
-    matrix.prepend(pivotMatrix);
-    return matrix;
-  }
 }

@@ -2,9 +2,9 @@ part of stagexl_gaf;
 
 class CSound {
 
-  static final String GAF_PLAY_SOUND = "gafPlaySound";
-  static final int WAV = 0;
-  static final int MP3 = 1;
+  static const String GAF_PLAY_SOUND = "gafPlaySound";
+  static const int WAV = 0;
+  static const int MP3 = 1;
 
   int soundID = 0;
   String linkageName = null;

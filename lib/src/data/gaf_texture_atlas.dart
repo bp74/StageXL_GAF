@@ -15,23 +15,24 @@ class GAFTextureAtlas {
 
     var bitmapDataFile = configSource.source;
     if (bitmapDataFile == "no_atlas") return;
+
     var bitmapData = await BitmapData.load(path + bitmapDataFile);
+    var pixelRatio = configContent.contentScale;
+    var rtq = bitmapData.renderTextureQuad;
 
     for (var element in config.elements) {
 
       if (element.atlasID != configSource.id) continue;
 
       var region = element.region;
-      var scale9Grid = element.scale9Grid;
       var matrix = element.matrix;
+      var scale9Grid = element.scale9Grid;
       var rotation = element.rotated ? 1 : 0;
-      var scale = configContent.contentScale;
-      var rtq = bitmapData.renderTextureQuad;
 
-      var srcLeft = (region.left * scale).round();
-      var srcTop = (region.top * scale).round();
-      var srcWidth = (region.width * scale).round();
-      var srcHeight = (region.height * scale).round();
+      var srcLeft = (region.left * pixelRatio).round();
+      var srcTop = (region.top * pixelRatio).round();
+      var srcWidth = (region.width * pixelRatio).round();
+      var srcHeight = (region.height * pixelRatio).round();
       var src = new Rectangle<int>(srcLeft, srcTop, srcWidth, srcHeight);
 
       var ofsLeft = 0;
@@ -41,7 +42,7 @@ class GAFTextureAtlas {
       var ofs = new Rectangle<int>(ofsLeft, ofsTop, ofsWidth, ofsHeight);
 
       var quad = new RenderTextureQuad.slice(rtq, src, ofs, rotation);
-      var quadPR = quad.withPixelRatio(scale);
+      var quadPR = quad.withPixelRatio(pixelRatio);
       var gafBitmapData = new GAFBitmapData(scale9Grid, matrix, quadPR);
 
       this.gafBitmapDatas[element.id] = gafBitmapData;

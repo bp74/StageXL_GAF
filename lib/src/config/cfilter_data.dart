@@ -8,7 +8,7 @@ abstract class CFilterData {
 
 class CColorMatrixFilterData implements CFilterData {
 
-  final List<num> matrix = new List<num>.filled(20, 0.0, growable: false);
+  final Float32List matrix = new Float32List(20);
 
   CColorMatrixFilterData() {
     matrix[00] = 1.0; // R scale

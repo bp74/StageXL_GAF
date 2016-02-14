@@ -239,33 +239,24 @@ class GAFAssetConfigConverter {
   }
 
   Matrix _readMatrix() {
-    var a = _readFloat();
-    var b = _readFloat();
-    var c = _readFloat();
-    var d = _readFloat();
-    var tx = _readFloat();
-    var ty = _readFloat();
-    return new Matrix(a, b, c, d, tx, ty);
+    var f = _readFloats(6);
+    return new Matrix(f[0], f[1], f[2], f[3], f[4], f[5]);
   }
 
   Rectangle<num> _readRectangle() {
-    var left = _readFloat();
-    var top = _readFloat();
-    var width = _readFloat();
-    var height = _readFloat();
-    return new Rectangle<num>(left, top, width, height);
+    var f = _readFloats(4);
+    return new Rectangle<num>(f[0], f[1], f[2], f[3]);
   }
 
   Point<num> _readPoint() {
-    var x = _readFloat();
-    var y = _readFloat();
-    return new Point<num>(x, y);
+    var f = _readFloats(2);
+    return new Point<num>(f[0], f[1]);
   }
 
   Float32List _readFloats(int count) {
-    var value = new Float32List.view(_data.buffer, _dataPosition, count);
-    _dataPosition += count * 4;
-    return value;
+    var values = new Float32List(count);
+    for (int i = 0; i < count; i++) values[i] = _readFloat();
+    return values;
   }
 
   //---------------------------------------------------------------------------

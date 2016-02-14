@@ -2,10 +2,7 @@ part of stagexl_gaf;
 
 class CAnimationFrames {
 
-  final List<CAnimationFrame> _frames;
-
-  CAnimationFrames()
-      : _frames  = new List<CAnimationFrame>();
+  final List<CAnimationFrame> _frames = new List<CAnimationFrame>();
 
   //---------------------------------------------------------------------------
 
