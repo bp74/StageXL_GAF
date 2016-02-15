@@ -368,7 +368,7 @@ class GAFAssetConfigConverter {
           var instance = new CAnimationFrameInstance(
               stateID, zIndex, alpha, maskID, matrix, filter);
 
-          currentFrame.addInstance(instance);
+          currentFrame.updateInstance(instance);
         }
         currentFrame.sortInstances();
       }
@@ -397,7 +397,7 @@ class GAFAssetConfigConverter {
             }
           }
 
-          currentFrame.addAction(action);
+          currentFrame.actions.add(action);
         }
       }
 
