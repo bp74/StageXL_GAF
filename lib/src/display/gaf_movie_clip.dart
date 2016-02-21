@@ -60,7 +60,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
     var gafAsset = _timeline.gafAsset;
     var config = _timeline.config;
 
-    this.fps = fps ?? gafAsset.config.stageConfig?.fps ?? 25;
+    this.fps = fps ?? gafAsset.config.stageConfig.fps;
 
     for (CAnimationObject animationObject in config.animationObjects) {
 
