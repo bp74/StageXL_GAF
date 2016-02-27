@@ -590,9 +590,8 @@ class GAFAssetConfigConverter {
       var embedFonts = _readBool();
       var multiline = _readBool();
       var wordWrap = _readBool();
-      var restrict = false;
       var hasRestrict = _readBool();
-      if (hasRestrict) restrict = _readUTF();
+      var restrict = hasRestrict ? _readUTF() : null;
       var editable = _readBool();
       var selectable = _readBool();
       var displayAsPassword = _readBool();
