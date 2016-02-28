@@ -3,11 +3,11 @@ part of stagexl_gaf;
 class GAFBitmapData extends BitmapData {
 
   final Rectangle<num> scale9Grid;
-  final Matrix transformationMatrix;
+  final Matrix pivotMatrix;
 
   GAFBitmapData(
       this.scale9Grid,
-      this.transformationMatrix,
+      this.pivotMatrix,
       RenderTextureQuad renderTextureQuad)
       : super.fromRenderTextureQuad(renderTextureQuad) {
 

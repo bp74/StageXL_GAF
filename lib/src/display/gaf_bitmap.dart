@@ -5,7 +5,11 @@ part of stagexl_gaf;
 
 class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
-  GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData);
+  final Matrix pivotMatrix = new Matrix.fromIdentity();
+
+  GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData) {
+    this.pivotMatrix.copyFrom(gafBitmapData.pivotMatrix);
+  }
 
   //--------------------------------------------------------------------------
 
@@ -15,6 +19,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   @override
   void set bitmapData(GAFBitmapData value) {
     this.bitmapData = value;
+    this.pivotMatrix.copyFrom(value.pivotMatrix);
   }
 
   //--------------------------------------------------------------------------

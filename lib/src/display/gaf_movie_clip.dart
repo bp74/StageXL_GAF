@@ -21,6 +21,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   //--------------------------------------------------------------------------
 
+  final Matrix pivotMatrix = new Matrix.fromIdentity();
+
   final GAFTimeline _timeline;
 
   final Map<int, GAFDisplayObject> _displayObjects = new Map<int, GAFDisplayObject>();
@@ -504,15 +506,11 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
           }
         }
 
-        var displayObjectMatrix = displayObject.transformationMatrix;
-        displayObjectMatrix.copyFrom(instance.matrix);
+        Matrix displayObjectMatrix = displayObject.transformationMatrix;
+        Matrix pivotMatrix = displayObject.pivotMatrix;
+        Matrix instanceMatrix = instance.matrix;
+        displayObjectMatrix.copyFromAndConcat(pivotMatrix, instanceMatrix);
         displayObjectMatrix.scale(_timeline.displayScale, _timeline.displayScale);
-
-        if (displayObject is GAFBitmap) {
-          // TODO: remove this, see GAFBitmapData
-          var matrix = displayObject.bitmapData.transformationMatrix;
-          displayObjectMatrix.prepend(matrix);
-        }
 
         if (instance.maskID != null) {
           var mask = _displayObjects[instance.maskID];

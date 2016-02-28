@@ -643,8 +643,8 @@ class GAFAssetConfigConverter {
           leading: leading);
 
       var textField = new CTextField(textFieldID, text, textFormat, width, height);
-      textField.pivotPoint.x = -pivotX;
-      textField.pivotPoint.y = -pivotY;
+      textField.pivotPoint.x = pivotX;
+      textField.pivotPoint.y = pivotY;
       textField.embedFonts = embedFonts;
       textField.multiline = multiline;
       textField.wordWrap = wordWrap;
