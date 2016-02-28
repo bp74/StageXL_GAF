@@ -2,10 +2,10 @@ part of stagexl_gaf;
 
 class GAFTextField extends TextField implements GAFDisplayObject {
 
+  final CTextField config;
   final Matrix pivotMatrix = new Matrix.fromIdentity();
 
-  GAFTextField(CTextField config,
-      [num displayScale = 1, num contentScale = 1]) : super() {
+  GAFTextField(this.config, [num displayScale = 1, num contentScale = 1]) : super() {
 
     var pivotPoint = config.pivotPoint;
 

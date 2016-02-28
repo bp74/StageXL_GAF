@@ -506,9 +506,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
           }
         }
 
-        Matrix displayObjectMatrix = displayObject.transformationMatrix;
-        Matrix pivotMatrix = displayObject.pivotMatrix;
         Matrix instanceMatrix = instance.matrix;
+        Matrix pivotMatrix = displayObject.pivotMatrix;
+        Matrix displayObjectMatrix = displayObject.transformationMatrix;
         displayObjectMatrix.copyFromAndConcat(pivotMatrix, instanceMatrix);
         displayObjectMatrix.scale(_timeline.displayScale, _timeline.displayScale);
 

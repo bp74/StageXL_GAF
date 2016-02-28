@@ -25,8 +25,6 @@ class GAFTextureAtlas {
       if (element.atlasID != configSource.id) continue;
 
       var region = element.region;
-      var matrix = element.matrix;
-      var scale9Grid = element.scale9Grid;
       var rotation = element.rotated ? 1 : 0;
 
       var srcLeft = (region.left * pixelRatio).round();
@@ -42,8 +40,8 @@ class GAFTextureAtlas {
       var ofs = new Rectangle<int>(ofsLeft, ofsTop, ofsWidth, ofsHeight);
 
       var quad = new RenderTextureQuad.slice(rtq, src, ofs, rotation);
-      var quadPR = quad.withPixelRatio(pixelRatio);
-      var gafBitmapData = new GAFBitmapData(scale9Grid, matrix, quadPR);
+      var quadPixelRatio = quad.withPixelRatio(pixelRatio);
+      var gafBitmapData = new GAFBitmapData(element, quadPixelRatio);
 
       this.gafBitmapDatas[element.id] = gafBitmapData;
     }

@@ -2,17 +2,9 @@ part of stagexl_gaf;
 
 class GAFBitmapData extends BitmapData {
 
-  final Rectangle<num> scale9Grid;
-  final Matrix pivotMatrix;
+  CTextureAtlasElement element;
 
-  GAFBitmapData(
-      this.scale9Grid,
-      this.pivotMatrix,
-      RenderTextureQuad renderTextureQuad)
-      : super.fromRenderTextureQuad(renderTextureQuad) {
-
-    // TODO: replace transformationMatrix by something else
-    // TODO: implement scale9Grid with custom ixList and vxList!
-  }
+  GAFBitmapData(this.element, RenderTextureQuad renderTextureQuad)
+      : super.fromRenderTextureQuad(renderTextureQuad);
 
 }

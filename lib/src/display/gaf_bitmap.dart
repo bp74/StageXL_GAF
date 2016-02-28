@@ -8,7 +8,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   final Matrix pivotMatrix = new Matrix.fromIdentity();
 
   GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData) {
-    this.pivotMatrix.copyFrom(gafBitmapData.pivotMatrix);
+    this.pivotMatrix.copyFrom(gafBitmapData.element.matrix);
   }
 
   //--------------------------------------------------------------------------
@@ -19,7 +19,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   @override
   void set bitmapData(GAFBitmapData value) {
     this.bitmapData = value;
-    this.pivotMatrix.copyFrom(value.pivotMatrix);
+    this.pivotMatrix.copyFrom(value.element.matrix);
   }
 
   //--------------------------------------------------------------------------
