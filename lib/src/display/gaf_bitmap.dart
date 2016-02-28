@@ -6,11 +6,11 @@ part of stagexl_gaf;
 class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
   final Matrix pivotMatrix = new Matrix.fromIdentity();
-  final Rectangle<num> scale9Grid = new Rectangle<num>(0, 0, 0, 0);
+  //final Rectangle<num> scale9Grid = new Rectangle<num>(0, 0, 0, 0);
 
   GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData) {
     this.pivotMatrix.copyFrom(gafBitmapData.element.matrix);
-    this.scale9Grid.copyFrom(gafBitmapData.element.scale9Grid);
+    //this.scale9Grid.copyFrom(gafBitmapData.element.scale9Grid);
   }
 
   //--------------------------------------------------------------------------
@@ -22,7 +22,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   void set bitmapData(GAFBitmapData value) {
     this.bitmapData = value;
     this.pivotMatrix.copyFrom(value.element.matrix);
-    this.scale9Grid.copyFrom(value.element.scale9Grid);
+    //this.scale9Grid.copyFrom(value.element.scale9Grid);
   }
 
   //--------------------------------------------------------------------------
