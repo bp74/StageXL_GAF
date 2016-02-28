@@ -17,7 +17,7 @@ class CTextField {
 
   int maxChars = 0;
   String restrict = null;
-  Point pivotPoint = null;
+  Point<num> pivotPoint = new Point<num>(0, 0);
 
   CTextField(this.id, this.text, this.textFormat, this.width, this.height);
 
