@@ -2,9 +2,9 @@ part of stagexl_gaf;
 
 class GAFBitmapData extends BitmapData {
 
-  CTextureAtlasElement element;
+  CTextureAtlasElement config;
 
-  GAFBitmapData(this.element, RenderTextureQuad renderTextureQuad)
+  GAFBitmapData(this.config, RenderTextureQuad renderTextureQuad)
       : super.fromRenderTextureQuad(renderTextureQuad);
 
 }
