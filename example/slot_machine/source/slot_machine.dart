@@ -154,8 +154,6 @@ class SlotMachine extends GAFMovieClip {
     _state = (_state + 1) % MACHINE_STATE_COUNT;
     _resetCallbacks();
 
-    print(_state);
-
     switch (_state) {
 
       case MACHINE_STATE_INITIAL:

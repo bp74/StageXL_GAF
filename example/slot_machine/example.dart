@@ -38,6 +38,7 @@ Future main() async {
   slotMachineGame.y = 20;
   stage.addChild(slotMachineGame);
   stage.juggler.add(slotMachineGame);
-  stage.onEnterFrame.listen((e) => print(e.passedTime));
+
+//  stage.onEnterFrame.listen((e) => print(e.passedTime));
 
 }
