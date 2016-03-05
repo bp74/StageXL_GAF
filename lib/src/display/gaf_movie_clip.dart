@@ -86,10 +86,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
       if (config.namedParts != null) {
         var instanceName = config.namedParts[instanceID];
-        if (instanceName != null) {
-          //this[_config.namedParts[instanceID]] = displayObject;
-          displayObject.name = instanceName;
-        }
+        if (instanceName != null) displayObject.name = instanceName;
       }
     }
 
@@ -466,13 +463,14 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
       frame = 1;
     }
 
-    if (_playingSequence != null && _playingSequence.isSequenceFrame(frame) == null) {
+    if (_playingSequence?.isSequenceFrame(frame) == false) {
       _playingSequence = null;
     }
 
     if (_currentFrame != frame - 1) {
       _currentFrame = frame - 1;
       _runActions();
+      _draw();
     }
   }
 
