@@ -8,6 +8,7 @@ http://gafmedia.com/
 ##Examples
 
 Skeleton (<http://www.stagexl.org/show/gaf/skeleton/example.html>)  
+Slot Machine (<http://www.stagexl.org/show/gaf/slot_machine/example.html>)  
 Fireman (<http://www.stagexl.org/show/gaf/fireman/example.html>)  
 
 ##License
