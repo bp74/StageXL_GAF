@@ -1,23 +1,8 @@
 part of slot_machine;
 
-/// Created by Nazar on 27.11.2014.
-///
-/// This is the helper class for Slot Machine reel
-///
-///   /   \
-///   | A |
-///   |---|
-///   | B |
-///   |---|
-///   | C |
-///   \   /
-///
-///   http://gafmedia.com/
-
 class SlotBar {
 
   final GAFMovieClip bar;
-
   final List<GAFMovieClip> _slots = new List<GAFMovieClip>(3);
   final math.Random _random = new math.Random();
 
@@ -26,8 +11,7 @@ class SlotBar {
 
   SlotBar(this.bar) {
     for (var i = 0; i < _slots.length; i++) {
-      var name = "fruit${i + 1}";
-      _slots[i] = bar.getChildByName(name);
+      _slots[i] = bar.getChildByName("fruit${i + 1}");
     }
   }
 
@@ -38,10 +22,10 @@ class SlotBar {
   }
 
   void randomizeSlots(int maxTypes, String machineType) {
-    for (var i = 0; i < _slots.length; i++) {
+    for (var slot in _slots) {
       var slotImagePos = _random.nextInt(maxTypes) + 1;
-      var seqName = slotImagePos.toString() + "_" + machineType;
-      _slots[i].setSequence(seqName, false);
+      var sequenceName = "${slotImagePos}_${machineType}";
+      slot.setSequence(sequenceName, false);
     }
   }
 

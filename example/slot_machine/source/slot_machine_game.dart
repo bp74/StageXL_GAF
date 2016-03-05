@@ -1,7 +1,5 @@
 part of slot_machine;
 
-/// Created by Nazar on 27.11.2014.
-
 class SlotMachineGame extends Sprite implements Animatable {
 
   final SlotMachine machine;
@@ -13,9 +11,11 @@ class SlotMachineGame extends Sprite implements Animatable {
     this.machine.play();
 
     var arm = this.machine.arm;
-    arm.onMouseClick.listen((e) => this.machine.start());
+    arm.mouseCursor = MouseCursor.POINTER;
+    arm.onMouseClick.listen((e) => this.machine.pullArm());
 
     var switchMachineBtn = this.machine.switchMachineBtn;
+    switchMachineBtn.mouseCursor = MouseCursor.POINTER;
     switchMachineBtn.onMouseOver.listen((e) => switchMachineBtn.setSequence("Over"));
     switchMachineBtn.onMouseDown.listen((e) => switchMachineBtn.setSequence("Down"));
     switchMachineBtn.onMouseUp.listen((e) => switchMachineBtn.setSequence("Up"));

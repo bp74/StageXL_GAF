@@ -1,7 +1,5 @@
 part of slot_machine;
 
-/// Created by Nazar on 27.11.2014.
-
 class SlotMachine extends GAFMovieClip {
 
   static const int MACHINE_STATE_INITIAL = 0;
@@ -24,45 +22,49 @@ class SlotMachine extends GAFMovieClip {
   static const num _BAR_TIMEOUT = 0.2;
 
   GAFMovieClip _arm;
-  GAFMovieClip _switchMachineBtn;
-  GAFMovieClip _whiteBG;
-  GAFMovieClip _rewardText;
-  GAFMovieClip _bottomCoins;
+  GAFMovieClip _switchMachineButton;
+  GAFMovieClip _flash;
+  GAFMovieClip _winText;
+  GAFMovieClip _winCoins;
   GAFMovieClip _winFrame;
-  GAFMovieClip _spinningRays;
   List<SlotBar> _slotBars = new List<SlotBar>(3);
   List<GAFMovieClip> _centralCoins = new List<GAFMovieClip>(3);
   Juggler _juggler = new Juggler();
 
+  int _prize = 0;
   int _state = MACHINE_STATE_INITIAL;
   String _rewardType = _REWARD_CHIPS;
-  int _prize = 0;
-  // Timer _timer: Timer;
+
+  //---------------------------------------------------------------------------
 
   SlotMachine(GAFTimeline gafTimeline) : super(gafTimeline) {
 
     this.play(true);
 
-    // Here we get pointers to inner Gaf objects for quick access
     var obj = this.getChildByName("obj");
+
+    // Here we get pointers to inner Gaf objects for quick access
+
     _arm = obj.getChildByName("arm");
-    _switchMachineBtn = obj.getChildByName("swapBtn");
-    _switchMachineBtn.stop();
-    _switchMachineBtn.mouseChildren = false;
-    _whiteBG = obj.getChildByName("white_exit");
-    _bottomCoins = obj.getChildByName("wincoins");
-    _rewardText = obj.getChildByName("wintext");
+    _flash = obj.getChildByName("white_exit");
+    _winCoins = obj.getChildByName("wincoins");
+    _winText = obj.getChildByName("wintext");
     _winFrame = obj.getChildByName("frame");
-    _spinningRays = obj.getChildByName("spinning_rays");
+
+    _switchMachineButton = obj.getChildByName("swapBtn");
+    _switchMachineButton.stop();
+    _switchMachineButton.mouseChildren = false;
 
     // Play the "start" sequence once and then play the "spin" sequence.
-    _spinningRays.setSequence("start");
-    _spinningRays.onSequenceEnd.first.then((e) {
-      _spinningRays.setSequence("spin", true);
+
+    var spinningRays = obj.getChildByName("spinning_rays");
+    spinningRays.setSequence("start");
+    spinningRays.onSequenceEnd.first.then((e) {
+      spinningRays.setSequence("spin", true);
     });
 
-    for(var child in this.children) {
-      if (child == _arm || child == _switchMachineBtn) continue;
+    for (var child in this.children) {
+      if (child == _arm || child == _switchMachineButton) continue;
       if (child is! InteractiveObject) continue;
       InteractiveObject interactiveObject = child;
       interactiveObject.mouseEnabled = false;
@@ -74,8 +76,7 @@ class SlotMachine extends GAFMovieClip {
     }
 
     for (int i = 0; i < _slotBars.length; i++) {
-      var barName = "slot${i + 1}";
-      var bar = obj.getChildByName(barName);
+      var bar = obj.getChildByName("slot${i + 1}");
       _slotBars[i] = new SlotBar(bar);
       _slotBars[i].randomizeSlots(_FRUIT_COUNT, _rewardType);
     }
@@ -86,13 +87,9 @@ class SlotMachine extends GAFMovieClip {
   //---------------------------------------------------------------------------
 
   GAFMovieClip get arm => _arm;
-  GAFMovieClip get switchMachineBtn => _switchMachineBtn;
+  GAFMovieClip get switchMachineBtn => _switchMachineButton;
 
   //---------------------------------------------------------------------------
-
-  void start() {
-    if (_state == MACHINE_STATE_INITIAL) _nextState();
-  }
 
   @override
   bool advanceTime(num time) {
@@ -100,114 +97,72 @@ class SlotMachine extends GAFMovieClip {
     return super.advanceTime(time);
   }
 
+  void pullArm() {
+    if (_state == MACHINE_STATE_INITIAL) _nextState();
+  }
+
   void switchType() {
+
     if (_rewardType == _REWARD_CHIPS) {
       _rewardType = _REWARD_COINS;
     } else if (_rewardType == _REWARD_COINS) {
       _rewardType = _REWARD_CHIPS;
     }
 
-    var state = _state - 1;
-    if (state < 0) state = MACHINE_STATE_COUNT - 1;
-    _state = state;
+    _state = (_state - 1) % MACHINE_STATE_COUNT;
     _nextState();
-
-    for (var i = 0; i < _slotBars.length; i++) {
-      _slotBars[i].switchSlotType(_FRUIT_COUNT);
-    }
+    _slotBars.forEach((sb) => sb.switchSlotType(_FRUIT_COUNT));
   }
 
   //---------------------------------------------------------------------------
 
-  // General callback for sequences
-  // Used by Finite-state machine
-  // see setAnimationStartedNextLoopDelegate and setAnimationFinishedPlayDelegate
-  // for looped and non-looped sequences
-  void _onFinishSequence(Event event) {
-    _nextState();
-  }
-
   void _defaultPlacing() {
     // Here we set default sequences if needed
     // Sequence names are used from flash labels
-    _whiteBG.gotoAndStop("whiteenter");
+    _flash.gotoAndStop("whiteenter");
     _winFrame.setSequence("stop");
     _arm.setSequence("stop");
-    _bottomCoins.visible = false;
-    _bottomCoins.loop = false;
-    _rewardText.setSequence("notwin", true);
-
-    for (int i = 0; i < _centralCoins.length; i++) {
-      _centralCoins[i].visible = false;
-    }
-    for (int i = 0; i < _centralCoins.length; i++) {
-      _slotBars[i].bar.setSequence("statics");
-    }
+    _winCoins.visible = false;
+    _winCoins.loop = false;
+    _winText.setSequence("notwin", true);
+    _centralCoins.forEach((cc) => cc.visible = false);
+    _slotBars.forEach((sb) => sb.bar.setSequence("statics"));
   }
 
-  /// This method describes Finite-state machine state switches in 2 cases:
-  /// 1) specific sequence ended playing and callback called
-  /// 2) by timer
-
-  void _nextState() {
+  void _nextState([_]) {
 
     _state = (_state + 1) % MACHINE_STATE_COUNT;
-    _resetCallbacks();
 
-    switch (_state) {
-
-      case MACHINE_STATE_INITIAL:
-        _defaultPlacing();
-        break;
-
-      case MACHINE_STATE_ARM_TOUCHED:
-        _arm.setSequence("push");
-        _arm.onSequenceEnd.listen(_onFinishSequence);
-        break;
-
-      case MACHINE_STATE_SPIN:
-        _arm.setSequence("stop");
-        _juggler.delayCall(_nextState, 3.0);
-        for (int i = 0; i < _slotBars.length; i++) {
-          var seqName = "rotation_" + _rewardType;
-          var seq = new SequencePlaybackInfo(seqName, true);
-          var sb = _slotBars[i];
-          _juggler.delayCall(() => sb.playSequence(seq), _BAR_TIMEOUT * i);
-        }
-        break;
-
-      case MACHINE_STATE_SPIN_END:
-        _juggler.delayCall(_nextState, _BAR_TIMEOUT * 4.0);
-        _generatePrize();
-        List<List<int>> spinResult = _generateSpinResult(_prize);
-        for (int i = 0; i < _slotBars.length; i++) {
-          var seq = new SequencePlaybackInfo("stop", false);
-          var sb = _slotBars[i];
-          sb.setSpinResult(spinResult[i], _rewardType);
-          _juggler.delayCall(() => sb.playSequence(seq), _BAR_TIMEOUT * i);
-        }
-        break;
-
-      case MACHINE_STATE_WIN:
-        _showPrize(_prize);
-        break;
-
-      case MACHINE_STATE_END:
-        _whiteBG.play();
-        _whiteBG.onSequenceEnd.listen(_onFinishSequence);
-        break;
+    if (_state == MACHINE_STATE_INITIAL) {
+      _defaultPlacing();
+    } else if (_state == MACHINE_STATE_ARM_TOUCHED) {
+      _arm.setSequence("push");
+      _arm.onSequenceEnd.first.then(_nextState);
+    } else if (_state == MACHINE_STATE_SPIN) {
+      _arm.setSequence("stop");
+      _juggler.delay(3.0).then(_nextState);
+      for (int i = 0; i < _slotBars.length; i++) {
+        var seqName = "rotation_" + _rewardType;
+        var seq = new SequencePlaybackInfo(seqName, true);
+        var sb = _slotBars[i];
+        _juggler.delay(_BAR_TIMEOUT * i).then((f) => sb.playSequence(seq));
+      }
+    } else if (_state == MACHINE_STATE_SPIN_END) {
+      _juggler.delay(_BAR_TIMEOUT * 4.0).then(_nextState);
+      _prize = (_prize + 1) % PRIZE_COUNT;
+      var spinResult = _generateSpinResult(_prize);
+      for (int i = 0; i < _slotBars.length; i++) {
+        var slotBar = _slotBars[i];
+        var seq = new SequencePlaybackInfo("stop", false);
+        slotBar.setSpinResult(spinResult[i], _rewardType);
+        _juggler.delay(_BAR_TIMEOUT * i).then((f) => slotBar.playSequence(seq));
+      }
+    } else if (_state == MACHINE_STATE_WIN) {
+      _showPrize(_prize);
+    } else if (_state == MACHINE_STATE_END) {
+      _flash.play();
+      _flash.onSequenceEnd.first.then(_nextState);
     }
-  }
-
-  void _resetCallbacks() {
-    _whiteBG.removeEventListener(GAFMovieClip.EVENT_TYPE_SEQUENCE_END, _onFinishSequence);
-    _arm.removeEventListener(GAFMovieClip.EVENT_TYPE_SEQUENCE_END, _onFinishSequence);
-  }
-
-  int _generatePrize() {
-    ++_prize;
-    if (_prize == PRIZE_COUNT) _prize = 0;
-    return _prize;
   }
 
   /// Method returns machine spin result
@@ -260,8 +215,8 @@ class SlotMachine extends GAFMovieClip {
   void _showPrize(int prize) {
 
     var coinsBottomState = _getTextByPrize(prize) + "_" + _rewardType;
-    _bottomCoins.visible = true;
-    _bottomCoins.gotoAndStop(coinsBottomState);
+    _winCoins.visible = true;
+    _winCoins.gotoAndStop(coinsBottomState);
 
     if (prize == PRIZE_NONE) {
       _nextState();
@@ -269,13 +224,13 @@ class SlotMachine extends GAFMovieClip {
     }
 
     _winFrame.setSequence("win", true);
-    _rewardText.setSequence(_getTextByPrize(prize));
+    _winText.setSequence(_getTextByPrize(prize));
 
     int idx = prize - 1;
     _centralCoins[idx].visible = true;
     _centralCoins[idx].play(true);
     _centralCoins[idx].setSequence(_rewardType);
-    _juggler.delayCall(_nextState, 2.0);
+    _juggler.delay(2.0).then(_nextState);
   }
 
   String _getTextByPrize(int prize) {
@@ -288,4 +243,3 @@ class SlotMachine extends GAFMovieClip {
     }
   }
 }
-
