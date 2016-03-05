@@ -5,13 +5,7 @@ part of stagexl_gaf;
 
 class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
-  final Matrix pivotMatrix = new Matrix.fromIdentity();
-  //final Rectangle<num> scale9Grid = new Rectangle<num>(0, 0, 0, 0);
-
-  GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData) {
-    this.pivotMatrix.copyFrom(gafBitmapData.config.matrix);
-    //this.scale9Grid.copyFrom(gafBitmapData.element.scale9Grid);
-  }
+  GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData);
 
   //--------------------------------------------------------------------------
 
@@ -19,10 +13,11 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   GAFBitmapData get bitmapData => super.bitmapData;
 
   @override
+  Matrix get pivotMatrix => bitmapData.config.matrix;
+
+  @override
   void set bitmapData(GAFBitmapData value) {
     this.bitmapData = value;
-    this.pivotMatrix.copyFrom(value.config.matrix);
-    //this.scale9Grid.copyFrom(value.element.scale9Grid);
   }
 
   //--------------------------------------------------------------------------
@@ -30,4 +25,28 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   /// Creates a clone of this [GAFBitmap].
 
   GAFBitmap clone() => new GAFBitmap(this.bitmapData);
+
+  //--------------------------------------------------------------------------
+
+  @override
+  void render(RenderState renderState) {
+
+    var bitmapData = this.bitmapData;
+    if (bitmapData == null) return;
+
+    var scale9Grid = bitmapData.config.scale9Grid;
+    var renderTextureQuad = bitmapData.renderTextureQuad;
+
+    if (scale9Grid == null) {
+      renderState.renderTextureQuad(renderTextureQuad);
+    } else {
+      throw new UnimplementedError("Implement support for scale9Grid");
+      //this.transformationMatrix = this.transformationMatrix;
+      //var ixList = new Int16List(9 * 6);
+      //var vxList = new Float32List(16 * 4);
+      //var renderTexture = renderTextureQuad.renderTexture;
+      //renderState.renderTextureMesh(renderTexture, ixList, vxList);
+    }
+  }
+
 }
