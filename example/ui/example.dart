@@ -8,7 +8,7 @@ Future main() async {
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
-  StageXL.stageOptions.backgroundColor = Color.DarkSlateGray;
+  StageXL.stageOptions.backgroundColor = Color.White;
   StageXL.bitmapDataLoadOptions.webp = false;
 
   // init Stage and RenderLoop
@@ -18,7 +18,7 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  var gafAsset = await GAFAsset.load('assets/ui/ui.gaf', 1, 1);
+  var gafAsset = await GAFAsset.load('assets/ui/ui.gaf', 1, 2);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
   var skeleton = new GAFMovieClip(gafTimeline);
