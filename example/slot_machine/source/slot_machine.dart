@@ -16,10 +16,10 @@ class SlotMachine extends GAFMovieClip {
   static const int PRIZE_C1000K = 3;
   static const int PRIZE_COUNT = 4;
 
-  static const String _REWARD_COINS = "coins";
-  static const String _REWARD_CHIPS = "chips";
-  static const int _FRUIT_COUNT = 5;
-  static const num _BAR_TIMEOUT = 0.2;
+  static const String REWARD_COINS = "coins";
+  static const String REWARD_CHIPS = "chips";
+  static const int FRUIT_COUNT = 5;
+  static const num BAR_TIMEOUT = 0.2;
 
   GAFMovieClip _arm;
   GAFMovieClip _switchMachineButton;
@@ -29,11 +29,11 @@ class SlotMachine extends GAFMovieClip {
   GAFMovieClip _winFrame;
   List<SlotBar> _slotBars = new List<SlotBar>(3);
   List<GAFMovieClip> _centralCoins = new List<GAFMovieClip>(3);
-  Juggler _juggler = new Juggler();
 
   int _prize = 0;
   int _state = MACHINE_STATE_INITIAL;
-  String _rewardType = _REWARD_CHIPS;
+  String _rewardType = REWARD_CHIPS;
+  Juggler _juggler = new Juggler();
 
   //---------------------------------------------------------------------------
 
@@ -78,7 +78,7 @@ class SlotMachine extends GAFMovieClip {
     for (int i = 0; i < _slotBars.length; i++) {
       var bar = obj.getChildByName("slot${i + 1}");
       _slotBars[i] = new SlotBar(bar);
-      _slotBars[i].randomizeSlots(_FRUIT_COUNT, _rewardType);
+      _slotBars[i].randomizeSlots(FRUIT_COUNT, _rewardType);
     }
 
     _defaultPlacing();
@@ -103,15 +103,15 @@ class SlotMachine extends GAFMovieClip {
 
   void switchType() {
 
-    if (_rewardType == _REWARD_CHIPS) {
-      _rewardType = _REWARD_COINS;
-    } else if (_rewardType == _REWARD_COINS) {
-      _rewardType = _REWARD_CHIPS;
+    if (_rewardType == REWARD_CHIPS) {
+      _rewardType = REWARD_COINS;
+    } else if (_rewardType == REWARD_COINS) {
+      _rewardType = REWARD_CHIPS;
     }
 
     _state = (_state - 1) % MACHINE_STATE_COUNT;
     _nextState();
-    _slotBars.forEach((sb) => sb.switchSlotType(_FRUIT_COUNT));
+    _slotBars.forEach((sb) => sb.switchSlotType(FRUIT_COUNT));
   }
 
   //---------------------------------------------------------------------------
@@ -145,17 +145,17 @@ class SlotMachine extends GAFMovieClip {
         var seqName = "rotation_" + _rewardType;
         var seq = new SequencePlaybackInfo(seqName, true);
         var sb = _slotBars[i];
-        _juggler.delay(_BAR_TIMEOUT * i).then((f) => sb.playSequence(seq));
+        _juggler.delay(BAR_TIMEOUT * i).then((f) => sb.playSequence(seq));
       }
     } else if (_state == MACHINE_STATE_SPIN_END) {
-      _juggler.delay(_BAR_TIMEOUT * 4.0).then(_nextState);
+      _juggler.delay(BAR_TIMEOUT * 4).then(_nextState);
       _prize = (_prize + 1) % PRIZE_COUNT;
       var spinResult = _generateSpinResult(_prize);
       for (int i = 0; i < _slotBars.length; i++) {
         var slotBar = _slotBars[i];
         var seq = new SequencePlaybackInfo("stop", false);
         slotBar.setSpinResult(spinResult[i], _rewardType);
-        _juggler.delay(_BAR_TIMEOUT * i).then((f) => slotBar.playSequence(seq));
+        _juggler.delay(BAR_TIMEOUT * i).then((f) => slotBar.playSequence(seq));
       }
     } else if (_state == MACHINE_STATE_WIN) {
       _showPrize(_prize);
@@ -179,18 +179,18 @@ class SlotMachine extends GAFMovieClip {
 
     for (int i = 0; i < 3; i++) {
       result[i] = new List<int>(3);
-      result[i][0] = random.nextInt(_FRUIT_COUNT) + 1;
-      result[i][2] = random.nextInt(_FRUIT_COUNT) + 1;
+      result[i][0] = random.nextInt(FRUIT_COUNT) + 1;
+      result[i][2] = random.nextInt(FRUIT_COUNT) + 1;
     }
 
     if (prize == PRIZE_NONE) {
-      centralFruit = random.nextInt(_FRUIT_COUNT) + 1;
+      centralFruit = random.nextInt(FRUIT_COUNT) + 1;
     } else if (prize == PRIZE_C1K) {
-      centralFruit = random.nextInt(_FRUIT_COUNT ~/ 2) + 1;
+      centralFruit = random.nextInt(FRUIT_COUNT ~/ 2) + 1;
     } else if (prize == PRIZE_C500K) {
-      centralFruit = random.nextInt(_FRUIT_COUNT ~/ 2) + _FRUIT_COUNT ~/ 2 + 1;
+      centralFruit = random.nextInt(FRUIT_COUNT ~/ 2) + FRUIT_COUNT ~/ 2 + 1;
     } else if (prize == PRIZE_C1000K) {
-      centralFruit = _FRUIT_COUNT - 1;
+      centralFruit = FRUIT_COUNT - 1;
     }
 
     if (prize == PRIZE_NONE) {
@@ -199,7 +199,7 @@ class SlotMachine extends GAFMovieClip {
       result[2][1] = centralFruit;
       while (result[2][1] == result[1][1]) {
         // last fruit should be different
-        result[2][1] = random.nextInt(_FRUIT_COUNT) + 1;
+        result[2][1] = random.nextInt(FRUIT_COUNT) + 1;
       }
     } else {
       for (int i = 0; i < result.length; i++) {

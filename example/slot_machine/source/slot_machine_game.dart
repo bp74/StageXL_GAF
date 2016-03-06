@@ -3,7 +3,6 @@ part of slot_machine;
 class SlotMachineGame extends Sprite implements Animatable {
 
   final SlotMachine machine;
-  final Juggler juggler = new Juggler();
 
   SlotMachineGame(this.machine) {
 
