@@ -3,18 +3,19 @@ part of stagexl_gaf;
 class GAFAsset {
 
   final GAFAssetConfig config;
+  final num displayScale;
+  final num contentScale;
+
   final List<GAFTimeline> timelines = new List<GAFTimeline>();
   final List<GAFTextureAtlas> textureAtlases = new List<GAFTextureAtlas>();
   //final List<GAFSound> sounds = new List<GAFSound>();
-
-  final num displayScale;
-  final num contentScale;
 
   GAFAsset._(this.config, this.displayScale, this.contentScale);
 
   //--------------------------------------------------------------------------
 
-  static Future<GAFAsset> load(String gafUrl, [num displayScale, num contentScale]) async {
+  static Future<GAFAsset> load(
+      String gafUrl, [num displayScale, num contentScale]) async {
 
     var cutURL = gafUrl.split("?")[0];
     var lastIndex = cutURL.lastIndexOf("/");
@@ -97,10 +98,10 @@ class GAFAsset {
     return null;
   }
 
-  GAFBitmapData getBitmapDataByName(String name) {
+  GAFBitmapData getBitmapDataByLinkage(String linkage) {
     for (var ta in this.textureAtlases) {
       for (var element in ta.config.elements) {
-        if (element.linkage != name) continue;
+        if (element.linkage != linkage) continue;
         var gafBitmapData = ta.gafBitmapDatas[element.id];
         if (gafBitmapData != null) return gafBitmapData;
       }

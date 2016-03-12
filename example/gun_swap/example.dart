@@ -33,9 +33,9 @@ Future main() async {
 
   // prepare gun swap
 
-  var gunSlot = robot.getChildByName("GUN") as GAFBitmap;
-  var gun1 = gafAsset.getBitmapDataByName("gun1");
-  var gun2 = gafAsset.getBitmapDataByName("gun2");
+  GAFBitmapData gun1 = gafAsset.getBitmapDataByLinkage("gun1");
+  GAFBitmapData gun2 = gafAsset.getBitmapDataByLinkage("gun2");
+  GAFBitmap gunSlot = robot.getChildByName("GUN");
   gunSlot.bitmapData = gun1;
 
   robot.onMouseClick.listen((MouseEvent e) {
