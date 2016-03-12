@@ -543,13 +543,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
               displayObject.filters.add(blurFilter);
             }
           }
-        } else {
-          var y = 1;
         }
-        // TODO: apply filters
-        // var filterConfig = instance.filter;
-        // var filterScale = _timeline.displayScale;
-
       }
     }
 
