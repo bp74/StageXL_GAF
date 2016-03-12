@@ -24,6 +24,16 @@ class GAFTimeline {
     return gafAsset.getGAFBitmapData(displayScale, contentScale, regionID);
   }
 
+  GAFBitmapData getBitmapDataByName(String name) {
+    for (var ta in gafAsset.textureAtlases) {
+      for (var element in ta.config.elements) {
+        if (element.linkage != name) continue;
+        return gafAsset.getGAFBitmapData(displayScale, contentScale, element.id);
+      }
+    }
+    return null;
+  }
+
   void startSound(int frame) {
     var frameSound = config.getSound(frame);
     if (frameSound == null) {
