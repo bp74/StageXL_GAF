@@ -40,12 +40,9 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
     if (scale9Grid == null) {
       renderState.renderTextureQuad(renderTextureQuad);
     } else {
+      // http://gafmedia.com/forum/viewtopic.php?f=3&t=540
+      // we will add it once GAFConverter exports it!
       throw new UnimplementedError("Implement support for scale9Grid");
-      //this.transformationMatrix = this.transformationMatrix;
-      //var ixList = new Int16List(9 * 6);
-      //var vxList = new Float32List(16 * 4);
-      //var renderTexture = renderTextureQuad.renderTexture;
-      //renderState.renderTextureMesh(renderTexture, ixList, vxList);
     }
   }
 
