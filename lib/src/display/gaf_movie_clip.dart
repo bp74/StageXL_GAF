@@ -178,7 +178,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   ///
   /// @param id Child ID
 
-  DisplayObject getChildByID(String id) {
+  DisplayObject getChildByID(int id) {
     return _displayObjects[id];
   }
 
@@ -187,7 +187,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   ///
   /// @param id Mask ID
 
-  DisplayObject getMaskByID(String id) {
+  DisplayObject getMaskByID(int id) {
     return _displayObjects[id];
   }
 
