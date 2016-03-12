@@ -8,16 +8,23 @@ part of stagexl_gaf;
 
 class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, Animatable {
 
-  static const String EVENT_TYPE_SEQUENCE_START = "typeSequenceStart";
-	static const String EVENT_TYPE_SEQUENCE_END = "typeSequenceEnd";
+  static const EventStreamProvider<SequenceEvent> sequenceStartEvent =
+      const EventStreamProvider<SequenceEvent>(SequenceEvent.SEQUENCE_START);
 
-  static const EventStreamProvider<Event> sequenceStartEvent = const EventStreamProvider<Event>(EVENT_TYPE_SEQUENCE_START);
-  static const EventStreamProvider<Event> sequenceEndEvent = const EventStreamProvider<Event>(EVENT_TYPE_SEQUENCE_END);
-  static const EventStreamProvider<Event> completeEvent = const EventStreamProvider<Event>(Event.COMPLETE);
+  static const EventStreamProvider<SequenceEvent> sequenceEndEvent =
+      const EventStreamProvider<SequenceEvent>(SequenceEvent.SEQUENCE_END);
 
-  EventStream<Event> get onSequenceStart => GAFMovieClip.sequenceStartEvent.forTarget(this);
-  EventStream<Event> get onSequenceEnd => GAFMovieClip.sequenceEndEvent.forTarget(this);
-  EventStream<Event> get onComplete => GAFMovieClip.completeEvent.forTarget(this);
+  static const EventStreamProvider<Event> completeEvent =
+      const EventStreamProvider<Event>(Event.COMPLETE);
+
+  EventStream<SequenceEvent> get onSequenceStart =>
+      GAFMovieClip.sequenceStartEvent.forTarget(this);
+
+  EventStream<SequenceEvent> get onSequenceEnd =>
+      GAFMovieClip.sequenceEndEvent.forTarget(this);
+
+  EventStream<Event> get onComplete =>
+      GAFMovieClip.completeEvent.forTarget(this);
 
   //--------------------------------------------------------------------------
 
@@ -397,29 +404,23 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
     var config = timeline.config;
 
-    if (this.hasEventListener(EVENT_TYPE_SEQUENCE_START)) {
-      var type = EVENT_TYPE_SEQUENCE_START;
-      var sequence = config.getSequenceByStartFrame(_currentFrame + 1);
-      if (sequence != null) _dispatchEventWith(type, false, sequence);
+    if (this.hasEventListener(SequenceEvent.SEQUENCE_START)) {
+      var type = SequenceEvent.SEQUENCE_START;
+      var data = config.getSequenceByStartFrame(_currentFrame + 1);
+      if (data != null) dispatchEvent(new SequenceEvent(type, false, data));
     }
 
-    if (this.hasEventListener(EVENT_TYPE_SEQUENCE_END)) {
-      var type = EVENT_TYPE_SEQUENCE_END;
-      var sequence = config.getSequenceByEndFrame(_currentFrame + 1);
-      if (sequence != null) _dispatchEventWith(type, false, sequence);
+    if (this.hasEventListener(SequenceEvent.SEQUENCE_END)) {
+      var type = SequenceEvent.SEQUENCE_END;
+      var data = config.getSequenceByEndFrame(_currentFrame + 1);
+      if (data != null) dispatchEvent(new SequenceEvent(type, false, data));
     }
 
     if (this.hasEventListener(Event.COMPLETE)) {
       if (_currentFrame == _finalFrame) {
-        _dispatchEventWith(Event.COMPLETE, false, null);
+        dispatchEvent(new Event(Event.COMPLETE, false));
       }
     }
-  }
-
-  void _dispatchEventWith(String type, bool bubbles, Object data) {
-    var event = new Event(type, bubbles);
-    this.dispatchEvent(event);
-    // TODO: create special event which holds [data].
   }
 
   void _runActions() {
@@ -444,7 +445,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         //var cancelable = params.length >= 3 ? params[2] == "true" : false;
         var bubbles = params.length >= 2 ? params[1] == "true" : false;
         var type = params.length >= 1 ? params[0] : null;
-        if (hasEventListener(type)) _dispatchEventWith(type, bubbles, data);
+        if (this.hasEventListener(type)) {
+          this.dispatchEvent(new ActionEvent(type, bubbles, data));
+        }
         if (type == CSound.GAF_PLAY_SOUND) timeline.startSound(currentFrame);
       }
     }
