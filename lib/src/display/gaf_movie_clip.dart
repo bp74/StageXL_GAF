@@ -77,7 +77,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         var textField = config.getTextField(regionID);
         displayObject = new GAFTextField(textField, displayScale, contentScale);
       } else if (type == CAnimationObject.TYPE_TIMELINE) {
-        var mcTimeline = timeline.gafAsset.getGAFTimelineByID(regionID);
+        var mcTimeline = gafAsset.getGAFTimelineByID(regionID);
         displayObject = new GAFMovieClip(mcTimeline, this.fps);
         _movieClips.add(displayObject);
       }
@@ -503,11 +503,16 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
           }
         }
 
-        Matrix instanceMatrix = instance.matrix;
-        Matrix pivotMatrix = displayObject.pivotMatrix;
-        Matrix displayObjectMatrix = displayObject.transformationMatrix;
-        displayObjectMatrix.copyFromAndConcat(pivotMatrix, instanceMatrix);
-        displayObjectMatrix.scale(timeline.displayScale, timeline.displayScale);
+        Matrix im = instance.matrix;
+        Matrix pm = displayObject.pivotMatrix;
+        Matrix tm = displayObject.transformationMatrix;
+
+        tm.a = pm.a * im.a + pm.b * im.c;
+        tm.b = pm.a * im.b + pm.b * im.d;
+        tm.c = pm.c * im.a + pm.d * im.c;
+        tm.d = pm.c * im.b + pm.d * im.d;
+        tm.tx = pm.tx * im.a + pm.ty * im.c + im.tx * timeline.displayScale;
+        tm.ty = pm.tx * im.b + pm.ty * im.d + im.ty * timeline.displayScale;
 
         if (instance.maskID != null) {
           var mask = _displayObjects[instance.maskID];
