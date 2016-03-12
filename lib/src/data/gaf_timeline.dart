@@ -11,28 +11,9 @@ class GAFTimeline {
   final GAFAsset gafAsset;
   final GAFTimelineConfig config;
 
-  num displayScale = 1.0;
-  num contentScale = 1.0;
-
   GAFTimeline(this.gafAsset, this.config);
 
   //---------------------------------------------------------------------------
-
-  /// Returns GAF Texture by name of an instance inside a timeline.
-
-  GAFBitmapData getBitmapDataByID(int regionID) {
-    return gafAsset.getGAFBitmapData(displayScale, contentScale, regionID);
-  }
-
-  GAFBitmapData getBitmapDataByName(String name) {
-    for (var ta in gafAsset.textureAtlases) {
-      for (var element in ta.config.elements) {
-        if (element.linkage != name) continue;
-        return gafAsset.getGAFBitmapData(displayScale, contentScale, element.id);
-      }
-    }
-    return null;
-  }
 
   void startSound(int frame) {
     var frameSound = config.getSound(frame);

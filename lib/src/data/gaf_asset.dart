@@ -7,7 +7,10 @@ class GAFAsset {
   final List<GAFTextureAtlas> textureAtlases = new List<GAFTextureAtlas>();
   //final List<GAFSound> sounds = new List<GAFSound>();
 
-  GAFAsset(this.config);
+  final num displayScale;
+  final num contentScale;
+
+  GAFAsset._(this.config, this.displayScale, this.contentScale);
 
   //--------------------------------------------------------------------------
 
@@ -29,17 +32,15 @@ class GAFAsset {
     var gafBinary = (await gafRequest).response as ByteBuffer;
     var gafConverter = new GAFAssetConfigConverter(gafAssetID, false, gafBinary);
     var gafAssetConfig = gafConverter.convert();
-    var gafAsset = new GAFAsset(gafAssetConfig);
 
     displayScale = displayScale ?? gafAssetConfig.defaultDisplayScale;
     contentScale = contentScale ?? gafAssetConfig.defaultContentScale;
+    var gafAsset = new GAFAsset._(gafAssetConfig, displayScale, contentScale);
 
     // load gaf timelines
 
     for (GAFTimelineConfig gafTimelineConfig in gafAssetConfig.timelines) {
       var gafTimeline = new GAFTimeline(gafAsset, gafTimelineConfig);
-      gafTimeline.displayScale = displayScale;
-      gafTimeline.contentScale = contentScale;
       gafAsset.timelines.add(gafTimeline);
     }
 
@@ -88,12 +89,21 @@ class GAFAsset {
     return null;
   }
 
-  GAFBitmapData getGAFBitmapData(num displayScale, num contentScale, int regionID) {
+  GAFBitmapData getGAFBitmapDataByID(int id) {
     for (var ta in this.textureAtlases) {
-      if (ta.configContent.displayScale != displayScale) continue;
-      if (ta.configContent.contentScale != contentScale) continue;
-      var gafBitmapData = ta.gafBitmapDatas[regionID];
+      var gafBitmapData = ta.gafBitmapDatas[id];
       if (gafBitmapData != null) return gafBitmapData;
+    }
+    return null;
+  }
+
+  GAFBitmapData getBitmapDataByName(String name) {
+    for (var ta in this.textureAtlases) {
+      for (var element in ta.config.elements) {
+        if (element.linkage != name) continue;
+        var gafBitmapData = ta.gafBitmapDatas[element.id];
+        if (gafBitmapData != null) return gafBitmapData;
+      }
     }
     return null;
   }

@@ -63,8 +63,8 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
 
   GAFMovieClip(this.timeline, [num fps]) {
 
-    var displayScale = timeline.displayScale;
-    var contentScale = timeline.contentScale;
+    var displayScale = timeline.gafAsset.displayScale;
+    var contentScale = timeline.gafAsset.contentScale;
     var gafAsset = timeline.gafAsset;
     var config = timeline.config;
 
@@ -78,7 +78,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
       var instanceID = animationObject.instanceID;
 
       if (type == CAnimationObject.TYPE_TEXTURE) {
-        var bitmapData = timeline.getBitmapDataByID(regionID);
+        var bitmapData = gafAsset.getGAFBitmapDataByID(regionID);
         displayObject = new GAFBitmap(bitmapData);
       } else if (type == CAnimationObject.TYPE_TEXTFIELD) {
         var textField = config.getTextField(regionID);
@@ -509,13 +509,14 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         Matrix im = instance.matrix;
         Matrix pm = displayObject.pivotMatrix;
         Matrix tm = displayObject.transformationMatrix;
+        num displayScale = timeline.gafAsset.displayScale;
 
         tm.a = pm.a * im.a + pm.b * im.c;
         tm.b = pm.a * im.b + pm.b * im.d;
         tm.c = pm.c * im.a + pm.d * im.c;
         tm.d = pm.c * im.b + pm.d * im.d;
-        tm.tx = pm.tx * im.a + pm.ty * im.c + im.tx * timeline.displayScale;
-        tm.ty = pm.tx * im.b + pm.ty * im.d + im.ty * timeline.displayScale;
+        tm.tx = pm.tx * im.a + pm.ty * im.c + im.tx * displayScale;
+        tm.ty = pm.tx * im.b + pm.ty * im.d + im.ty * displayScale;
 
         // TODO: reuse filters to avoid unnecessary memory allocations
 
