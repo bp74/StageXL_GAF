@@ -537,7 +537,10 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
               var colorMatrixFilter = new ColorMatrixFilter(colorMatrix, colorOffset);
               displayObject.filters.add(colorMatrixFilter);
             } else if (filterData is CBlurFilterData) {
-              // TODO: Add blur filter
+              var blurX = filterData.blurX.round();
+              var blurY = filterData.blurY.round();
+              var blurFilter = new BlurFilter(blurX, blurY);
+              displayObject.filters.add(blurFilter);
             }
           }
         } else {
