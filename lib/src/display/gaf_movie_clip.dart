@@ -483,7 +483,9 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
       displayObject.off = true;
     }
 
+    var displayScale = timeline.gafAsset.displayScale;
     var animationFrames = timeline.config.animationFrames;
+
     if (animationFrames.length > _currentFrame) {
 
       var frameConfig = animationFrames[_currentFrame];
@@ -509,7 +511,6 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         Matrix im = instance.matrix;
         Matrix pm = displayObject.pivotMatrix;
         Matrix tm = displayObject.transformationMatrix;
-        num displayScale = timeline.gafAsset.displayScale;
 
         tm.a = pm.a * im.a + pm.b * im.c;
         tm.b = pm.a * im.b + pm.b * im.d;
