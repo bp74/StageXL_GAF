@@ -8,18 +8,20 @@ abstract class CFilterData {
 
 class CColorMatrixFilterData implements CFilterData {
 
-  final Float32List matrix = new Float32List(20);
+  final Float32List colorMatrix = new Float32List(16);
+  final Float32List colorOffset = new Float32List(4);
 
   CColorMatrixFilterData() {
-    matrix[00] = 1.0; // R scale
-    matrix[06] = 1.0; // G scale
-    matrix[12] = 1.0; // B scale
-    matrix[18] = 1.0; // A scale
+    colorMatrix[00] = 1.0; // R scale
+    colorMatrix[05] = 1.0; // G scale
+    colorMatrix[10] = 1.0; // B scale
+    colorMatrix[15] = 1.0; // A scale
   }
 
   CFilterData clone() {
     var filterData = new CColorMatrixFilterData();
-    filterData.matrix.setAll(0, matrix);
+    filterData.colorMatrix.setAll(0, colorMatrix);
+    filterData.colorOffset.setAll(0, colorOffset);
     return filterData;
   }
 }

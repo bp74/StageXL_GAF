@@ -514,10 +514,11 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         tm.tx = pm.tx * im.a + pm.ty * im.c + im.tx * timeline.displayScale;
         tm.ty = pm.tx * im.b + pm.ty * im.d + im.ty * timeline.displayScale;
 
+        // TODO: reuse filters to avoid unnecessary memory allocations
+
         if (instance.maskID != null) {
           var mask = _displayObjects[instance.maskID];
           if (mask is Bitmap) {
-            // TODO: avoid memory allocations for filter/matrix
             var filter = new AlphaMaskFilter(mask.bitmapData);
             filter.matrix.copyFromAndInvert(displayObject.transformationMatrix);
             filter.matrix.prepend(mask.transformationMatrix);
@@ -528,6 +529,20 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
           }
         }
 
+        if (instance.filter != null) {
+          for(var filterData in instance.filter.filterDatas) {
+            if (filterData is CColorMatrixFilterData) {
+              var colorMatrix = filterData.colorMatrix;
+              var colorOffset = filterData.colorOffset;
+              var colorMatrixFilter = new ColorMatrixFilter(colorMatrix, colorOffset);
+              displayObject.filters.add(colorMatrixFilter);
+            } else if (filterData is CBlurFilterData) {
+              // TODO: Add blur filter
+            }
+          }
+        } else {
+          var y = 1;
+        }
         // TODO: apply filters
         // var filterConfig = instance.filter;
         // var filterScale = _timeline.displayScale;
