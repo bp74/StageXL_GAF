@@ -4,9 +4,9 @@ class GAFBundle {
 
   final String path;
   final List<GAFAssetConfig> assetConfigs;
-  final List<GAFTextureAtlasSource> textureAtlasSources = new List<GAFTextureAtlasSource>();
+  final List<GAFTextureAtlasSource> textureAtlasSources;
 
-  GAFBundle._(this.path, this.assetConfigs);
+  GAFBundle._(this.path, this.assetConfigs, this.textureAtlasSources);
 
   //---------------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ class GAFBundle {
 
     var path = null;
     var assetConfigs = new List<GAFAssetConfig>();
+    var textureAtlasSources = new List<GAFTextureAtlasSource>();
 
     for (var gafUrl in gafUrls) {
       var i1 = gafUrl.lastIndexOf("/") + 1;
@@ -28,7 +29,7 @@ class GAFBundle {
       path ??= assetPath;
     }
 
-    return new GAFBundle._(path, assetConfigs);
+    return new GAFBundle._(path, assetConfigs, textureAtlasSources);
   }
 
   //---------------------------------------------------------------------------
@@ -37,7 +38,7 @@ class GAFBundle {
       [num displayScale, num contentScale]) async {
 
     var assetConfig = _getAssetConfig(assetID);
-    if (assetConfig is! GAFAssetConfig) throw new ArgumentError("assetID");
+    if (assetConfig == null) throw new ArgumentError("assetID");
 
     displayScale = displayScale ?? assetConfig.defaultDisplayScale;
     var displayScaleValues = assetConfig.displayScaleValues;
@@ -98,7 +99,7 @@ class GAFBundle {
     for(var textureAtlasSource in this.textureAtlasSources) {
       if (textureAtlasSource.config.id != config.id) continue;
       if (textureAtlasSource.config.source != config.source) continue;
-      return textureAtlasSource.completer.future;
+      return textureAtlasSource.renderTexture;
     }
 
     var textureAtlasSource = new GAFTextureAtlasSource(config);
@@ -106,10 +107,9 @@ class GAFBundle {
 
     var bitmapDataUrl = this.path + config.source;
     var bitmapData = await BitmapData.load(bitmapDataUrl);
-    var renderTexture = bitmapData.renderTexture;
-    textureAtlasSource.completer.complete(renderTexture);
+    textureAtlasSource.completer.complete(bitmapData.renderTexture);
 
-    return renderTexture;
+    return textureAtlasSource.renderTexture;;
   }
 
 }
