@@ -38,8 +38,6 @@ class GAFAssetConfigConverter {
   static final Matrix sHelperMatrix = new Matrix.fromIdentity();
 
   final String assetID;
-  final bool ignoreSounds;
-  final ByteBuffer byteBuffer;
 
   ByteData _data;
   int _dataPosition = 0;
@@ -47,13 +45,13 @@ class GAFAssetConfigConverter {
   GAFTimelineConfig _currentTimeline;
   bool _isTimeline;
 
-  GAFAssetConfigConverter(this.assetID, this.ignoreSounds, this.byteBuffer);
+  GAFAssetConfigConverter(this.assetID);
 
   //--------------------------------------------------------------------------
 
-  GAFAssetConfig convert() {
+  GAFAssetConfig convert(ByteBuffer byteBuffer) {
 
-    _data = new ByteData.view(this.byteBuffer);
+    _data = new ByteData.view(byteBuffer);
     _dataPosition = 0;
 
     _config = new GAFAssetConfig(this.assetID);
@@ -158,11 +156,7 @@ class GAFAssetConfigConverter {
         break;
 
       case TAG_DEFINE_SOUNDS:
-        if (ignoreSounds) {
-          _dataPosition += tagLength;
-        } else {
-          _readSounds(_config);
-        }
+        _readSounds(_config);
         break;
 
       case TAG_DEFINE_TIMELINE:
@@ -391,7 +385,6 @@ class GAFAssetConfigConverter {
             var param0 = action.params.length > 0 ? action.params[0] : null;
             var param3 = action.params.length > 3 ? action.params[3] : null;
             if (param0 == CSound.GAF_PLAY_SOUND && param3 != null) {
-              if (ignoreSounds) continue; //do not add sound events if they're ignored
               Map data = JSON.decode(param3);
               timelineConfig.addSound(data, frameNumber);
             }

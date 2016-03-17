@@ -27,6 +27,7 @@ part 'src/config/ctexture_atlas_source.dart';
 part 'src/data/gaf_asset.dart';
 part 'src/data/gaf_asset_config.dart';
 part 'src/data/gaf_asset_config_converter.dart';
+part 'src/data/gaf_bundle.dart';
 part 'src/data/gaf_constants.dart';
 part 'src/data/gaf_texture_atlas.dart';
 part 'src/data/gaf_timeline.dart';

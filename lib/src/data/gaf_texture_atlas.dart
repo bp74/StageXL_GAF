@@ -1,28 +1,23 @@
 part of stagexl_gaf;
 
+class GAFTextureAtlasSource {
+  final CTextureAtlasSource config;
+  final Completer<RenderTexture> completer = new Completer<RenderTexture>();
+  GAFTextureAtlasSource(this.config);
+}
+
 class GAFTextureAtlas {
 
   final CTextureAtlas config;
   final CTextureAtlasContent configContent;
-  final CTextureAtlasSource configSource;
   final Map<int, GAFBitmapData> gafBitmapDatas = new Map<int, GAFBitmapData>();
 
-  GAFTextureAtlas(this.config, this.configContent, this.configSource);
+  GAFTextureAtlas(RenderTexture renderTexture, this.config, this.configContent) {
 
-  //---------------------------------------------------------------------------
-
-  Future load(String path) async {
-
-    var bitmapDataFile = configSource.source;
-    if (bitmapDataFile == "no_atlas") return;
-
-    var bitmapData = await BitmapData.load(path + bitmapDataFile);
     var pixelRatio = configContent.contentScale;
-    var rtq = bitmapData.renderTextureQuad;
+    var rtq = renderTexture.quad;
 
     for (var element in config.elements) {
-
-      if (element.atlasID != configSource.id) continue;
 
       var region = element.region;
       var rotation = element.rotated ? 1 : 0;
