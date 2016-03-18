@@ -2,7 +2,9 @@ StageXL_GAF
 ===========
 
 The GAF runtime for the StageXL library. 
-The GAF converter can be downloaded here: <http://gafmedia.com/>
+
+Use the GAF converter to convert Adobe Flash animations to the GAF-format, 
+learn more about it here: <http://gafmedia.com/>
 
 #### Best solution to improve your workflow
 
@@ -29,7 +31,7 @@ Sound (<http://www.stagexl.org/show/gaf/sound/example.html>)
 
 ##License
 
-The GAF runtime for StageXL is based on the official AS3 runtime. The
-source code was greatly refactored for best performance and simplicity.
+The GAF runtime for StageXL is based on the official AS3 runtime.  
+The source code was greatly refactored for best performance and simplicity.
 
 <https://github.com/CatalystApps/StarlingGAFPlayer>  
