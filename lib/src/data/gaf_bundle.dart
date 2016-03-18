@@ -53,14 +53,12 @@ class GAFBundle {
     var gafAsset = new GAFAsset._(assetConfig, displayScale, contentScale);
 
     // load gaf timelines
-
     for (GAFTimelineConfig timelineConfig in assetConfig.timelines) {
       var gafTimeline = new GAFTimeline(gafAsset, timelineConfig);
       gafAsset.timelines.add(gafTimeline);
     }
 
     // load gaf texture atlases
-
     for (CTextureAtlas ta in assetConfig.textureAtlases) {
       for (CTextureAtlasContent taContent in ta.contents) {
         if (taContent.displayScale != displayScale) continue;
@@ -94,7 +92,7 @@ class GAFBundle {
     return null;
   }
 
-  Future<RenderTexture> _getRenderTexture(CTextureAtlasSource config) async {
+  Future<RenderTexture> _getRenderTexture(CTextureAtlasSource config) {
 
     for(var textureAtlasSource in this.textureAtlasSources) {
       if (textureAtlasSource.config.id != config.id) continue;
@@ -105,11 +103,10 @@ class GAFBundle {
     var textureAtlasSource = new GAFTextureAtlasSource(config);
     this.textureAtlasSources.add(textureAtlasSource);
 
-    var bitmapDataUrl = this.path + config.source;
-    var bitmapData = await BitmapData.load(bitmapDataUrl);
-    textureAtlasSource.completer.complete(bitmapData.renderTexture);
-
-    return textureAtlasSource.renderTexture;;
+    var completer = textureAtlasSource.completer;
+    var loader = BitmapData.load(this.path + config.source);
+    loader.then((bd) => completer.complete(bd.renderTexture));
+    return textureAtlasSource.renderTexture;
   }
 
 }
