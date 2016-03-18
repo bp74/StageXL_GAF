@@ -1,20 +1,20 @@
 StageXL_GAF
 ===========
 
-The GAF runtime for the StageXL library.  
-<http://gafmedia.com/>
+The GAF runtime for the StageXL library. 
+The GAF converter can be downloaded here: <http://gafmedia.com/>
 
-GAF = Best solution to improve game dev workflow
+#### Best solution to improve your workflow
 
 * GAF greatly reduces the number of steps in game development workflow.
-* With GAF you can play any Flash 2D animation (explosions, cutscenes, characters, etc) on mobile devices.
-* No special pre-preparation needed to convert your Adobe Flash Pro 2D animations into .gaf format.
+* Play any Flash 2D animation (explosions, cutscenes, characters, etc).
+* No special pre-preparation needed to convert your Flash 2D animations.
 
-GAF = High Performance
+#### High performance even on low-end hardware 
 
-* High FPS, which is possible due to runtime libraries provided and supported by GAF Media;
-* Minimal amount of drawcalls achieved by the means of using native API for each framework to control and manage animations;
-* Highly optimized texture atlas to achieve minimal RAM consumption and build size
+* High FPS by pre-rendering vector assets to texture atlases.
+* Minimized draw-calls by using StageXLs rendering API.
+* Built in support for HiDPI displays and textures.
 
 ##Examples
 
