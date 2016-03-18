@@ -18,6 +18,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  // load and show the gun swap GAF asset
+
   var gafAsset = await GAFAsset.load('assets/gun_swap/gun_swap.gaf', 1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 

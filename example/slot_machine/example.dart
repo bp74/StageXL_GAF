@@ -29,6 +29,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  // load and show the slot machine GAF asset
+
   var gafAsset = await GAFAsset.load('assets/slot_machine/slot_machine.gaf', 1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
@@ -38,7 +40,5 @@ Future main() async {
   slotMachineGame.y = 20;
   stage.addChild(slotMachineGame);
   stage.juggler.add(slotMachineGame);
-
-//  stage.onEnterFrame.listen((e) => print(e.passedTime));
 
 }

@@ -18,6 +18,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  // load and show the skeleton GAF asset
+
   var gafAsset = await GAFAsset.load('assets/skeleton/skeleton.gaf', 1, 2);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 

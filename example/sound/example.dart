@@ -18,7 +18,7 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
-  // load and show tank GAF asset
+  // load and show the tank GAF asset
 
   var gafAsset = await GAFAsset.load('assets/tank/tank.gaf',1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');

@@ -18,6 +18,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  // load and show the fireman GAF asset
+
   var gafAsset = await GAFAsset.load('assets/fireman/fireman.gaf', 1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 

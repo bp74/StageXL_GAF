@@ -18,6 +18,8 @@ Future main() async {
   var renderLoop = new RenderLoop();
   renderLoop.addStage(stage);
 
+  // load and show the ufo monster GAF asset
+
   var gafAsset = await GAFAsset.load('assets/ufo_monster/ufo_monster.gaf', 4, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
