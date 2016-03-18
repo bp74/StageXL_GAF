@@ -495,7 +495,6 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         if (displayObject == null) continue;
 
         displayObject.off = false;
-        displayObject.visible = true;
         displayObject.alpha = instance.alpha;
         displayObject.filters.clear();
         this.addChild(displayObject);
