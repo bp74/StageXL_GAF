@@ -20,7 +20,7 @@ Future main() async {
 
   // load and show the tank GAF asset
 
-  var gafAsset = await GAFAsset.load('assets/tank/tank.gaf',1, 1);
+  var gafAsset = await GAFAsset.load('assets/tank/tank.gaf',1, 2);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
   var tank = new GAFMovieClip(gafTimeline);
