@@ -4,9 +4,12 @@ class GAFBundle {
 
   final String path;
   final List<GAFAssetConfig> assetConfigs;
-  final List<GAFTextureAtlasSource> textureAtlasSources;
+  final List<GAFTextureAtlasLoader> textureAtlasLoaders;
+  final List<GAFSoundLoader> soundLoaders;
 
-  GAFBundle._(this.path, this.assetConfigs, this.textureAtlasSources);
+  GAFBundle._(this.path, this.assetConfigs)
+      : this.textureAtlasLoaders = new List<GAFTextureAtlasLoader>(),
+        this.soundLoaders = new List<GAFSoundLoader>();
 
   //---------------------------------------------------------------------------
 
@@ -14,7 +17,6 @@ class GAFBundle {
 
     var path = null;
     var assetConfigs = new List<GAFAssetConfig>();
-    var textureAtlasSources = new List<GAFTextureAtlasSource>();
 
     for (var gafUrl in gafUrls) {
       var i1 = gafUrl.lastIndexOf("/") + 1;
@@ -29,7 +31,7 @@ class GAFBundle {
       path ??= assetPath;
     }
 
-    return new GAFBundle._(path, assetConfigs, textureAtlasSources);
+    return new GAFBundle._(path, assetConfigs);
   }
 
   //---------------------------------------------------------------------------
@@ -73,12 +75,11 @@ class GAFBundle {
     }
 
     // load gaf sounds
-
-    //for (CSound csound in gafAssetConfig.sounds) {
-    //var sound = await Sound.load(folderURL + csound.source);
-    //var gafSound = new GAFSound(csound, sound);
-    //gafAsset.sounds.add(gafSound);
-    //}
+    for (CSound cs in assetConfig.sounds) {
+      var sound = await _getSound(cs);
+      var gafSound = new GAFSound(cs, sound);
+      gafAsset.sounds.add(gafSound);
+    }
 
     return gafAsset;
   }
@@ -94,19 +95,36 @@ class GAFBundle {
 
   Future<RenderTexture> _getRenderTexture(CTextureAtlasSource config) {
 
-    for(var textureAtlasSource in this.textureAtlasSources) {
-      if (textureAtlasSource.config.id != config.id) continue;
-      if (textureAtlasSource.config.source != config.source) continue;
-      return textureAtlasSource.renderTexture;
+    for (var textureAtlasLoader in this.textureAtlasLoaders) {
+      if (textureAtlasLoader.config.id != config.id) continue;
+      if (textureAtlasLoader.config.source != config.source) continue;
+      return textureAtlasLoader.completer.future;
     }
 
-    var textureAtlasSource = new GAFTextureAtlasSource(config);
-    this.textureAtlasSources.add(textureAtlasSource);
+    var textureAtlasLoader = new GAFTextureAtlasLoader(config);
+    this.textureAtlasLoaders.add(textureAtlasLoader);
 
-    var completer = textureAtlasSource.completer;
+    var completer = textureAtlasLoader.completer;
     var loader = BitmapData.load(this.path + config.source);
     loader.then((bd) => completer.complete(bd.renderTexture));
-    return textureAtlasSource.renderTexture;
+    return completer.future;
+  }
+
+  Future<Sound> _getSound(CSound config) {
+
+    for (var soundLoader in this.soundLoaders) {
+      if (soundLoader.config.id != config.id) continue;
+      if (soundLoader.config.source != config.source) continue;
+      return soundLoader.completer.future;
+    }
+
+    var soundLoader = new GAFSoundLoader(config);
+    this.soundLoaders.add(soundLoader);
+
+    var completer = soundLoader.completer;
+    var loader = Sound.load(this.path + config.source);
+    loader.then((s) => completer.complete(s));
+    return completer.future;
   }
 
 }

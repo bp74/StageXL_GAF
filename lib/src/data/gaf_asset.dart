@@ -8,7 +8,7 @@ class GAFAsset {
 
   final List<GAFTimeline> timelines = new List<GAFTimeline>();
   final List<GAFTextureAtlas> textureAtlases = new List<GAFTextureAtlas>();
-  //final List<GAFSound> sounds = new List<GAFSound>();
+  final List<GAFSound> sounds = new List<GAFSound>();
 
   GAFAsset._(this.config, this.displayScale, this.contentScale);
 
@@ -57,6 +57,20 @@ class GAFAsset {
         var gafBitmapData = ta.gafBitmapDatas[element.id];
         if (gafBitmapData != null) return gafBitmapData;
       }
+    }
+    return null;
+  }
+
+  GAFSound getGAFSoundByID(int id) {
+    for (var sound in this.sounds) {
+      if (sound.config.id == id) return sound;
+    }
+    return null;
+  }
+
+  GAFSound getGAFSoundByLinkage(String linkage) {
+    for (var sound in this.sounds) {
+      if (sound.config.linkage == linkage) return sound;
     }
     return null;
   }

@@ -1,12 +1,21 @@
 part of stagexl_gaf;
 
+class GAFTextureAtlasLoader {
+  final CTextureAtlasSource config;
+  final Completer<RenderTexture> completer = new Completer<RenderTexture>();
+  GAFTextureAtlasLoader(this.config);
+}
+
+//-----------------------------------------------------------------------------
+
 class GAFTextureAtlas {
 
   final CTextureAtlas config;
   final CTextureAtlasContent configContent;
   final Map<int, GAFBitmapData> gafBitmapDatas = new Map<int, GAFBitmapData>();
+  final RenderTexture renderTexture;
 
-  GAFTextureAtlas(RenderTexture renderTexture, this.config, this.configContent) {
+  GAFTextureAtlas(this.renderTexture, this.config, this.configContent) {
 
     var pixelRatio = configContent.contentScale;
     var rtq = renderTexture.quad;

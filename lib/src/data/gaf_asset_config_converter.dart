@@ -558,8 +558,8 @@ class GAFAssetConfigConverter {
   void _readSounds(GAFAssetConfig config) {
     for (int i = 0, length = _readShort(); i < length; i++) {
       var sound = new CSound();
-      sound.soundID = _readShort();
-      sound.linkageName = _readUTF();
+      sound.id = _readShort();
+      sound.linkage = _readUTF();
       sound.source = _readUTF();
       sound.format = _readByte();
       sound.rate = _readByte();

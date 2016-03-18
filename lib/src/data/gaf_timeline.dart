@@ -21,15 +21,17 @@ class GAFTimeline {
       // do nothing
     } else if (frameSound.action == CFrameSound.ACTION_STOP) {
       //GAFSoundManager.getInstance()._stop(frameSound.soundID, config.assetID);
+    } else if (frameSound.linkage != null) {
+      var gafSound = gafAsset.getGAFSoundByLinkage(frameSound.linkage);
+      gafSound.sound.play();
     } else {
-      //Sound sound = frameSound.linkage != null
-      //    ? gafAsset.getSoundByLinkage(frameSound.linkage)
-      //    : gafAsset.getSound(frameSound.soundID, config.assetID);
-      //Map soundOptions = {};
-      //soundOptions["continue"] = frameSound.action == CFrameSound.ACTION_CONTINUE;
-      //soundOptions["repeatCount"] = frameSound.repeatCount;
-      //GAFSoundManager.getInstance()._play(sound, frameSound.soundID, soundOptions, config.assetID);
+      var gafSound = gafAsset.getGAFSoundByID(frameSound.soundID);
+      gafSound.sound.play();
     }
+    //Map soundOptions = {};
+    //soundOptions["continue"] = frameSound.action == CFrameSound.ACTION_CONTINUE;
+    //soundOptions["repeatCount"] = frameSound.repeatCount;
+    //GAFSoundManager.getInstance()._play(sound, frameSound.soundID, soundOptions, config.assetID);
   }
 
   //--------------------------------------------------------------------------

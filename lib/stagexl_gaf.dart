@@ -29,8 +29,8 @@ part 'src/data/gaf_asset_config.dart';
 part 'src/data/gaf_asset_config_converter.dart';
 part 'src/data/gaf_bundle.dart';
 part 'src/data/gaf_constants.dart';
+part 'src/data/gaf_sound.dart';
 part 'src/data/gaf_texture_atlas.dart';
-part 'src/data/gaf_texture_atlas_source.dart';
 part 'src/data/gaf_timeline.dart';
 part 'src/data/gaf_timeline_config.dart';
 
@@ -40,10 +40,5 @@ part 'src/display/gaf_movie_clip_event.dart';
 part 'src/display/gaf_text_field.dart';
 part 'src/display/gaf_bitmap_data.dart';
 part 'src/display/gaf_display_object.dart';
-
-part 'src/sound/gaf_sound_channel.dart';
-part 'src/sound/gaf_sound_data.dart';
-part 'src/sound/gaf_sound_manager.dart';
-
 
 

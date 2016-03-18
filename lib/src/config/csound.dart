@@ -6,8 +6,8 @@ class CSound {
   static const int WAV = 0;
   static const int MP3 = 1;
 
-  int soundID = 0;
-  String linkageName = null;
+  int id = 0;
+  String linkage = null;
   String source = null;
   int format = 0;
   int rate = 0;
