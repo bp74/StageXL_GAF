@@ -1,13 +1,5 @@
 part of stagexl_gaf;
 
-class GAFSoundLoader {
-  final CSound config;
-  final Completer<Sound> completer = new Completer<Sound>();
-  GAFSoundLoader(this.config);
-}
-
-//-----------------------------------------------------------------------------
-
 class GAFSound {
 
   final CSound config;
@@ -15,4 +7,7 @@ class GAFSound {
 
   GAFSound(this.config, this.sound);
 
+  //---------------------------------------------------------------------------
+
+  SoundChannel play() => sound.play();
 }

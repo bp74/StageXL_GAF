@@ -1,13 +1,5 @@
 part of stagexl_gaf;
 
-class GAFTextureAtlasLoader {
-  final CTextureAtlasSource config;
-  final Completer<RenderTexture> completer = new Completer<RenderTexture>();
-  GAFTextureAtlasLoader(this.config);
-}
-
-//-----------------------------------------------------------------------------
-
 class GAFTextureAtlas {
 
   final CTextureAtlas config;

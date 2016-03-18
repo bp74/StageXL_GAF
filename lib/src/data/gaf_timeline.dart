@@ -20,18 +20,14 @@ class GAFTimeline {
     if (frameSound == null) {
       // do nothing
     } else if (frameSound.action == CFrameSound.ACTION_STOP) {
-      //GAFSoundManager.getInstance()._stop(frameSound.soundID, config.assetID);
+      // stop sound (not supported yet)
+    } else if (frameSound.action == CFrameSound.ACTION_CONTINUE) {
+      // continue sound (not supported yet)
     } else if (frameSound.linkage != null) {
-      var gafSound = gafAsset.getGAFSoundByLinkage(frameSound.linkage);
-      gafSound.sound.play();
+      gafAsset.getGAFSoundByLinkage(frameSound.linkage).play();
     } else {
-      var gafSound = gafAsset.getGAFSoundByID(frameSound.soundID);
-      gafSound.sound.play();
+      gafAsset.getGAFSoundByID(frameSound.soundID).play();
     }
-    //Map soundOptions = {};
-    //soundOptions["continue"] = frameSound.action == CFrameSound.ACTION_CONTINUE;
-    //soundOptions["repeatCount"] = frameSound.repeatCount;
-    //GAFSoundManager.getInstance()._play(sound, frameSound.soundID, soundOptions, config.assetID);
   }
 
   //--------------------------------------------------------------------------
