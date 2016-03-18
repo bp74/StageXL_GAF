@@ -3,7 +3,7 @@ StageXL_GAF
 
 The GAF runtime for the StageXL library. 
 
-Use the GAF converter to convert Adobe Flash animations to the GAF-format, 
+Use the GAF converter to convert Adobe Flash animations to the GAF-format,  
 learn more about it here: <http://gafmedia.com/>
 
 #### Best solution to improve your workflow
