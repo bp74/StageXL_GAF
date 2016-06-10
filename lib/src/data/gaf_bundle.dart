@@ -9,20 +9,16 @@ class GAFBundle {
 
   //---------------------------------------------------------------------------
 
-  static Future<GAFBundle> load(List<String> gafUrls) async {
+  static Future<GAFBundle> load(List<String> gafUrls) {
     var bundleLoader = new GAFBundleGafLoader(gafUrls);
-    var assetConfigs = await bundleLoader.loadAssetConfigs();
-    var bundle = new GAFBundle._(bundleLoader, assetConfigs);
-    return bundle;
+    return GAFBundle.withLoader(bundleLoader);
   }
 
-  static Future<GAFBundle> loadZip(List<int> zip) async {
+  static Future<GAFBundle> loadZip(List<int> zip) {
     var decoder = new ZipDecoder();
     var archive = decoder.decodeBytes(zip);
     var bundleLoader = new GAFBundleZipLoader(archive);
-    var assetConfigs = await bundleLoader.loadAssetConfigs();
-    var bundle = new GAFBundle._(bundleLoader, assetConfigs);
-    return bundle;
+    return GAFBundle.withLoader(bundleLoader);
   }
 
   static Future<GAFBundle> loadZipUrl(String zipUrl) async {
@@ -30,6 +26,11 @@ class GAFBundle {
     var response = (await request).response;
     var zip = response.asUint8List();
     return GAFBundle.loadZip(zip);
+  }
+
+  static Future<GAFBundle> withLoader(GAFBundleLoader bundleLoader) async {
+    var assetConfigs = await bundleLoader.loadAssetConfigs();
+    return new GAFBundle._(bundleLoader, assetConfigs);
   }
 
   //---------------------------------------------------------------------------
