@@ -65,7 +65,7 @@ class GAFBundle {
         if (content.contentScale != contentScale) continue;
         for (CTextureAtlasSource source in content.sources) {
           if (source.source == "no_atlas") continue;
-          var renderTexture = await bundleLoader.loadTexture(source);
+          var renderTexture = await bundleLoader.getTexture(source);
           var ta = new GAFTextureAtlas(renderTexture, config, content, source);
           gafAsset.textureAtlases.add(ta);
         }
@@ -74,7 +74,7 @@ class GAFBundle {
 
     // load gaf sounds
     for (CSound config in assetConfig.sounds) {
-      var sound = await bundleLoader.loadSound(config);
+      var sound = await bundleLoader.getSound(config);
       var gafSound = new GAFSound(config, sound);
       gafAsset.sounds.add(gafSound);
     }

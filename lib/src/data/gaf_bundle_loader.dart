@@ -9,58 +9,41 @@ abstract class GAFBundleLoader {
   Future<RenderTexture> loadTexture(CTextureAtlasSource config);
   Future<Sound> loadSound(CSound config);
 
-  Future<RenderTexture> _getTexture(
-      CTextureAtlasSource config, Future<RenderTexture> load()) {
-
+  Future<RenderTexture> getTexture(CTextureAtlasSource config) {
     for (var textureLoader in this.textureLoaders) {
       if (textureLoader.config.id != config.id) continue;
       if (textureLoader.config.source != config.source) continue;
-      return textureLoader.completer.future;
+      return textureLoader.future;
     }
-
-    var textureLoader = new GAFBundleTextureLoader(config);
+    var textureFuture = this.loadTexture(config);
+    var textureLoader = new GAFBundleTextureLoader(config, textureFuture);
     this.textureLoaders.add(textureLoader);
-
-    load().then((renderTexture) {
-      textureLoader.completer.complete(renderTexture);
-    }).catchError((error) {
-      textureLoader.completer.completeError(error);
-    });
-
-    return textureLoader.completer.future;
+    return textureLoader.future;
   }
 
-  Future<Sound> _getSound(CSound config, Future<Sound> load()) {
-
+  Future<Sound> getSound(CSound config) {
     for (var soundLoader in this.soundLoaders) {
       if (soundLoader.config.id != config.id) continue;
       if (soundLoader.config.source != config.source) continue;
-      return soundLoader.completer.future;
+      return soundLoader.future;
     }
-
-    var soundLoader = new GAFBundleSoundLoader(config);
+    var soundFuture = this.loadSound(config);
+    var soundLoader = new GAFBundleSoundLoader(config, soundFuture);
     this.soundLoaders.add(soundLoader);
-
-    load().then((sound) {
-      soundLoader.completer.complete(sound);
-    }).catchError((error) {
-      soundLoader.completer.completeError(error);
-    });
-
-    return soundLoader.completer.future;
+    return soundLoader.future;
   }
 }
 
 class GAFBundleTextureLoader {
   final CTextureAtlasSource config;
-  final Completer<RenderTexture> completer = new Completer<RenderTexture>();
-  GAFBundleTextureLoader(this.config);
+  final Future<RenderTexture> future;
+  GAFBundleTextureLoader(this.config, this.future);
 }
 
 class GAFBundleSoundLoader {
   final CSound config;
-  final Completer<Sound> completer = new Completer<Sound>();
-  GAFBundleSoundLoader(this.config);
+  final Future<Sound> future;
+  GAFBundleSoundLoader(this.config, this.future);
 }
 
 //-----------------------------------------------------------------------------
@@ -69,6 +52,7 @@ class GAFBundleSoundLoader {
 class GAFBundleGafLoader extends GAFBundleLoader {
 
   final List<String> gafUrls;
+
   GAFBundleGafLoader(this.gafUrls);
 
   @override
@@ -90,16 +74,12 @@ class GAFBundleGafLoader extends GAFBundleLoader {
 
   @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-    return _getTexture(config, () {
-      return BitmapData.load(config.source).then((bd) => bd.renderTexture);
-    });
+    return BitmapData.load(config.source).then((bd) => bd.renderTexture);
   }
 
   @override
   Future<Sound> loadSound(CSound config) {
-    return _getSound(config, () {
-      return Sound.load(config.source);
-    });
+    return Sound.load(config.source);
   }
 }
 
@@ -130,21 +110,17 @@ class GAFBundleZipLoader extends GAFBundleLoader {
 
   @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-    return _getTexture(config, () {
-      var file = archive.files.firstWhere((f) => f.name == config.source);
-      var fileBase64 = new Base64Encoder().convert(file.content);
-      var imageDataUrl = "data:image/png;base64," + fileBase64;
-      return BitmapData.load(imageDataUrl).then((bd) => bd.renderTexture);
-    });
+    var file = archive.files.firstWhere((f) => f.name == config.source);
+    var fileBase64 = new Base64Encoder().convert(file.content);
+    var imageDataUrl = "data:image/png;base64," + fileBase64;
+    return BitmapData.load(imageDataUrl).then((bd) => bd.renderTexture);
   }
 
   @override
   Future<Sound> loadSound(CSound config) {
-    return _getSound(config, () {
-      var file = archive.files.firstWhere((f) => f.name == config.source);
-      var fileBase64 = new Base64Encoder().convert(file.content);
-      var soundDataUrl = "data:audio/mp3;base64," + fileBase64;
-      return Sound.loadDataUrl(soundDataUrl);
-    });
+    var file = archive.files.firstWhere((f) => f.name == config.source);
+    var fileBase64 = new Base64Encoder().convert(file.content);
+    var soundDataUrl = "data:audio/mp3;base64," + fileBase64;
+    return Sound.loadDataUrl(soundDataUrl);
   }
 }
