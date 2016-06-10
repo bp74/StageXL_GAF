@@ -69,13 +69,11 @@ class GAFBundleSoundLoader {
 class GAFBundleGafLoader extends GAFBundleLoader {
 
   final List<String> gafUrls;
-
   GAFBundleGafLoader(this.gafUrls);
 
+  @override
   Future<List<GAFAssetConfig>> loadAssetConfigs() async {
-
     var assetConfigs = new List<GAFAssetConfig>();
-
     for (var gafUrl in gafUrls) {
       var i1 = gafUrl.lastIndexOf("/") + 1;
       var i2 = gafUrl.indexOf(".", i1);
@@ -87,10 +85,10 @@ class GAFBundleGafLoader extends GAFBundleLoader {
       var assetConfig = converter.convert(binary, assetPath);
       assetConfigs.add(assetConfig);
     }
-
     return assetConfigs;
   }
 
+  @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
     return _getTexture(config, () async {
       var bitmapData = await BitmapData.load(config.source);
@@ -98,6 +96,7 @@ class GAFBundleGafLoader extends GAFBundleLoader {
     });
   }
 
+  @override
   Future<Sound> loadSound(CSound config) {
     return _getSound(config, () => Sound.load(config.source));
   }
@@ -108,14 +107,12 @@ class GAFBundleGafLoader extends GAFBundleLoader {
 class GAFBundleZipLoader extends GAFBundleLoader {
 
   final Archive archive;
-
   GAFBundleZipLoader(this.archive);
 
+  @override
   Future<List<GAFAssetConfig>> loadAssetConfigs() async {
-
     var assetConfigs = new List<GAFAssetConfig>();
     var files = archive.files.where((f) => f.name.endsWith(".gaf"));
-
     for (ArchiveFile file in files) {
       var fileName = file.name;
       var fileContent = file.content;
@@ -127,13 +124,13 @@ class GAFBundleZipLoader extends GAFBundleLoader {
       var assetConfig = converter.convert(fileContent.buffer, assetPath);
       assetConfigs.add(assetConfig);
     }
-
     return assetConfigs;
   }
 
+  @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
     return _getTexture(config, () async {
-      var file = this.archive.files.firstWhere((f) => f.name == config.source);
+      var file = archive.files.firstWhere((f) => f.name == config.source);
       var fileBase64 = new Base64Encoder().convert(file.content);
       var imageDataUrl = "data:image/png;base64," + fileBase64;
       var bitmapData = await BitmapData.load(imageDataUrl);
@@ -141,9 +138,13 @@ class GAFBundleZipLoader extends GAFBundleLoader {
     });
   }
 
+  @override
   Future<Sound> loadSound(CSound config) {
     return _getSound(config, () async {
-      new StateError("Sounds not yet supported");
+      var file = archive.files.firstWhere((f) => f.name == config.source);
+      var fileBase64 = new Base64Encoder().convert(file.content);
+      var soundDataUrl = "data:audio/mp3;base64," + fileBase64;
+      return Sound.loadDataUrl(soundDataUrl);
     });
   }
 }
