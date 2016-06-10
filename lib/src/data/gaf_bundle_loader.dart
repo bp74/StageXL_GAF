@@ -90,15 +90,16 @@ class GAFBundleGafLoader extends GAFBundleLoader {
 
   @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-    return _getTexture(config, () async {
-      var bitmapData = await BitmapData.load(config.source);
-      return bitmapData.renderTexture;
+    return _getTexture(config, () {
+      return BitmapData.load(config.source).then((bd) => bd.renderTexture);
     });
   }
 
   @override
   Future<Sound> loadSound(CSound config) {
-    return _getSound(config, () => Sound.load(config.source));
+    return _getSound(config, () {
+      return Sound.load(config.source);
+    });
   }
 }
 
@@ -129,18 +130,17 @@ class GAFBundleZipLoader extends GAFBundleLoader {
 
   @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-    return _getTexture(config, () async {
+    return _getTexture(config, () {
       var file = archive.files.firstWhere((f) => f.name == config.source);
       var fileBase64 = new Base64Encoder().convert(file.content);
       var imageDataUrl = "data:image/png;base64," + fileBase64;
-      var bitmapData = await BitmapData.load(imageDataUrl);
-      return bitmapData.renderTexture;
+      return BitmapData.load(imageDataUrl).then((bd) => bd.renderTexture);
     });
   }
 
   @override
   Future<Sound> loadSound(CSound config) {
-    return _getSound(config, () async {
+    return _getSound(config, () {
       var file = archive.files.firstWhere((f) => f.name == config.source);
       var fileBase64 = new Base64Encoder().convert(file.content);
       var soundDataUrl = "data:audio/mp3;base64," + fileBase64;
