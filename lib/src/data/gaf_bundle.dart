@@ -73,9 +73,9 @@ class GAFBundle {
     }
 
     // load gaf sounds
-    for (CSound cs in assetConfig.sounds) {
-      var sound = await bundleLoader.loadSound(cs);
-      var gafSound = new GAFSound(cs, sound);
+    for (CSound config in assetConfig.sounds) {
+      var sound = await bundleLoader.loadSound(config);
+      var gafSound = new GAFSound(config, sound);
       gafAsset.sounds.add(gafSound);
     }
 
