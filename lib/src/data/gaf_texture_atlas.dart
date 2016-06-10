@@ -4,15 +4,20 @@ class GAFTextureAtlas {
 
   final CTextureAtlas config;
   final CTextureAtlasContent configContent;
+  final CTextureAtlasSource configSource;
   final Map<int, GAFBitmapData> gafBitmapDatas = new Map<int, GAFBitmapData>();
   final RenderTexture renderTexture;
 
-  GAFTextureAtlas(this.renderTexture, this.config, this.configContent) {
+  GAFTextureAtlas(
+      this.renderTexture,
+      this.config, this.configContent, this.configSource) {
 
     var pixelRatio = configContent.contentScale;
     var rtq = renderTexture.quad;
 
     for (var element in config.elements) {
+
+      if (element.atlasID != this.configSource.id) continue;
 
       var region = element.region;
       var rotation = element.rotated ? 1 : 0;

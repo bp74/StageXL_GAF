@@ -105,7 +105,7 @@ class GAFAssetConfigConverter {
   CTextureAtlasContent _getTextureAtlasContent(num displayScale, num contentScale) {
     var textureAtlas = _getTextureAtlas(displayScale);
     var textureAtlasContent = textureAtlas.getTextureAtlasContent(contentScale);
-    if (textureAtlasContent != null) textureAtlasContent;
+    if (textureAtlasContent != null) return textureAtlasContent;
     textureAtlasContent = new CTextureAtlasContent(contentScale, displayScale);
     textureAtlas.contents.add(textureAtlasContent);
     return textureAtlasContent;

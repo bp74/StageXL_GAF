@@ -52,15 +52,15 @@ class GAFBundle {
     }
 
     // load gaf texture atlases
-    for (CTextureAtlas ta in assetConfig.textureAtlases) {
-      for (CTextureAtlasContent taContent in ta.contents) {
-        if (taContent.displayScale != displayScale) continue;
-        if (taContent.contentScale != contentScale) continue;
-        for (CTextureAtlasSource taSource in taContent.sources) {
-          if (taSource.source == "no_atlas") continue;
-          var renderTexture = await bundleLoader.getTexture(taSource);
-          var textureAtlas = new GAFTextureAtlas(renderTexture, ta, taContent);
-          gafAsset.textureAtlases.add(textureAtlas);
+    for (CTextureAtlas config in assetConfig.textureAtlases) {
+      for (CTextureAtlasContent content in config.contents) {
+        if (content.displayScale != displayScale) continue;
+        if (content.contentScale != contentScale) continue;
+        for (CTextureAtlasSource source in content.sources) {
+          if (source.source == "no_atlas") continue;
+          var renderTexture = await bundleLoader.getTexture(source);
+          var ta = new GAFTextureAtlas(renderTexture, config, content, source);
+          gafAsset.textureAtlases.add(ta);
         }
       }
     }
@@ -83,4 +83,6 @@ class GAFBundle {
     }
     return null;
   }
+
 }
+
