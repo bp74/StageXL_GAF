@@ -9,34 +9,45 @@ abstract class GAFBundleLoader {
   Future<RenderTexture> loadTexture(CTextureAtlasSource config);
   Future<Sound> loadSound(CSound config);
 
-  GAFBundleTextureLoader _getTextureLoader(CTextureAtlasSource config) {
-    for (var textureAtlasLoader in this.textureLoaders) {
-      if (textureAtlasLoader.config.id != config.id) continue;
-      if (textureAtlasLoader.config.source != config.source) continue;
-      return textureAtlasLoader;
+  Future<RenderTexture> _getTexture(
+      CTextureAtlasSource config, Future<RenderTexture> load()) {
+
+    for (var textureLoader in this.textureLoaders) {
+      if (textureLoader.config.id != config.id) continue;
+      if (textureLoader.config.source != config.source) continue;
+      return textureLoader.completer.future;
     }
-    return null;
+
+    var textureLoader = new GAFBundleTextureLoader(config);
+    this.textureLoaders.add(textureLoader);
+
+    load().then((renderTexture) {
+      textureLoader.completer.complete(renderTexture);
+    }).catchError((error) {
+      textureLoader.completer.completeError(error);
+    });
+
+    return textureLoader.completer.future;
   }
 
-  GAFBundleSoundLoader _getSoundLoader(CSound config) {
+  Future<Sound> _getSound(CSound config, Future<Sound> load()) {
+
     for (var soundLoader in this.soundLoaders) {
       if (soundLoader.config.id != config.id) continue;
       if (soundLoader.config.source != config.source) continue;
-      return soundLoader;
+      return soundLoader.completer.future;
     }
-    return null;
-  }
 
-  GAFBundleTextureLoader _createTextureLoader(CTextureAtlasSource config) {
-    var textureLoader = new GAFBundleTextureLoader(config);
-    this.textureLoaders.add(textureLoader);
-    return textureLoader;
-  }
-
-  GAFBundleSoundLoader _createSoundLoader(CSound config) {
     var soundLoader = new GAFBundleSoundLoader(config);
     this.soundLoaders.add(soundLoader);
-    return soundLoader;
+
+    load().then((sound) {
+      soundLoader.completer.complete(sound);
+    }).catchError((error) {
+      soundLoader.completer.completeError(error);
+    });
+
+    return soundLoader.completer.future;
   }
 }
 
@@ -81,29 +92,14 @@ class GAFBundleGafLoader extends GAFBundleLoader {
   }
 
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-    var loader = _getTextureLoader(config);
-    if (loader == null) {
-      loader = _createTextureLoader(config);
-      BitmapData.load(config.source).then((bitmapData) {
-        loader.completer.complete(bitmapData.renderTexture);
-      }).catchError((e) {
-        loader.completer.completeError(e);
-      });
-    }
-    return loader.completer.future;
+    return _getTexture(config, () async {
+      var bitmapData = await BitmapData.load(config.source);
+      return bitmapData.renderTexture;
+    });
   }
 
   Future<Sound> loadSound(CSound config) {
-    var loader = _getSoundLoader(config);
-    if (loader == null) {
-      loader = _createSoundLoader(config);
-      Sound.load(config.source).then((sound) {
-        loader.completer.complete(sound);
-      }).catchError((e) {
-        loader.completer.completeError(e);
-      });
-    }
-    return loader.completer.future;
+    return _getSound(config, () => Sound.load(config.source));
   }
 }
 
@@ -136,29 +132,18 @@ class GAFBundleZipLoader extends GAFBundleLoader {
   }
 
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-    var loader = _getTextureLoader(config);
-    if (loader == null) {
-      loader = _createTextureLoader(config);
+    return _getTexture(config, () async {
       var file = this.archive.files.firstWhere((f) => f.name == config.source);
       var fileBase64 = new Base64Encoder().convert(file.content);
       var imageDataUrl = "data:image/png;base64," + fileBase64;
-      BitmapData.load(imageDataUrl).then((bitmapData) {
-        loader.completer.complete(bitmapData.renderTexture);
-      }).catchError((e) {
-        loader.completer.completeError(e);
-      });
-    }
-    return loader.completer.future;
+      var bitmapData = await BitmapData.load(imageDataUrl);
+      return bitmapData.renderTexture;
+    });
   }
 
   Future<Sound> loadSound(CSound config) {
-    var loader = _getSoundLoader(config);
-    if (loader == null) {
-      loader = _createSoundLoader(config);
-      var completer = loader.completer;
-      completer.completeError(new StateError("Sounds not yet supported"));
-    }
-    return loader.completer.future;
+    return _getSound(config, () async {
+      new StateError("Sounds not yet supported");
+    });
   }
-
 }
