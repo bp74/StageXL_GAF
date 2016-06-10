@@ -3,7 +3,6 @@ library stagexl_gaf;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' show HttpRequest;
-import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';

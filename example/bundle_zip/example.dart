@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:html' as html;
-import 'package:archive/archive.dart';
 import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_gaf/stagexl_gaf.dart';
 
