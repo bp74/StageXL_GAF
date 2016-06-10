@@ -6,8 +6,8 @@ abstract class GAFBundleLoader {
   final List<GAFBundleSoundLoader> soundLoaders = [];
 
   Future<List<GAFAssetConfig>> loadAssetConfigs();
-  Future<RenderTexture> getTexture(CTextureAtlasSource config);
-  Future<Sound> getSound(CSound config);
+  Future<RenderTexture> loadTexture(CTextureAtlasSource config);
+  Future<Sound> loadSound(CSound config);
 
   GAFBundleTextureLoader _getTextureLoader(CTextureAtlasSource config) {
     for (var textureAtlasLoader in this.textureLoaders) {
@@ -68,7 +68,7 @@ class GAFBundleGafLoader extends GAFBundleLoader {
     return assetConfigs;
   }
 
-  Future<RenderTexture> getTexture(CTextureAtlasSource config) {
+  Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
 
     var textureLoader = _getTextureLoader(config);
     if (textureLoader != null) return textureLoader.completer.future;
@@ -82,7 +82,7 @@ class GAFBundleGafLoader extends GAFBundleLoader {
     return completer.future;
   }
 
-  Future<Sound> getSound(CSound config) {
+  Future<Sound> loadSound(CSound config) {
 
     var soundLoader = _getSoundLoader(config);
     if (soundLoader != null) return soundLoader.completer.future;
@@ -125,7 +125,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
     return assetConfigs;
   }
 
-  Future<RenderTexture> getTexture(CTextureAtlasSource config) {
+  Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
 
     var textureLoader = _getTextureLoader(config);
     if (textureLoader != null) return textureLoader.completer.future;
@@ -147,7 +147,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
     return completer.future;
   }
 
-  Future<Sound> getSound(CSound config) {
+  Future<Sound> loadSound(CSound config) {
 
     var soundLoader = _getSoundLoader(config);
     if (soundLoader != null) return soundLoader.completer.future;
