@@ -156,7 +156,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
     if (loader == null) {
       loader = _createSoundLoader(config);
       var completer = loader.completer;
-      completer.completeError(new StateError("Sounds not jet supported"));
+      completer.completeError(new StateError("Sounds not yet supported"));
     }
     return loader.completer.future;
   }
