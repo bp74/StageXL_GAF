@@ -26,6 +26,18 @@ abstract class GAFBundleLoader {
     }
     return null;
   }
+
+  GAFBundleTextureLoader _createTextureLoader(CTextureAtlasSource config) {
+    var textureLoader = new GAFBundleTextureLoader(config);
+    this.textureLoaders.add(textureLoader);
+    return textureLoader;
+  }
+
+  GAFBundleSoundLoader _createSoundLoader(CSound config) {
+    var soundLoader = new GAFBundleSoundLoader(config);
+    this.soundLoaders.add(soundLoader);
+    return soundLoader;
+  }
 }
 
 class GAFBundleTextureLoader {
@@ -69,31 +81,29 @@ class GAFBundleGafLoader extends GAFBundleLoader {
   }
 
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-
-    var textureLoader = _getTextureLoader(config);
-    if (textureLoader != null) return textureLoader.completer.future;
-
-    textureLoader = new GAFBundleTextureLoader(config);
-    this.textureLoaders.add(textureLoader);
-
-    var completer = textureLoader.completer;
-    var loader = BitmapData.load(config.source);
-    loader.then((bd) => completer.complete(bd.renderTexture));
-    return completer.future;
+    var loader = _getTextureLoader(config);
+    if (loader == null) {
+      loader = _createTextureLoader(config);
+      BitmapData.load(config.source).then((bitmapData) {
+        loader.completer.complete(bitmapData.renderTexture);
+      }).catchError((e) {
+        loader.completer.completeError(e);
+      });
+    }
+    return loader.completer.future;
   }
 
   Future<Sound> loadSound(CSound config) {
-
-    var soundLoader = _getSoundLoader(config);
-    if (soundLoader != null) return soundLoader.completer.future;
-
-    soundLoader = new GAFBundleSoundLoader(config);
-    this.soundLoaders.add(soundLoader);
-
-    var completer = soundLoader.completer;
-    var loader = Sound.load(config.source);
-    loader.then((s) => completer.complete(s));
-    return completer.future;
+    var loader = _getSoundLoader(config);
+    if (loader == null) {
+      loader = _createSoundLoader(config);
+      Sound.load(config.source).then((sound) {
+        loader.completer.complete(sound);
+      }).catchError((e) {
+        loader.completer.completeError(e);
+      });
+    }
+    return loader.completer.future;
   }
 }
 
@@ -126,39 +136,29 @@ class GAFBundleZipLoader extends GAFBundleLoader {
   }
 
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
-
-    var textureLoader = _getTextureLoader(config);
-    if (textureLoader != null) return textureLoader.completer.future;
-
-    textureLoader = new GAFBundleTextureLoader(config);
-    this.textureLoaders.add(textureLoader);
-
-    var completer = textureLoader.completer;
-    var file = this.archive.files.firstWhere((f) => f.name == config.source);
-    var fileBase64 = new Base64Encoder().convert(file.content);
-    var imageDataUrl = "data:image/png;base64," + fileBase64;
-
-    BitmapData.load(imageDataUrl).then((BitmapData bd) {
-      completer.complete(bd.renderTexture);
-    }).catchError((e) {
-      completer.completeError(e);
-    });
-
-    return completer.future;
+    var loader = _getTextureLoader(config);
+    if (loader == null) {
+      loader = _createTextureLoader(config);
+      var file = this.archive.files.firstWhere((f) => f.name == config.source);
+      var fileBase64 = new Base64Encoder().convert(file.content);
+      var imageDataUrl = "data:image/png;base64," + fileBase64;
+      BitmapData.load(imageDataUrl).then((bitmapData) {
+        loader.completer.complete(bitmapData.renderTexture);
+      }).catchError((e) {
+        loader.completer.completeError(e);
+      });
+    }
+    return loader.completer.future;
   }
 
   Future<Sound> loadSound(CSound config) {
-
-    var soundLoader = _getSoundLoader(config);
-    if (soundLoader != null) return soundLoader.completer.future;
-
-    soundLoader = new GAFBundleSoundLoader(config);
-    this.soundLoaders.add(soundLoader);
-
-    var completer = soundLoader.completer;
-    completer.completeError(new StateError("Sounds not jet supported"));
-
-    return completer.future;
+    var loader = _getSoundLoader(config);
+    if (loader == null) {
+      loader = _createSoundLoader(config);
+      var completer = loader.completer;
+      completer.completeError(new StateError("Sounds not jet supported"));
+    }
+    return loader.completer.future;
   }
 
 }
