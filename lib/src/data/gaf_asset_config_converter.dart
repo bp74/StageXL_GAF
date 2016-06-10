@@ -39,6 +39,7 @@ class GAFAssetConfigConverter {
 
   final String assetID;
 
+  String _path;
   ByteData _data;
   int _dataPosition = 0;
   GAFAssetConfig _config;
@@ -49,8 +50,9 @@ class GAFAssetConfigConverter {
 
   //--------------------------------------------------------------------------
 
-  GAFAssetConfig convert(ByteBuffer byteBuffer) {
+  GAFAssetConfig convert(ByteBuffer byteBuffer, String path) {
 
+    _path = path;
     _data = new ByteData.view(byteBuffer);
     _dataPosition = 0;
 
@@ -416,7 +418,7 @@ class GAFAssetConfigConverter {
     for (int i = 0, al = _readByte(); i < al; i++) {
       int atlasID = _readUnsignedInt();
       for (int j = 0, sl = _readByte(); j < sl; j++) {
-        var source = _readUTF();
+        var source = _path + _readUTF();
         var contentScale = _readFloat();
         var csValues = _config.contentScaleValues;
         if (csValues.indexOf(contentScale) == -1) csValues.add(contentScale);
@@ -560,7 +562,7 @@ class GAFAssetConfigConverter {
       var sound = new CSound();
       sound.id = _readShort();
       sound.linkage = _readUTF();
-      sound.source = _readUTF();
+      sound.source = _path + _readUTF();
       sound.format = _readByte();
       sound.rate = _readByte();
       sound.sampleSize = _readByte();

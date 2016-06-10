@@ -1,52 +1,28 @@
 part of stagexl_gaf;
 
-class GAFBundleTextureLoader {
-  final CTextureAtlasSource config;
-  final Completer<RenderTexture> completer = new Completer<RenderTexture>();
-  GAFBundleTextureLoader(this.config);
-}
-
-class GAFBundleSoundLoader {
-  final CSound config;
-  final Completer<Sound> completer = new Completer<Sound>();
-  GAFBundleSoundLoader(this.config);
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
 class GAFBundle {
 
-  final String path;
+  final GAFBundleLoader bundleLoader;
   final List<GAFAssetConfig> assetConfigs;
-  final List<GAFBundleTextureLoader> textureLoaders;
-  final List<GAFBundleSoundLoader> soundLoaders;
 
-  GAFBundle._(this.path, this.assetConfigs)
-      : this.textureLoaders = new List<GAFBundleTextureLoader>(),
-        this.soundLoaders = new List<GAFBundleSoundLoader>();
+  GAFBundle._(this.bundleLoader, this.assetConfigs);
 
   //---------------------------------------------------------------------------
 
   static Future<GAFBundle> load(List<String> gafUrls) async {
+    var bundleLoader = new GAFBundleGafLoader(gafUrls);
+    var assetConfigs = await bundleLoader.loadAssetConfigs();
+    var bundle = new GAFBundle._(bundleLoader, assetConfigs);
+    return bundle;
+  }
 
-    var path = null;
-    var assetConfigs = new List<GAFAssetConfig>();
-
-    for (var gafUrl in gafUrls) {
-      var i1 = gafUrl.lastIndexOf("/") + 1;
-      var i2 = gafUrl.indexOf(".", i1);
-      var assetPath = gafUrl.substring(0, i1);
-      var assetID = gafUrl.substring(i1, i2);
-      var request = HttpRequest.request(gafUrl, responseType: "arraybuffer");
-      var binary = (await request).response as ByteBuffer;
-      var converter = new GAFAssetConfigConverter(assetID);
-      var assetConfig = converter.convert(binary);
-      assetConfigs.add(assetConfig);
-      path ??= assetPath;
-    }
-
-    return new GAFBundle._(path, assetConfigs);
+  static Future<GAFBundle> loadZip(List<int> zipData) async {
+    var decoder = new ZipDecoder();
+    var archive = decoder.decodeBytes(zipData);
+    var bundleLoader = new GAFBundleZipLoader(archive);
+    var assetConfigs = await bundleLoader.loadAssetConfigs();
+    var bundle = new GAFBundle._(bundleLoader, assetConfigs);
+    return bundle;
   }
 
   //---------------------------------------------------------------------------
@@ -82,7 +58,7 @@ class GAFBundle {
         if (taContent.contentScale != contentScale) continue;
         for (CTextureAtlasSource taSource in taContent.sources) {
           if (taSource.source == "no_atlas") continue;
-          var renderTexture = await _getTexture(taSource);
+          var renderTexture = await bundleLoader.getTexture(taSource);
           var textureAtlas = new GAFTextureAtlas(renderTexture, ta, taContent);
           gafAsset.textureAtlases.add(textureAtlas);
         }
@@ -91,7 +67,7 @@ class GAFBundle {
 
     // load gaf sounds
     for (CSound cs in assetConfig.sounds) {
-      var sound = await _getSound(cs);
+      var sound = await bundleLoader.getSound(cs);
       var gafSound = new GAFSound(cs, sound);
       gafAsset.sounds.add(gafSound);
     }
@@ -107,39 +83,4 @@ class GAFBundle {
     }
     return null;
   }
-
-  Future<RenderTexture> _getTexture(CTextureAtlasSource config) {
-
-    for (var textureAtlasLoader in this.textureLoaders) {
-      if (textureAtlasLoader.config.id != config.id) continue;
-      if (textureAtlasLoader.config.source != config.source) continue;
-      return textureAtlasLoader.completer.future;
-    }
-
-    var textureLoader = new GAFBundleTextureLoader(config);
-    this.textureLoaders.add(textureLoader);
-
-    var completer = textureLoader.completer;
-    var loader = BitmapData.load(this.path + config.source);
-    loader.then((bd) => completer.complete(bd.renderTexture));
-    return completer.future;
-  }
-
-  Future<Sound> _getSound(CSound config) {
-
-    for (var soundLoader in this.soundLoaders) {
-      if (soundLoader.config.id != config.id) continue;
-      if (soundLoader.config.source != config.source) continue;
-      return soundLoader.completer.future;
-    }
-
-    var soundLoader = new GAFBundleSoundLoader(config);
-    this.soundLoaders.add(soundLoader);
-
-    var completer = soundLoader.completer;
-    var loader = Sound.load(this.path + config.source);
-    loader.then((s) => completer.complete(s));
-    return completer.future;
-  }
-
 }

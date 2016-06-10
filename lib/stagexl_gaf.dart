@@ -3,6 +3,7 @@ library stagexl_gaf;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' show HttpRequest;
+import 'dart:html' as html;
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
@@ -28,6 +29,7 @@ part 'src/data/gaf_asset.dart';
 part 'src/data/gaf_asset_config.dart';
 part 'src/data/gaf_asset_config_converter.dart';
 part 'src/data/gaf_bundle.dart';
+part 'src/data/gaf_bundle_loader.dart';
 part 'src/data/gaf_constants.dart';
 part 'src/data/gaf_sound.dart';
 part 'src/data/gaf_texture_atlas.dart';
