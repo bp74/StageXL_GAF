@@ -22,6 +22,14 @@ class GAFAsset {
     return bundle.getAsset(assetID, displayScale, contentScale);
   }
 
+  static Future<GAFAsset> loadZip(List<int> zipData,
+      [num displayScale, num contentScale]) async {
+
+    var bundle = await GAFBundle.loadZip(zipData);
+    var assetID = bundle.assetConfigs.first.id;
+    return bundle.getAsset(assetID, displayScale, contentScale);
+  }
+
   //--------------------------------------------------------------------------
 
   String get id => config.id;
