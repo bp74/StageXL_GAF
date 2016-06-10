@@ -52,7 +52,6 @@ class GAFBundleSoundLoader {
 class GAFBundleGafLoader extends GAFBundleLoader {
 
   final List<String> gafUrls;
-
   GAFBundleGafLoader(this.gafUrls);
 
   @override
@@ -111,7 +110,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
   @override
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
     var file = archive.files.firstWhere((f) => f.name == config.source);
-    var fileBase64 = new Base64Encoder().convert(file.content);
+    var fileBase64 = const Base64Encoder().convert(file.content);
     var imageDataUrl = "data:image/png;base64," + fileBase64;
     return BitmapData.load(imageDataUrl).then((bd) => bd.renderTexture);
   }
@@ -119,7 +118,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
   @override
   Future<Sound> loadSound(CSound config) {
     var file = archive.files.firstWhere((f) => f.name == config.source);
-    var fileBase64 = new Base64Encoder().convert(file.content);
+    var fileBase64 = const Base64Encoder().convert(file.content);
     var soundDataUrl = "data:audio/mp3;base64," + fileBase64;
     return Sound.loadDataUrl(soundDataUrl);
   }
