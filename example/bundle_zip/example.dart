@@ -21,10 +21,7 @@ Future main() async {
   // load a GAF bundle, containing two GAF assets.
   // the GAF assets share a common texture!
 
-  var zipUrl = "assets/bundle.zip";
-  var zipRequest = await html.HttpRequest.request(zipUrl, responseType: 'arraybuffer');
-  var zipData = zipRequest.response.asUint8List();
-  var gafBundle = await GAFBundle.loadZip(zipData);
+  var gafBundle = await GAFBundle.loadZipUrl("assets/bundle.zip");
 
   // get skeleton from bundle and start animation
 

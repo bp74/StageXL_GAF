@@ -22,13 +22,22 @@ class GAFAsset {
     return bundle.getAsset(assetID, displayScale, contentScale);
   }
 
-  static Future<GAFAsset> loadZip(List<int> zipData,
+  static Future<GAFAsset> loadZip(List<int> zip,
       [num displayScale, num contentScale]) async {
 
-    var bundle = await GAFBundle.loadZip(zipData);
+    var bundle = await GAFBundle.loadZip(zip);
     var assetID = bundle.assetConfigs.first.id;
     return bundle.getAsset(assetID, displayScale, contentScale);
   }
+
+  static Future<GAFAsset> loadZipUrl(String zipUrl,
+      [num displayScale, num contentScale]) async {
+
+    var bundle = await GAFBundle.loadZipUrl(zipUrl);
+    var assetID = bundle.assetConfigs.first.id;
+    return bundle.getAsset(assetID, displayScale, contentScale);
+  }
+
 
   //--------------------------------------------------------------------------
 

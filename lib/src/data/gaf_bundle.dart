@@ -16,13 +16,20 @@ class GAFBundle {
     return bundle;
   }
 
-  static Future<GAFBundle> loadZip(List<int> zipData) async {
+  static Future<GAFBundle> loadZip(List<int> zip) async {
     var decoder = new ZipDecoder();
-    var archive = decoder.decodeBytes(zipData);
+    var archive = decoder.decodeBytes(zip);
     var bundleLoader = new GAFBundleZipLoader(archive);
     var assetConfigs = await bundleLoader.loadAssetConfigs();
     var bundle = new GAFBundle._(bundleLoader, assetConfigs);
     return bundle;
+  }
+
+  static Future<GAFBundle> loadZipUrl(String zipUrl) async {
+    var request = HttpRequest.request(zipUrl, responseType: 'arraybuffer');
+    var response = (await request).response;
+    var zip = response.asUint8List();
+    return GAFBundle.loadZip(zip);
   }
 
   //---------------------------------------------------------------------------
