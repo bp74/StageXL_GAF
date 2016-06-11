@@ -64,8 +64,8 @@ class GAFBundleGafLoader extends GAFBundleLoader {
       var assetID = gafUrl.substring(i1, i2);
       var request = HttpRequest.request(gafUrl, responseType: "arraybuffer");
       var binary = (await request).response as ByteBuffer;
-      var converter = new GAFAssetConfigConverter(assetID);
-      var assetConfig = converter.convert(binary, assetPath);
+      var converter = new GAFAssetConfigConverter(assetID, assetPath);
+      var assetConfig = converter.convert(binary);
       assetConfigs.add(assetConfig);
     }
     return assetConfigs;
@@ -100,8 +100,8 @@ class GAFBundleZipLoader extends GAFBundleLoader {
       var i2 = fileName.indexOf(".", i1);
       var assetPath = fileName.substring(0, i1);
       var assetID = fileName.substring(i1, i2);
-      var converter = new GAFAssetConfigConverter(assetID);
-      var assetConfig = converter.convert(fileContent.buffer, assetPath);
+      var converter = new GAFAssetConfigConverter(assetID, assetPath);
+      var assetConfig = converter.convert(fileContent.buffer);
       assetConfigs.add(assetConfig);
     }
     return assetConfigs;
