@@ -1,14 +1,14 @@
 name: stagexl_gaf
-version: 0.1.2+2
+version: 0.1.2+3
 author: Bernhard Pichler <support@stagexl.org>
 description: The GAF runtime for the StageXL library.
 homepage: https://github.com/bp74/StageXL_GAF
 environment:
   sdk: '>=1.17.0 <2.0.0'
 dependencies:
-  browser: any
-  archive: any
-  stagexl: '>=0.13.8 <0.14.0'
+  browser: '^0.10.0'
+  archive: '^1.0.24'
+  stagexl: '^0.13.8'
 transformers:
 - $dart2js:
     commandLineOptions: ["--trust-type-annotations", "--trust-primitives"]
