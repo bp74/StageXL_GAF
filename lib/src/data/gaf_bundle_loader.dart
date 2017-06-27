@@ -95,13 +95,13 @@ class GAFBundleZipLoader extends GAFBundleLoader {
     var files = archive.files.where((f) => f.name.endsWith(".gaf"));
     for (ArchiveFile file in files) {
       var fileName = file.name;
-      var fileContent = file.content;
+      var fileContent = file.content as TypedData;
       var i1 = fileName.lastIndexOf("/") + 1;
       var i2 = fileName.indexOf(".", i1);
       var assetPath = fileName.substring(0, i1);
       var assetID = fileName.substring(i1, i2);
       var converter = new GAFAssetConfigConverter(assetID, assetPath);
-      var assetConfig = converter.convert(new Uint8List.fromList(fileContent).buffer);
+      var assetConfig = converter.convert(fileContent.buffer);
       assetConfigs.add(assetConfig);
     }
     return assetConfigs;
