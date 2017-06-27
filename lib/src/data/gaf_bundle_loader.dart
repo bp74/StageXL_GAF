@@ -101,7 +101,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
       var assetPath = fileName.substring(0, i1);
       var assetID = fileName.substring(i1, i2);
       var converter = new GAFAssetConfigConverter(assetID, assetPath);
-      var assetConfig = converter.convert(fileContent.buffer);
+      var assetConfig = converter.convert(new Uint8List.fromList(fileContent).buffer);
       assetConfigs.add(assetConfig);
     }
     return assetConfigs;
