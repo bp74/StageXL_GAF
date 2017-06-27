@@ -23,7 +23,7 @@ class GAFBundle {
 
   static Future<GAFBundle> loadZipUrl(String zipUrl) async {
     var request = HttpRequest.request(zipUrl, responseType: 'arraybuffer');
-    var response = (await request).response;
+    var response = (await request).response as ByteBuffer;
     var zip = response.asUint8List();
     return GAFBundle.loadZip(zip);
   }
