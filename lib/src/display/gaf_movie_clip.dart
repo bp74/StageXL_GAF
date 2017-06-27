@@ -523,7 +523,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
         if (instance.maskID != null) {
           var mask = _displayObjects[instance.maskID];
           if (mask is Bitmap) {
-            var filter = new AlphaMaskFilter(mask.bitmapData);
+            var filter = new AlphaMaskFilter((mask as Bitmap).bitmapData);
             filter.matrix.copyFromAndInvert(displayObject.transformationMatrix);
             filter.matrix.prepend(mask.transformationMatrix);
             displayObject.filters.add(filter);

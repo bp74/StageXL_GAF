@@ -3,6 +3,10 @@
 This file contains highlights of what changes on each version of the StageXL_GAF
 package. This file is normally updated whenever we push a new version to pub.
 
+#### Pub version 0.1.4
+  * Added support for strong mode
+  * Raised dependency to Dart SDK 1.22.0 (reason: covariant keyword)
+
 #### Pub version 0.1.3
   * Raised dependency to StageXL 1.0.0
 

@@ -17,7 +17,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   GAFBitmapData get bitmapData => super.bitmapData;
 
   @override
-  void set bitmapData(GAFBitmapData value) {
+  void set bitmapData(covariant GAFBitmapData value) {
     this.pivotMatrix.copyFrom(value.config.matrix);
     super.bitmapData = value;
   }

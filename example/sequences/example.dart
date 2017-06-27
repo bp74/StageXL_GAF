@@ -40,7 +40,7 @@ Future main() async {
 
   void setSequence(String sequenceName) {
     robot.setSequence(sequenceName, true);
-    robot.getChildByName("sequence").text = sequenceName;
+    (robot.getChildByName("sequence") as GAFTextField).text = sequenceName;
     currentSequence = sequenceName;
   }
 

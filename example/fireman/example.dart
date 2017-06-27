@@ -30,18 +30,18 @@ Future main() async {
 
   // listen to custom events on the fireman MovieClip
 
-  var subtitles_txt = fireman.getChildByName("subtitles_txt");
+  var subtitles_txt = fireman.getChildByName("subtitles_txt") as GAFTextField;
   var subtitles = [
     "Our game is on fire!",
     "GAF Team, there is a job for us!",
     "Go and do your best!"];
 
-  fireman.on("showSubtitles").listen((ActionEvent e) {
+  fireman.on<ActionEvent>("showSubtitles").listen((ActionEvent e) {
     var subtitlesIndex = int.parse(e.data) - 1;
     subtitles_txt.text = subtitles[subtitlesIndex];
   });
 
-  fireman.on("hideSubtitles").listen((ActionEvent e) {
+  fireman.on<ActionEvent>("hideSubtitles").listen((ActionEvent e) {
     subtitles_txt.text = "";
   });
 }
