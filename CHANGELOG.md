@@ -3,7 +3,7 @@
 This file contains highlights of what changes on each version of the StageXL_GAF
 package. This file is normally updated whenever we push a new version to pub.
 
-#### Pub version 0.2.0
+#### Pub version 0.2.0-dev
   * Raised dependency to StageXL 1.3.2-dev
   * Ready for Dart 2.0
 
