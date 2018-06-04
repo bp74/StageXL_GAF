@@ -185,7 +185,7 @@ class GAFAssetConfigConverter {
   //---------------------------------------------------------------------------
 
   double _readFloat() {
-    var value = _data.getFloat32(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var value = _data.getFloat32(_dataPosition, Endian.little);
     _dataPosition += 4;
     return value;
   }
@@ -197,25 +197,25 @@ class GAFAssetConfigConverter {
   }
 
   int _readInt() {
-    var value = _data.getInt32(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var value = _data.getInt32(_dataPosition, Endian.little);
     _dataPosition += 4;
     return value;
   }
 
   int _readShort() {
-    var value = _data.getInt16(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var value = _data.getInt16(_dataPosition, Endian.little);
     _dataPosition += 2;
     return value;
   }
 
   int _readUnsignedShort() {
-    var value = _data.getUint16(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var value = _data.getUint16(_dataPosition, Endian.little);
     _dataPosition += 2;
     return value;
   }
 
   int _readUnsignedInt() {
-    var value = _data.getUint32(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var value = _data.getUint32(_dataPosition, Endian.little);
     _dataPosition += 4;
     return value;
   }
@@ -227,10 +227,10 @@ class GAFAssetConfigConverter {
   }
 
   String _readUTF() {
-    var length = _data.getUint16(_dataPosition, Endianness.LITTLE_ENDIAN);
+    var length = _data.getUint16(_dataPosition, Endian.little);
     var string = new Uint8List.view(_data.buffer, _dataPosition + 2, length);
     _dataPosition += 2 + length;
-    return UTF8.decode(string);
+    return utf8.decode(string);
   }
 
   Matrix _readMatrix() {
@@ -386,7 +386,7 @@ class GAFAssetConfigConverter {
             var param0 = action.params.length > 0 ? action.params[0] : null;
             var param3 = action.params.length > 3 ? action.params[3] : null;
             if (param0 == CSound.GAF_PLAY_SOUND && param3 != null) {
-              Map data = JSON.decode(param3);
+              Map data = json.decode(param3);
               timelineConfig.addSound(data, frameNumber);
             }
           }

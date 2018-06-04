@@ -134,7 +134,7 @@ class GAFMovieClip extends DisplayObjectContainer implements GAFDisplayObject, A
   }
 
   set fps(num value) {
-    _frameDuration = value <= 0.0 ? double.INFINITY : 1.0 / value;
+    _frameDuration = value <= 0.0 ? double.infinity : 1.0 / value;
     for (var movieClip in _movieClips) {
       movieClip.fps = value;
     }
