@@ -6,6 +6,8 @@ The GAF runtime for the StageXL library.
 Use the GAF converter to convert Adobe Flash animations to the GAF-format,  
 learn more about it here: <http://gafmedia.com/>
 
+*NOTE:* as of version 0.3.0-dev, `StageXL_GAF` requires a Dart 2 SDK. 
+
 #### Best solution to improve your workflow
 
 * GAF greatly reduces the number of steps in game development workflow.
