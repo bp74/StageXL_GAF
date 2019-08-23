@@ -3,7 +3,7 @@ part of stagexl_gaf;
 class GAFTextField extends TextField implements GAFDisplayObject {
 
   final CTextField config;
-  final Matrix pivotMatrix = new Matrix.fromIdentity();
+  final Matrix pivotMatrix = Matrix.fromIdentity();
 
   GAFTextField(this.config, [num displayScale = 1, num contentScale = 1]) : super() {
 

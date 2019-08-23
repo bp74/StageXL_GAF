@@ -14,8 +14,8 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 550, height: 550);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 550, height: 550);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load and show the red robot GAF asset
@@ -23,7 +23,7 @@ Future main() async {
   var gafAsset = await GAFAsset.load('assets/RedRobot/RedRobot.gaf');
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
-  var robot = new GAFMovieClip(gafTimeline);
+  var robot = GAFMovieClip(gafTimeline);
   robot.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);
   robot.mouseChildren = false;
   robot.mouseCursor = MouseCursor.POINTER;

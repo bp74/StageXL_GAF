@@ -5,7 +5,7 @@ part of stagexl_gaf;
 
 class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
-  final Matrix pivotMatrix = new Matrix.fromIdentity();
+  final Matrix pivotMatrix = Matrix.fromIdentity();
 
   GAFBitmap(GAFBitmapData gafBitmapData) : super(gafBitmapData) {
     this.pivotMatrix.copyFrom(gafBitmapData.config.matrix);
@@ -17,7 +17,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
   GAFBitmapData get bitmapData => super.bitmapData;
 
   @override
-  void set bitmapData(covariant GAFBitmapData value) {
+  set bitmapData(covariant GAFBitmapData value) {
     this.pivotMatrix.copyFrom(value.config.matrix);
     super.bitmapData = value;
   }
@@ -26,7 +26,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
 
   /// Creates a clone of this [GAFBitmap].
 
-  GAFBitmap clone() => new GAFBitmap(this.bitmapData);
+  GAFBitmap clone() => GAFBitmap(this.bitmapData);
 
   //--------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ class GAFBitmap extends Bitmap implements GAFDisplayObject {
     } else {
       // http://gafmedia.com/forum/viewtopic.php?f=3&t=540
       // we will add it once GAFConverter exports it!
-      throw new UnimplementedError("Implement support for scale9Grid");
+      throw UnimplementedError("Implement support for scale9Grid");
     }
   }
 

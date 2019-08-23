@@ -6,9 +6,9 @@ class GAFAsset {
   final num displayScale;
   final num contentScale;
 
-  final List<GAFTimeline> timelines = new List<GAFTimeline>();
-  final List<GAFTextureAtlas> textureAtlases = new List<GAFTextureAtlas>();
-  final List<GAFSound> sounds = new List<GAFSound>();
+  final List<GAFTimeline> timelines = List<GAFTimeline>();
+  final List<GAFTextureAtlas> textureAtlases = List<GAFTextureAtlas>();
+  final List<GAFSound> sounds = List<GAFSound>();
 
   GAFAsset._(this.config, this.displayScale, this.contentScale);
 

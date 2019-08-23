@@ -2,12 +2,12 @@ part of stagexl_gaf;
 
 class CFilter {
 
-  final List<CFilterData> filterDatas = new List<CFilterData>();
+  final List<CFilterData> filterDatas = List<CFilterData>();
 
   //---------------------------------------------------------------------------
 
   void addBlurFilter(num blurX, num blurY) {
-    var filterData = new CBlurFilterData();
+    var filterData = CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
     filterData.color = -1;
@@ -18,7 +18,7 @@ class CFilter {
       num blurX, num blurY, int color,
       [num strength = 1, bool inner = false, bool knockout = false]) {
 
-    var filterData = new CBlurFilterData();
+    var filterData = CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
     filterData.color = color;
@@ -32,7 +32,7 @@ class CFilter {
       num blurX, num blurY, int color, num angle, num distance,
       [num strength = 1, bool inner = false, bool knockout = false]) {
 
-    var filterData = new CBlurFilterData();
+    var filterData = CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
     filterData.color = color;
@@ -45,7 +45,7 @@ class CFilter {
   }
 
   void addColorTransform(List<num> params) {
-    var filterData = new CColorMatrixFilterData();
+    var filterData = CColorMatrixFilterData();
 
     filterData.colorMatrix[00] = params[1];       // R scale
     filterData.colorMatrix[05] = params[3];       // G scale
@@ -61,7 +61,7 @@ class CFilter {
   }
 
   void addColorMatrixFilter(List<num> params) {
-    var filterData = new CColorMatrixFilterData();
+    var filterData = CColorMatrixFilterData();
 
     filterData.colorMatrix[00] = params[00];
     filterData.colorMatrix[01] = params[01];

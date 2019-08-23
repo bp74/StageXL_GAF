@@ -16,7 +16,7 @@ abstract class GAFBundleLoader {
       return textureLoader.future;
     }
     var textureFuture = this.loadTexture(config);
-    var textureLoader = new GAFBundleTextureLoader(config, textureFuture);
+    var textureLoader = GAFBundleTextureLoader(config, textureFuture);
     this.textureLoaders.add(textureLoader);
     return textureLoader.future;
   }
@@ -28,7 +28,7 @@ abstract class GAFBundleLoader {
       return soundLoader.future;
     }
     var soundFuture = this.loadSound(config);
-    var soundLoader = new GAFBundleSoundLoader(config, soundFuture);
+    var soundLoader = GAFBundleSoundLoader(config, soundFuture);
     this.soundLoaders.add(soundLoader);
     return soundLoader.future;
   }
@@ -56,7 +56,7 @@ class GAFBundleGafLoader extends GAFBundleLoader {
 
   @override
   Future<List<GAFAssetConfig>> loadAssetConfigs() async {
-    var assetConfigs = new List<GAFAssetConfig>();
+    var assetConfigs = List<GAFAssetConfig>();
     for (var gafUrl in gafUrls) {
       var i1 = gafUrl.lastIndexOf("/") + 1;
       var i2 = gafUrl.indexOf(".", i1);
@@ -64,7 +64,7 @@ class GAFBundleGafLoader extends GAFBundleLoader {
       var assetID = gafUrl.substring(i1, i2);
       var request = HttpRequest.request(gafUrl, responseType: "arraybuffer");
       var binary = (await request).response as ByteBuffer;
-      var converter = new GAFAssetConfigConverter(assetID, assetPath);
+      var converter = GAFAssetConfigConverter(assetID, assetPath);
       var assetConfig = converter.convert(binary);
       assetConfigs.add(assetConfig);
     }
@@ -91,7 +91,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
 
   @override
   Future<List<GAFAssetConfig>> loadAssetConfigs() async {
-    var assetConfigs = new List<GAFAssetConfig>();
+    var assetConfigs = List<GAFAssetConfig>();
     var files = archive.files.where((f) => f.name.endsWith(".gaf"));
     for (ArchiveFile file in files) {
       var fileName = file.name;
@@ -100,7 +100,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
       var i2 = fileName.indexOf(".", i1);
       var assetPath = fileName.substring(0, i1);
       var assetID = fileName.substring(i1, i2);
-      var converter = new GAFAssetConfigConverter(assetID, assetPath);
+      var converter = GAFAssetConfigConverter(assetID, assetPath);
       var assetConfig = converter.convert(fileContent.buffer);
       assetConfigs.add(assetConfig);
     }

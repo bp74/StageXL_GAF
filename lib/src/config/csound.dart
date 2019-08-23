@@ -7,13 +7,13 @@ class CSound {
   static const int MP3 = 1;
 
   int id = 0;
-  String linkage = null;
-  String source = null;
+  String linkage;
+  String source;
   int format = 0;
   int rate = 0;
   int sampleSize = 0;
   int sampleCount = 0;
   bool stereo = false;
-  Sound sound = null;
+  Sound sound;
 
 }

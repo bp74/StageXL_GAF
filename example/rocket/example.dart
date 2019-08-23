@@ -13,8 +13,8 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 768, height: 1024);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 768, height: 1024);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load and show the mini game GAF asset
@@ -22,7 +22,7 @@ Future main() async {
   var gafAsset = await GAFAsset.load('assets/mini_game/mini_game.gaf', 1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
-  var miniGame = new GAFMovieClip(gafTimeline);
+  var miniGame = GAFMovieClip(gafTimeline);
   miniGame.play(true);
   stage.addChild(miniGame);
   stage.juggler.add(miniGame);

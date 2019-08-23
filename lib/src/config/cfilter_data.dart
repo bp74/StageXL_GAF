@@ -8,8 +8,8 @@ abstract class CFilterData {
 
 class CColorMatrixFilterData implements CFilterData {
 
-  final Float32List colorMatrix = new Float32List(16);
-  final Float32List colorOffset = new Float32List(4);
+  final Float32List colorMatrix = Float32List(16);
+  final Float32List colorOffset = Float32List(4);
 
   CColorMatrixFilterData() {
     colorMatrix[00] = 1.0; // R scale
@@ -19,7 +19,7 @@ class CColorMatrixFilterData implements CFilterData {
   }
 
   CFilterData clone() {
-    var filterData = new CColorMatrixFilterData();
+    var filterData = CColorMatrixFilterData();
     filterData.colorMatrix.setAll(0, colorMatrix);
     filterData.colorOffset.setAll(0, colorOffset);
     return filterData;
@@ -41,7 +41,7 @@ class CBlurFilterData implements CFilterData {
   bool knockout = false;
 
   CFilterData clone() {
-    CBlurFilterData filterData = new CBlurFilterData();
+    CBlurFilterData filterData = CBlurFilterData();
     filterData.blurX = this.blurX;
     filterData.blurY = this.blurY;
     filterData.angle = this.angle;

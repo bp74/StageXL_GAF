@@ -14,8 +14,8 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 800, height: 500);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 800, height: 500);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load and show the fireman GAF asset
@@ -23,7 +23,7 @@ Future main() async {
   var gafAsset = await GAFAsset.load('assets/fireman/fireman.gaf', 1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
-  var fireman = new GAFMovieClip(gafTimeline);
+  var fireman = GAFMovieClip(gafTimeline);
   stage.addChild(fireman);
   stage.juggler.add(fireman);
   fireman.play(true);

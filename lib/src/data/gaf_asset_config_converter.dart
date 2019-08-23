@@ -34,8 +34,8 @@ class GAFAssetConfigConverter {
   static const int FILTER_COLOR_MATRIX = 6;
   static const int FILTER_GRADIENT_BEVEL = 7;  // suppressed by GAFConverter
 
-  static final Rectangle sHelperRectangle = new Rectangle<num>(0, 0, 0, 0);
-  static final Matrix sHelperMatrix = new Matrix.fromIdentity();
+  static final Rectangle sHelperRectangle = Rectangle<num>(0, 0, 0, 0);
+  static final Matrix sHelperMatrix = Matrix.fromIdentity();
 
   final String assetID;
   final String assetPath;
@@ -52,27 +52,27 @@ class GAFAssetConfigConverter {
 
   GAFAssetConfig convert(ByteBuffer byteBuffer) {
 
-    _data = new ByteData.view(byteBuffer);
+    _data = ByteData.view(byteBuffer);
     _dataPosition = 0;
 
-    _config = new GAFAssetConfig(this.assetID);
+    _config = GAFAssetConfig(this.assetID);
     _config.compression = _readInt();
     _config.versionMajor = _readByte();
     _config.versionMinor = _readByte();
     _config.fileLength = _readUnsignedInt();
 
     if (_config.compression == SIGNATURE_GAC) {
-      var decoder = new ZLibDecoder();
-      var compressed = new Uint8List.view(_data.buffer, _dataPosition);
-      var inputStream = new InputStream(compressed, byteOrder: LITTLE_ENDIAN);
+      var decoder = ZLibDecoder();
+      var compressed = Uint8List.view(_data.buffer, _dataPosition);
+      var inputStream = InputStream(compressed, byteOrder: LITTLE_ENDIAN);
       var uncompressed = decoder.decodeBuffer(inputStream) as Uint8List;
-      _data = new ByteData.view(uncompressed.buffer);
+      _data = ByteData.view(uncompressed.buffer);
       _dataPosition = 0;
     }
 
     if (_config.versionMajor < 4) {
       var version = "${_config.versionMajor}.${_config.versionMinor}";
-      _currentTimeline = new GAFTimelineConfig(0, assetID, version);
+      _currentTimeline = GAFTimelineConfig(0, assetID, version);
       _currentTimeline.framesCount = _readShort();
       _currentTimeline.bounds = _readRectangle();
       _currentTimeline.pivot = _readPoint();
@@ -96,7 +96,7 @@ class GAFAssetConfigConverter {
     for (var textureAtlas in _config.textureAtlases) {
       if (textureAtlas.displayScale == displayScale) return textureAtlas;
     }
-    var textureAtlas = new CTextureAtlas(displayScale);
+    var textureAtlas = CTextureAtlas(displayScale);
     _config.textureAtlases.add(textureAtlas);
     return textureAtlas;
   }
@@ -105,7 +105,7 @@ class GAFAssetConfigConverter {
     var textureAtlas = _getTextureAtlas(displayScale);
     var textureAtlasContent = textureAtlas.getTextureAtlasContent(contentScale);
     if (textureAtlasContent != null) return textureAtlasContent;
-    textureAtlasContent = new CTextureAtlasContent(contentScale, displayScale);
+    textureAtlasContent = CTextureAtlasContent(contentScale, displayScale);
     textureAtlas.contents.add(textureAtlasContent);
     return textureAtlasContent;
   }
@@ -228,29 +228,31 @@ class GAFAssetConfigConverter {
 
   String _readUTF() {
     var length = _data.getUint16(_dataPosition, Endian.little);
-    var string = new Uint8List.view(_data.buffer, _dataPosition + 2, length);
+    var string = Uint8List.view(_data.buffer, _dataPosition + 2, length);
     _dataPosition += 2 + length;
     return utf8.decode(string);
   }
 
   Matrix _readMatrix() {
     var f = _readFloats(6);
-    return new Matrix(f[0], f[1], f[2], f[3], f[4], f[5]);
+    return Matrix(f[0], f[1], f[2], f[3], f[4], f[5]);
   }
 
   Rectangle<num> _readRectangle() {
     var f = _readFloats(4);
-    return new Rectangle<num>(f[0], f[1], f[2], f[3]);
+    return Rectangle<num>(f[0], f[1], f[2], f[3]);
   }
 
   Point<num> _readPoint() {
     var f = _readFloats(2);
-    return new Point<num>(f[0], f[1]);
+    return Point<num>(f[0], f[1]);
   }
 
   Float32List _readFloats(int count) {
-    var values = new Float32List(count);
-    for (int i = 0; i < count; i++) values[i] = _readFloat();
+    var values = Float32List(count);
+    for (int i = 0; i < count; i++) {
+      values[i] = _readFloat(); 
+    }
     return values;
   }
 
@@ -270,7 +272,7 @@ class GAFAssetConfigConverter {
     var id = _readUnsignedInt();
     var assetID = _config.id;
     var version = "${_config.versionMajor}.${_config.versionMinor}";
-    var timelineConfig = new GAFTimelineConfig(id, assetID, version);
+    var timelineConfig = GAFTimelineConfig(id, assetID, version);
 
     timelineConfig.framesCount = _readUnsignedInt();
     timelineConfig.bounds = _readRectangle();
@@ -291,7 +293,7 @@ class GAFAssetConfigConverter {
     if (framesCount is! num) framesCount = _readUnsignedInt();
 
     GAFTimelineConfig timelineConfig = _config.timelines.last;
-    CAnimationFrame currentFrame = null;
+    CAnimationFrame currentFrame;
 
     for (int i = startIndex; i < framesCount; i++) {
 
@@ -313,10 +315,10 @@ class GAFAssetConfigConverter {
           timelineConfig.animationFrames.add(prevFrame.clone(n));
         }
       } else {
-        currentFrame = new CAnimationFrame(frameNumber);
+        currentFrame = CAnimationFrame(frameNumber);
         if (currentFrame.frameNumber > 1) {
           for (int n = 1; n < currentFrame.frameNumber; n++) {
-            timelineConfig.animationFrames.add(new CAnimationFrame(n));
+            timelineConfig.animationFrames.add(CAnimationFrame(n));
           }
         }
       }
@@ -333,16 +335,16 @@ class GAFAssetConfigConverter {
           var alpha = _readFloat();
           var matrix = _readMatrix();
 
-          CFilter filter = null;
+          CFilter filter;
 
           if (hasColorTransform) {
             var params = _readFloats(7);
-            filter ??= new CFilter();
+            filter ??= CFilter();
             filter.addColorTransform(params);
           }
 
           if (hasEffect) {
-            filter ??= new CFilter();
+            filter ??= CFilter();
             for (int k = 0, l = _readByte(); k < l; k++) {
               var filterType = _readUnsignedInt();
               if (filterType == FILTER_DROP_SHADOW) {
@@ -360,7 +362,7 @@ class GAFAssetConfigConverter {
           }
 
           var maskID = hasMask ? _readUnsignedInt() : null;
-          var instance = new CAnimationFrameInstance(
+          var instance = CAnimationFrameInstance(
               stateID, zIndex, alpha, maskID, matrix, filter);
 
           currentFrame.updateInstance(instance);
@@ -376,14 +378,14 @@ class GAFAssetConfigConverter {
           var scope = _readUTF();
           var paramsLength = _readUnsignedInt();
           var paramsOffset = _dataPosition;
-          var action = new CFrameAction(type, scope);
+          var action = CFrameAction(type, scope);
 
           while (_dataPosition < paramsOffset + paramsLength) {
             action.params.add(_readUTF());
           }
 
           if (type == CFrameAction.DISPATCH_EVENT) {
-            var param0 = action.params.length > 0 ? action.params[0] : null;
+            var param0 = action.params.isNotEmpty ? action.params[0] : null;
             var param3 = action.params.length > 3 ? action.params[3] : null;
             if (param0 == CSound.GAF_PLAY_SOUND && param3 != null) {
               Map data = json.decode(param3);
@@ -412,7 +414,7 @@ class GAFAssetConfigConverter {
     var textureAtlas = _getTextureAtlas(displayScale);
 
     var dsValues = _config.displayScaleValues;
-    if (dsValues.indexOf(displayScale) == -1) dsValues.add(displayScale);
+    if (dsValues.contains(displayScale) == false) dsValues.add(displayScale);
 
     for (int i = 0, al = _readByte(); i < al; i++) {
       int atlasID = _readUnsignedInt();
@@ -420,10 +422,10 @@ class GAFAssetConfigConverter {
         var source = assetPath + _readUTF();
         var contentScale = _readFloat();
         var csValues = _config.contentScaleValues;
-        if (csValues.indexOf(contentScale) == -1) csValues.add(contentScale);
+        if (csValues.contains(contentScale) == false) csValues.add(contentScale);
         var taContent = _getTextureAtlasContent(displayScale, contentScale);
         if (taContent.sources.every((s) => s.id != atlasID)) {
-          taContent.sources.add(new CTextureAtlasSource(atlasID, source));
+          taContent.sources.add(CTextureAtlasSource(atlasID, source));
         }
       }
     }
@@ -433,7 +435,7 @@ class GAFAssetConfigConverter {
       Point pivot = _readPoint();
       Point topLeft = _readPoint();
       bool hasScale9Grid = false;
-      Rectangle scale9Grid = null;
+      Rectangle scale9Grid;
       num elementScaleX = 1.0;
       num elementScaleY = 1.0;
       bool rotation = false;
@@ -461,7 +463,7 @@ class GAFAssetConfigConverter {
       }
 
       if (textureAtlas.getTextureAtlasElementByID(elementID) == null) {
-        var element = new CTextureAtlasElement(elementID, atlasID);
+        var element = CTextureAtlasElement(elementID, atlasID);
         element.region.left = (topLeft.x).round();
         element.region.top =  (topLeft.y).round();
         element.region.right = (topLeft.x + elementWidth).round();
@@ -522,7 +524,7 @@ class GAFAssetConfigConverter {
       var regionID = _readUnsignedInt();
       var type = tagID == TAG_DEFINE_ANIMATION_MASKS ? 0 : _readUnsignedShort();
       var typeString = _getAnimationObjectTypeString(type);
-      var value = new CAnimationObject(objectID, regionID, typeString, true);
+      var value = CAnimationObject(objectID, regionID, typeString, true);
       timelineConfig.animationObjects.add(value);
     }
   }
@@ -533,7 +535,7 @@ class GAFAssetConfigConverter {
       var regionID = _readUnsignedInt();
       var type = tagID == TAG_DEFINE_ANIMATION_OBJECTS ? 0 : _readUnsignedShort();
       var typeString = _getAnimationObjectTypeString(type);
-      var value = new CAnimationObject(objectID, regionID, typeString, false);
+      var value = CAnimationObject(objectID, regionID, typeString, false);
       timelineConfig.animationObjects.add(value);
     }
   }
@@ -543,7 +545,7 @@ class GAFAssetConfigConverter {
       var sequenceID = _readUTF();
       var startFrameNo = _readShort();
       var endFrameNo = _readShort();
-      var value = new CAnimationSequence(sequenceID, startFrameNo, endFrameNo);
+      var value = CAnimationSequence(sequenceID, startFrameNo, endFrameNo);
       timelineConfig.animationSequences.add(value);
     }
   }
@@ -558,7 +560,7 @@ class GAFAssetConfigConverter {
 
   void _readSounds(GAFAssetConfig config) {
     for (int i = 0, length = _readShort(); i < length; i++) {
-      var sound = new CSound();
+      var sound = CSound();
       sound.id = _readShort();
       sound.linkage = _readUTF();
       sound.source = assetPath + _readUTF();
@@ -605,7 +607,7 @@ class GAFAssetConfigConverter {
       var letterSpacing = _readFloat();
       var rightMargin = _readUnsignedInt();
       var size = _readUnsignedInt();
-      List<int> tabStops = new List<int>();
+      List<int> tabStops = List<int>();
 
       for (int j = 0, l = _readUnsignedInt(); j < l; j++) {
         tabStops.add(_readUnsignedInt());
@@ -625,7 +627,7 @@ class GAFAssetConfigConverter {
         case 5: align = TextFormatAlign.END; break;
       }
 
-      var textFormat = new TextFormat(
+      var textFormat = TextFormat(
           font, size, color,
           bold: bold,
           italic: italic,
@@ -636,7 +638,7 @@ class GAFAssetConfigConverter {
           indent: indent,
           leading: leading);
 
-      var textField = new CTextField(textFieldID, text, textFormat, width, height);
+      var textField = CTextField(textFieldID, text, textFormat, width, height);
       textField.pivotPoint.x = pivotX;
       textField.pivotPoint.y = pivotY;
       textField.embedFonts = embedFonts;

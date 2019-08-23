@@ -5,13 +5,13 @@ class GAFAssetConfig {
   static final int MAX_VERSION = 5;
 
   final String id;
-  final CStage stageConfig = new CStage();
+  final CStage stageConfig = CStage();
 
-  final List<num> displayScaleValues = new List<num>();
-  final List<num> contentScaleValues = new List<num>();
-  final List<GAFTimelineConfig> timelines = new List<GAFTimelineConfig>();
-  final List<CTextureAtlas> textureAtlases = new List<CTextureAtlas>();
-  final List<CSound> sounds = new List<CSound>();
+  final List<num> displayScaleValues = List<num>();
+  final List<num> contentScaleValues = List<num>();
+  final List<GAFTimelineConfig> timelines = List<GAFTimelineConfig>();
+  final List<CTextureAtlas> textureAtlases = List<CTextureAtlas>();
+  final List<CSound> sounds = List<CSound>();
 
   int compression = 0;
   int versionMajor = 0;

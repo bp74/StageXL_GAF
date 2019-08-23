@@ -3,8 +3,8 @@ part of slot_machine;
 class SlotBar {
 
   final GAFMovieClip bar;
-  final List<GAFMovieClip> _slots = new List<GAFMovieClip>(3);
-  final math.Random _random = new math.Random();
+  final List<GAFMovieClip> _slots = List<GAFMovieClip>(3);
+  final math.Random _random = math.Random();
 
   List<int> _spinResult;
   String _machineType;

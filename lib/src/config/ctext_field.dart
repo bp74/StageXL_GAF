@@ -16,8 +16,8 @@ class CTextField {
   bool displayAsPassword = false;
 
   int maxChars = 0;
-  String restrict = null;
-  Point<num> pivotPoint = new Point<num>(0, 0);
+  String restrict;
+  Point<num> pivotPoint = Point<num>(0, 0);
 
   CTextField(this.id, this.text, this.textFormat, this.width, this.height);
 

@@ -14,8 +14,8 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 400, height: 400);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 400, height: 400);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load and show the tank GAF asset
@@ -23,7 +23,7 @@ Future main() async {
   var gafAsset = await GAFAsset.load('assets/tank/tank.gaf',1, 2);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
-  var tank = new GAFMovieClip(gafTimeline);
+  var tank = GAFMovieClip(gafTimeline);
   tank.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);
   tank.x = 200;
   tank.y = 200;

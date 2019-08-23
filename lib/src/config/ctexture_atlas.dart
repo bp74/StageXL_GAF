@@ -3,8 +3,8 @@ part of stagexl_gaf;
 class CTextureAtlas {
 
   final num displayScale;
-  final List<CTextureAtlasContent> contents = new List<CTextureAtlasContent>();
-  final List<CTextureAtlasElement> elements = new List<CTextureAtlasElement>();
+  final List<CTextureAtlasContent> contents = List<CTextureAtlasContent>();
+  final List<CTextureAtlasElement> elements = List<CTextureAtlasElement>();
 
   CTextureAtlas(this.displayScale);
 

@@ -10,14 +10,14 @@ class GAFBundle {
   //---------------------------------------------------------------------------
 
   static Future<GAFBundle> load(List<String> gafUrls) {
-    var bundleLoader = new GAFBundleGafLoader(gafUrls);
+    var bundleLoader = GAFBundleGafLoader(gafUrls);
     return GAFBundle.withLoader(bundleLoader);
   }
 
   static Future<GAFBundle> loadZip(List<int> zip) {
-    var decoder = new ZipDecoder();
+    var decoder = ZipDecoder();
     var archive = decoder.decodeBytes(zip);
-    var bundleLoader = new GAFBundleZipLoader(archive);
+    var bundleLoader = GAFBundleZipLoader(archive);
     return GAFBundle.withLoader(bundleLoader);
   }
 
@@ -30,7 +30,7 @@ class GAFBundle {
 
   static Future<GAFBundle> withLoader(GAFBundleLoader bundleLoader) async {
     var assetConfigs = await bundleLoader.loadAssetConfigs();
-    return new GAFBundle._(bundleLoader, assetConfigs);
+    return GAFBundle._(bundleLoader, assetConfigs);
   }
 
   //---------------------------------------------------------------------------
@@ -39,23 +39,23 @@ class GAFBundle {
       [num displayScale, num contentScale]) async {
 
     var assetConfig = _getAssetConfig(assetID);
-    if (assetConfig == null) throw new ArgumentError("assetID");
+    if (assetConfig == null) throw ArgumentError("assetID");
 
     displayScale = displayScale ?? assetConfig.defaultDisplayScale;
     var displayScaleValues = assetConfig.displayScaleValues;
     var displayScaleValid = displayScaleValues.contains(displayScale);
-    if (displayScaleValid == false) throw new ArgumentError("displayScale");
+    if (displayScaleValid == false) throw ArgumentError("displayScale");
 
     contentScale = contentScale ?? assetConfig.defaultContentScale;
     var contentScaleValues = assetConfig.contentScaleValues;
     var contentScaleValid = contentScaleValues.contains(contentScale);
-    if (contentScaleValid == false) throw new ArgumentError("contentScale");
+    if (contentScaleValid == false) throw ArgumentError("contentScale");
 
-    var gafAsset = new GAFAsset._(assetConfig, displayScale, contentScale);
+    var gafAsset = GAFAsset._(assetConfig, displayScale, contentScale);
 
     // load gaf timelines
     for (GAFTimelineConfig timelineConfig in assetConfig.timelines) {
-      var gafTimeline = new GAFTimeline(gafAsset, timelineConfig);
+      var gafTimeline = GAFTimeline(gafAsset, timelineConfig);
       gafAsset.timelines.add(gafTimeline);
     }
 
@@ -67,7 +67,7 @@ class GAFBundle {
         for (CTextureAtlasSource source in content.sources) {
           if (source.source == "no_atlas") continue;
           var renderTexture = await bundleLoader.getTexture(source);
-          var ta = new GAFTextureAtlas(renderTexture, config, content, source);
+          var ta = GAFTextureAtlas(renderTexture, config, content, source);
           gafAsset.textureAtlases.add(ta);
         }
       }
@@ -76,7 +76,7 @@ class GAFBundle {
     // load gaf sounds
     for (CSound config in assetConfig.sounds) {
       var sound = await bundleLoader.getSound(config);
-      var gafSound = new GAFSound(config, sound);
+      var gafSound = GAFSound(config, sound);
       gafAsset.sounds.add(gafSound);
     }
 

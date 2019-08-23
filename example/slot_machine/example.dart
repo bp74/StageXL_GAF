@@ -25,8 +25,8 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 600, height: 1000);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 600, height: 1000);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load and show the slot machine GAF asset
@@ -34,8 +34,8 @@ Future main() async {
   var gafAsset = await GAFAsset.load('assets/slot_machine/slot_machine.gaf', 1, 1);
   var gafTimeline = gafAsset.getGAFTimelineByLinkage('rootTimeline');
 
-  var slotMachine = new SlotMachine(gafTimeline);
-  var slotMachineGame = new SlotMachineGame(slotMachine);
+  var slotMachine = SlotMachine(gafTimeline);
+  var slotMachineGame = SlotMachineGame(slotMachine);
   slotMachineGame.x = 40;
   slotMachineGame.y = 20;
   stage.addChild(slotMachineGame);

@@ -6,17 +6,17 @@ class GAFTimelineConfig {
   final String assetID;
   final String version;
 
-  final List<CAnimationFrame> animationFrames = new List<CAnimationFrame>();
-  final List<CAnimationObject> animationObjects = new List <CAnimationObject>();
-  final List<CAnimationSequence> animationSequences = new List<CAnimationSequence>();
-  final List<CTextField> textFields = new List<CTextField>();
-  final Map<int, String> namedParts = new Map<int, String>();
-  final Map<int, CFrameSound> sounds = new Map<int, CFrameSound>();
+  final List<CAnimationFrame> animationFrames = List<CAnimationFrame>();
+  final List<CAnimationObject> animationObjects = List <CAnimationObject>();
+  final List<CAnimationSequence> animationSequences = List<CAnimationSequence>();
+  final List<CTextField> textFields = List<CTextField>();
+  final Map<int, String> namedParts = Map<int, String>();
+  final Map<int, CFrameSound> sounds = Map<int, CFrameSound>();
 
   String linkage = "";
   int framesCount = 0;
-  Rectangle bounds = null;
-  Point pivot = null;
+  Rectangle bounds;
+  Point pivot;
 
   GAFTimelineConfig(this.id, this.assetID, this.version);
 
@@ -73,7 +73,7 @@ class GAFTimelineConfig {
     var action = data["action"];
     var repeatCount = data["repeat"] ?? 1;
     var linkage = data["linkage"];
-    sounds[frame] = new CFrameSound(soundID, action, repeatCount, linkage);
+    sounds[frame] = CFrameSound(soundID, action, repeatCount, linkage);
   }
 
 }

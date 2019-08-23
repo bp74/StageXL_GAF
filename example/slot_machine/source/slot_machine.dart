@@ -27,13 +27,13 @@ class SlotMachine extends GAFMovieClip {
   GAFMovieClip _winText;
   GAFMovieClip _winCoins;
   GAFMovieClip _winFrame;
-  List<SlotBar> _slotBars = new List<SlotBar>(3);
-  List<GAFMovieClip> _centralCoins = new List<GAFMovieClip>(3);
+  List<SlotBar> _slotBars = List<SlotBar>(3);
+  List<GAFMovieClip> _centralCoins = List<GAFMovieClip>(3);
 
   int _prize = 0;
   int _state = MACHINE_STATE_INITIAL;
   String _rewardType = REWARD_CHIPS;
-  Juggler _juggler = new Juggler();
+  Juggler _juggler = Juggler();
 
   //---------------------------------------------------------------------------
 
@@ -77,7 +77,7 @@ class SlotMachine extends GAFMovieClip {
 
     for (int i = 0; i < _slotBars.length; i++) {
       var bar = obj.getChildByName("slot${i + 1}");
-      _slotBars[i] = new SlotBar(bar);
+      _slotBars[i] = SlotBar(bar);
       _slotBars[i].randomizeSlots(FRUIT_COUNT, _rewardType);
     }
 
@@ -143,7 +143,7 @@ class SlotMachine extends GAFMovieClip {
       _juggler.delay(3.0).then(_nextState);
       for (int i = 0; i < _slotBars.length; i++) {
         var seqName = "rotation_" + _rewardType;
-        var seq = new SequencePlaybackInfo(seqName, true);
+        var seq = SequencePlaybackInfo(seqName, true);
         var sb = _slotBars[i];
         _juggler.delay(BAR_TIMEOUT * i).then((f) => sb.playSequence(seq));
       }
@@ -153,7 +153,7 @@ class SlotMachine extends GAFMovieClip {
       var spinResult = _generateSpinResult(_prize);
       for (int i = 0; i < _slotBars.length; i++) {
         var slotBar = _slotBars[i];
-        var seq = new SequencePlaybackInfo("stop", false);
+        var seq = SequencePlaybackInfo("stop", false);
         slotBar.setSpinResult(spinResult[i], _rewardType);
         _juggler.delay(BAR_TIMEOUT * i).then((f) => slotBar.playSequence(seq));
       }
@@ -173,12 +173,12 @@ class SlotMachine extends GAFMovieClip {
 
   List<List<int>> _generateSpinResult(int prize) {
 
-    var result = new List<List<int>>(3);
-    var random = new math.Random();
+    var result = List<List<int>>(3);
+    var random = math.Random();
     var centralFruit = 0;
 
     for (int i = 0; i < 3; i++) {
-      result[i] = new List<int>(3);
+      result[i] = List<int>(3);
       result[i][0] = random.nextInt(FRUIT_COUNT) + 1;
       result[i][2] = random.nextInt(FRUIT_COUNT) + 1;
     }

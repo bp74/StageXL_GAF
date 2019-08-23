@@ -7,13 +7,13 @@ class CAnimationFrame {
   final int frameNumber;
 
   CAnimationFrame(this.frameNumber)
-      : instances = new List<CAnimationFrameInstance>(),
-        actions = new List<CFrameAction>();
+      : instances = List<CAnimationFrameInstance>(),
+        actions = List<CFrameAction>();
 
   //---------------------------------------------------------------------------
 
   CAnimationFrame clone(int frameNumber) {
-    CAnimationFrame result = new CAnimationFrame(frameNumber);
+    CAnimationFrame result = CAnimationFrame(frameNumber);
     result.instances.addAll(instances);
     return result;
   }

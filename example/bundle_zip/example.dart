@@ -14,8 +14,8 @@ Future main() async {
   // init Stage and RenderLoop
 
   var canvas = html.querySelector('#stage');
-  var stage = new Stage(canvas, width: 600, height: 400);
-  var renderLoop = new RenderLoop();
+  var stage = Stage(canvas, width: 600, height: 400);
+  var renderLoop = RenderLoop();
   renderLoop.addStage(stage);
 
   // load a GAF bundle, containing two GAF assets.
@@ -27,7 +27,7 @@ Future main() async {
 
   var skeletonAsset = await gafBundle.getAsset("skeleton", 1, 1);
   var skeletonTimeline = skeletonAsset.getGAFTimelineByLinkage('rootTimeline');
-  var skeleton = new GAFMovieClip(skeletonTimeline);
+  var skeleton = GAFMovieClip(skeletonTimeline);
 
   skeleton.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);
   skeleton.x = 200;
@@ -40,7 +40,7 @@ Future main() async {
 
   var monsterAsset = await gafBundle.getAsset("ufo-monster", 1, 1);
   var monsterTimeline = monsterAsset.getGAFTimelineByLinkage('rootTimeline');
-  var monster = new GAFMovieClip(monsterTimeline);
+  var monster = GAFMovieClip(monsterTimeline);
 
   monster.alignPivot(HorizontalAlign.Center, VerticalAlign.Center);
   monster.x = 450;
