@@ -1,8 +1,7 @@
 part of stagexl_gaf;
 
 class CSound {
-
-  static const String GAF_PLAY_SOUND = "gafPlaySound";
+  static const String GAF_PLAY_SOUND = 'gafPlaySound';
   static const int WAV = 0;
   static const int MP3 = 1;
 
@@ -15,5 +14,4 @@ class CSound {
   int sampleCount = 0;
   bool stereo = false;
   Sound sound;
-
 }

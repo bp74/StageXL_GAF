@@ -1,8 +1,7 @@
 part of stagexl_gaf;
 
 class CFilter {
-
-  final List<CFilterData> filterDatas = List<CFilterData>();
+  final List<CFilterData> filterDatas = <CFilterData>[];
 
   //---------------------------------------------------------------------------
 
@@ -14,10 +13,8 @@ class CFilter {
     filterDatas.add(filterData);
   }
 
-  void addGlowFilter(
-      num blurX, num blurY, int color,
+  void addGlowFilter(num blurX, num blurY, int color,
       [num strength = 1, bool inner = false, bool knockout = false]) {
-
     var filterData = CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
@@ -31,7 +28,6 @@ class CFilter {
   void addDropShadowFilter(
       num blurX, num blurY, int color, num angle, num distance,
       [num strength = 1, bool inner = false, bool knockout = false]) {
-
     var filterData = CBlurFilterData();
     filterData.blurX = blurX;
     filterData.blurY = blurY;
@@ -47,15 +43,15 @@ class CFilter {
   void addColorTransform(List<num> params) {
     var filterData = CColorMatrixFilterData();
 
-    filterData.colorMatrix[00] = params[1];       // R scale
-    filterData.colorMatrix[05] = params[3];       // G scale
-    filterData.colorMatrix[10] = params[5];       // B scale
-    filterData.colorMatrix[15] = 1.0;             // A scale
+    filterData.colorMatrix[00] = params[1]; // R scale
+    filterData.colorMatrix[05] = params[3]; // G scale
+    filterData.colorMatrix[10] = params[5]; // B scale
+    filterData.colorMatrix[15] = 1.0; // A scale
 
     filterData.colorOffset[00] = params[2] * 256; // R offset
     filterData.colorOffset[01] = params[4] * 256; // G offset
     filterData.colorOffset[02] = params[6] * 256; // B offset
-    filterData.colorOffset[03] = 0.0;             // A offset
+    filterData.colorOffset[03] = 0.0; // A offset
 
     filterDatas.add(filterData);
   }
@@ -87,5 +83,4 @@ class CFilter {
 
     filterDatas.add(filterData);
   }
-
 }

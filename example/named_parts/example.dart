@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_gaf/stagexl_gaf.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -33,7 +32,7 @@ Future main() async {
 
   gafMovieClip1.onMouseClick.listen((me) {
     // toggle plain body-gun bitmap
-    GAFBitmap bodyGun = gafMovieClip1.getChildByName("body_gun");
+    GAFBitmap bodyGun = gafMovieClip1.getChildByName('body_gun');
     bodyGun.visible = !bodyGun.visible;
   });
 
@@ -55,8 +54,8 @@ Future main() async {
 
   gafMovieClip2.onMouseClick.listen((me) {
     // toggle nested body-gun bitmap
-    GAFMovieClip body = gafMovieClip2.getChildByName("body");
-    GAFBitmap gun = body.getChildByName("gun");
+    GAFMovieClip body = gafMovieClip2.getChildByName('body');
+    GAFBitmap gun = body.getChildByName('gun');
     gun.visible = !gun.visible;
   });
 
@@ -65,24 +64,23 @@ Future main() async {
 
   // show some info texts
 
-  var textFormat = TextFormat("Arial", 24, Color.Black);
+  var textFormat = TextFormat('Arial', 24, Color.Black);
 
-  var title = TextField("Click the robots to show/hide guns", textFormat);
+  var title = TextField('Click the robots to show/hide guns', textFormat);
   title.autoSize = TextFieldAutoSize.CENTER;
   title.addTo(stage);
   title.x = 450;
   title.y = 20;
 
-  var plain = TextField("Conversion: Plain", textFormat);
+  var plain = TextField('Conversion: Plain', textFormat);
   plain.autoSize = TextFieldAutoSize.CENTER;
   plain.addTo(stage);
   plain.x = 256 - 70;
   plain.y = 540;
 
-  var nesting = TextField("Conversion: Nesting", textFormat);
+  var nesting = TextField('Conversion: Nesting', textFormat);
   nesting.autoSize = TextFieldAutoSize.CENTER;
   nesting.addTo(stage);
   nesting.x = 768 - 70;
   nesting.y = 540;
-
 }

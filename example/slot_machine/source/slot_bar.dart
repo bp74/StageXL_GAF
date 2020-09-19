@@ -1,7 +1,6 @@
 part of slot_machine;
 
 class SlotBar {
-
   final GAFMovieClip bar;
   final List<GAFMovieClip> _slots = List<GAFMovieClip>(3);
   final math.Random _random = math.Random();
@@ -11,20 +10,20 @@ class SlotBar {
 
   SlotBar(this.bar) {
     for (var i = 0; i < _slots.length; i++) {
-      _slots[i] = bar.getChildByName("fruit${i + 1}");
+      _slots[i] = bar.getChildByName('fruit${i + 1}');
     }
   }
 
   void playSequence(SequencePlaybackInfo sequence) {
-    this.bar.loop = sequence.looped;
-    this.bar.setSequence(sequence.name);
-    if (sequence.name == "stop") showSpinResult();
+    bar.loop = sequence.looped;
+    bar.setSequence(sequence.name);
+    if (sequence.name == 'stop') showSpinResult();
   }
 
   void randomizeSlots(int maxTypes, String machineType) {
     for (var slot in _slots) {
       var slotImagePos = _random.nextInt(maxTypes) + 1;
-      var sequenceName = "${slotImagePos}_${machineType}";
+      var sequenceName = '${slotImagePos}_${machineType}';
       slot.setSequence(sequenceName, false);
     }
   }
@@ -36,7 +35,7 @@ class SlotBar {
 
   void showSpinResult() {
     for (var i = 0; i < _slots.length; i++) {
-      var seqName = _spinResult[i].toString() + "_" + _machineType;
+      var seqName = _spinResult[i].toString() + '_' + _machineType;
       _slots[i].setSequence(seqName, false);
     }
   }
@@ -51,4 +50,3 @@ class SlotBar {
     }
   }
 }
-

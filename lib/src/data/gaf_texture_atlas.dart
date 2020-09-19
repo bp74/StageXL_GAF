@@ -1,23 +1,19 @@
 part of stagexl_gaf;
 
 class GAFTextureAtlas {
-
   final CTextureAtlas config;
   final CTextureAtlasContent configContent;
   final CTextureAtlasSource configSource;
-  final Map<int, GAFBitmapData> gafBitmapDatas = Map<int, GAFBitmapData>();
+  final Map<int, GAFBitmapData> gafBitmapDatas = <int, GAFBitmapData>{};
   final RenderTexture renderTexture;
 
   GAFTextureAtlas(
-      this.renderTexture,
-      this.config, this.configContent, this.configSource) {
-
+      this.renderTexture, this.config, this.configContent, this.configSource) {
     var pixelRatio = configContent.contentScale;
     var rtq = renderTexture.quad;
 
     for (var element in config.elements) {
-
-      if (element.atlasID != this.configSource.id) continue;
+      if (element.atlasID != configSource.id) continue;
 
       var region = element.region;
       var rotation = element.rotated ? 1 : 0;
@@ -30,16 +26,15 @@ class GAFTextureAtlas {
 
       var ofsLeft = 0;
       var ofsTop = 0;
-      var ofsWidth =  element.rotated ? region.height : region.width;
-      var ofsHeight =  element.rotated ? region.width : region.height;
+      var ofsWidth = element.rotated ? region.height : region.width;
+      var ofsHeight = element.rotated ? region.width : region.height;
       var ofs = Rectangle<int>(ofsLeft, ofsTop, ofsWidth, ofsHeight);
 
       var quad = RenderTextureQuad.slice(rtq, src, ofs, rotation);
       var quadPixelRatio = quad.withPixelRatio(pixelRatio);
       var gafBitmapData = GAFBitmapData(element, quadPixelRatio);
 
-      this.gafBitmapDatas[element.id] = gafBitmapData;
+      gafBitmapDatas[element.id] = gafBitmapData;
     }
   }
-
 }

@@ -1,7 +1,6 @@
 part of stagexl_gaf;
 
 class GAFAssetConfigConverter {
-
   static const int SIGNATURE_GAF = 0x00474146;
   static const int SIGNATURE_GAC = 0x00474143;
   static const int HEADER_LENGTH = 36;
@@ -28,11 +27,11 @@ class GAFAssetConfigConverter {
   static const int FILTER_DROP_SHADOW = 0;
   static const int FILTER_BLUR = 1;
   static const int FILTER_GLOW = 2;
-  static const int FILTER_BEVEL = 3;           // suppressed by GAFConverter
-  static const int FILTER_GRADIENT_GLOW = 4;   // suppressed by GAFConverter
-  static const int FILTER_CONVOLUTION = 5;     // suppressed by GAFConverter
+  static const int FILTER_BEVEL = 3; // suppressed by GAFConverter
+  static const int FILTER_GRADIENT_GLOW = 4; // suppressed by GAFConverter
+  static const int FILTER_CONVOLUTION = 5; // suppressed by GAFConverter
   static const int FILTER_COLOR_MATRIX = 6;
-  static const int FILTER_GRADIENT_BEVEL = 7;  // suppressed by GAFConverter
+  static const int FILTER_GRADIENT_BEVEL = 7; // suppressed by GAFConverter
 
   static final Rectangle sHelperRectangle = Rectangle<num>(0, 0, 0, 0);
   static final Matrix sHelperMatrix = Matrix.fromIdentity();
@@ -51,11 +50,10 @@ class GAFAssetConfigConverter {
   //--------------------------------------------------------------------------
 
   GAFAssetConfig convert(ByteBuffer byteBuffer) {
-
     _data = ByteData.view(byteBuffer);
     _dataPosition = 0;
 
-    _config = GAFAssetConfig(this.assetID);
+    _config = GAFAssetConfig(assetID);
     _config.compression = _readInt();
     _config.versionMajor = _readByte();
     _config.versionMinor = _readByte();
@@ -71,7 +69,7 @@ class GAFAssetConfigConverter {
     }
 
     if (_config.versionMajor < 4) {
-      var version = "${_config.versionMajor}.${_config.versionMinor}";
+      var version = '${_config.versionMajor}.${_config.versionMinor}';
       _currentTimeline = GAFTimelineConfig(0, assetID, version);
       _currentTimeline.framesCount = _readShort();
       _currentTimeline.bounds = _readRectangle();
@@ -101,7 +99,8 @@ class GAFAssetConfigConverter {
     return textureAtlas;
   }
 
-  CTextureAtlasContent _getTextureAtlasContent(num displayScale, num contentScale) {
+  CTextureAtlasContent _getTextureAtlasContent(
+      num displayScale, num contentScale) {
     var textureAtlas = _getTextureAtlas(displayScale);
     var textureAtlasContent = textureAtlas.getTextureAtlasContent(contentScale);
     if (textureAtlasContent != null) return textureAtlasContent;
@@ -113,12 +112,10 @@ class GAFAssetConfigConverter {
   //---------------------------------------------------------------------------
 
   void _readNextTag() {
-
-    int tagID = _readShort();
-    int tagLength = _readUnsignedInt();
+    var tagID = _readShort();
+    var tagLength = _readUnsignedInt();
 
     switch (tagID) {
-
       case TAG_DEFINE_STAGE:
         _readStageConfig(_config);
         break;
@@ -250,8 +247,8 @@ class GAFAssetConfigConverter {
 
   Float32List _readFloats(int count) {
     var values = Float32List(count);
-    for (int i = 0; i < count; i++) {
-      values[i] = _readFloat(); 
+    for (var i = 0; i < count; i++) {
+      values[i] = _readFloat();
     }
     return values;
   }
@@ -268,16 +265,15 @@ class GAFAssetConfigConverter {
   //---------------------------------------------------------------------------
 
   GAFTimelineConfig _readTimeline() {
-
     var id = _readUnsignedInt();
     var assetID = _config.id;
-    var version = "${_config.versionMajor}.${_config.versionMinor}";
+    var version = '${_config.versionMajor}.${_config.versionMinor}';
     var timelineConfig = GAFTimelineConfig(id, assetID, version);
 
     timelineConfig.framesCount = _readUnsignedInt();
     timelineConfig.bounds = _readRectangle();
     timelineConfig.pivot = _readPoint();
-    timelineConfig.linkage = _readBool() ? _readUTF() : "";
+    timelineConfig.linkage = _readBool() ? _readUTF() : '';
 
     _config.timelines.add(timelineConfig);
     _isTimeline = true;
@@ -289,14 +285,12 @@ class GAFAssetConfigConverter {
 
   void _readAnimationFrames(int tagID,
       [int startIndex = 0, num framesCount, CAnimationFrame prevFrame]) {
-
     if (framesCount is! num) framesCount = _readUnsignedInt();
 
-    GAFTimelineConfig timelineConfig = _config.timelines.last;
+    var timelineConfig = _config.timelines.last;
     CAnimationFrame currentFrame;
 
-    for (int i = startIndex; i < framesCount; i++) {
-
+    for (var i = startIndex; i < framesCount; i++) {
       var frameNumber = _readUnsignedInt();
       var hasActions = false;
       var hasChangesInDisplayList = false;
@@ -311,22 +305,22 @@ class GAFAssetConfigConverter {
 
       if (prevFrame != null) {
         currentFrame = prevFrame.clone(frameNumber);
-        for (int n = prevFrame.frameNumber + 1; n < currentFrame.frameNumber; n++) {
+        for (var n = prevFrame.frameNumber + 1;
+            n < currentFrame.frameNumber;
+            n++) {
           timelineConfig.animationFrames.add(prevFrame.clone(n));
         }
       } else {
         currentFrame = CAnimationFrame(frameNumber);
         if (currentFrame.frameNumber > 1) {
-          for (int n = 1; n < currentFrame.frameNumber; n++) {
+          for (var n = 1; n < currentFrame.frameNumber; n++) {
             timelineConfig.animationFrames.add(CAnimationFrame(n));
           }
         }
       }
 
       if (hasChangesInDisplayList) {
-
-        for (int j = 0, length = _readUnsignedInt(); j < length; j++) {
-
+        for (var j = 0, length = _readUnsignedInt(); j < length; j++) {
           var hasColorTransform = _readBool();
           var hasMask = _readBool();
           var hasEffect = _readBool();
@@ -345,7 +339,7 @@ class GAFAssetConfigConverter {
 
           if (hasEffect) {
             filter ??= CFilter();
-            for (int k = 0, l = _readByte(); k < l; k++) {
+            for (var k = 0, l = _readByte(); k < l; k++) {
               var filterType = _readUnsignedInt();
               if (filterType == FILTER_DROP_SHADOW) {
                 _readDropShadowFilter(filter);
@@ -371,9 +365,7 @@ class GAFAssetConfigConverter {
       }
 
       if (hasActions) {
-
-        for (int j = 0, l = _readUnsignedInt(); j < l; j++) {
-
+        for (var j = 0, l = _readUnsignedInt(); j < l; j++) {
           var type = _readUnsignedInt();
           var scope = _readUTF();
           var paramsLength = _readUnsignedInt();
@@ -401,7 +393,9 @@ class GAFAssetConfigConverter {
       prevFrame = currentFrame;
     }
 
-    for (int n = prevFrame.frameNumber + 1; n <= timelineConfig.framesCount; n++) {
+    for (var n = prevFrame.frameNumber + 1;
+        n <= timelineConfig.framesCount;
+        n++) {
       timelineConfig.animationFrames.add(prevFrame.clone(n));
     }
 
@@ -409,20 +403,21 @@ class GAFAssetConfigConverter {
   }
 
   void _readTextureAtlasConfig(int tagID) {
-
     var displayScale = _readFloat();
     var textureAtlas = _getTextureAtlas(displayScale);
 
     var dsValues = _config.displayScaleValues;
     if (dsValues.contains(displayScale) == false) dsValues.add(displayScale);
 
-    for (int i = 0, al = _readByte(); i < al; i++) {
-      int atlasID = _readUnsignedInt();
-      for (int j = 0, sl = _readByte(); j < sl; j++) {
+    for (var i = 0, al = _readByte(); i < al; i++) {
+      var atlasID = _readUnsignedInt();
+      for (var j = 0, sl = _readByte(); j < sl; j++) {
         var source = assetPath + _readUTF();
         var contentScale = _readFloat();
         var csValues = _config.contentScaleValues;
-        if (csValues.contains(contentScale) == false) csValues.add(contentScale);
+        if (csValues.contains(contentScale) == false) {
+          csValues.add(contentScale);
+        }
         var taContent = _getTextureAtlasContent(displayScale, contentScale);
         if (taContent.sources.every((s) => s.id != atlasID)) {
           taContent.sources.add(CTextureAtlasSource(atlasID, source));
@@ -430,25 +425,24 @@ class GAFAssetConfigConverter {
       }
     }
 
-    for (int i = 0, el = _readUnsignedInt(); i < el; i++) {
-
-      Point pivot = _readPoint();
-      Point topLeft = _readPoint();
-      bool hasScale9Grid = false;
+    for (var i = 0, el = _readUnsignedInt(); i < el; i++) {
+      var pivot = _readPoint();
+      var topLeft = _readPoint();
+      var hasScale9Grid = false;
       Rectangle scale9Grid;
       num elementScaleX = 1.0;
       num elementScaleY = 1.0;
-      bool rotation = false;
-      String linkageName = "";
+      var rotation = false;
+      var linkageName = '';
 
       if (tagID == TAG_DEFINE_ATLAS || tagID == TAG_DEFINE_ATLAS2) {
         elementScaleX = elementScaleY = _readFloat();
       }
 
-      double elementWidth = _readFloat();
-      double elementHeight = _readFloat();
-      int atlasID = _readUnsignedInt();
-      int elementID = _readUnsignedInt();
+      var elementWidth = _readFloat();
+      var elementHeight = _readFloat();
+      var atlasID = _readUnsignedInt();
+      var elementID = _readUnsignedInt();
 
       if (tagID == TAG_DEFINE_ATLAS2 || tagID == TAG_DEFINE_ATLAS3) {
         hasScale9Grid = _readBool();
@@ -465,7 +459,7 @@ class GAFAssetConfigConverter {
       if (textureAtlas.getTextureAtlasElementByID(elementID) == null) {
         var element = CTextureAtlasElement(elementID, atlasID);
         element.region.left = (topLeft.x).round();
-        element.region.top =  (topLeft.y).round();
+        element.region.top = (topLeft.y).round();
         element.region.right = (topLeft.x + elementWidth).round();
         element.region.bottom = (topLeft.y + elementHeight).round();
         element.matrix.translate(0.0 - pivot.x, 0.0 - pivot.y);
@@ -479,15 +473,16 @@ class GAFAssetConfigConverter {
   }
 
   void _readDropShadowFilter(CFilter filter) {
-    int color = _readUnsignedInt();
+    var color = _readUnsignedInt();
     num blurX = _readFloat();
     num blurY = _readFloat();
     num angle = _readFloat();
     num distance = _readFloat();
     num strength = _readFloat();
-    bool inner = _readBool();
-    bool knockout = _readBool();
-    filter.addDropShadowFilter(blurX, blurY, color, angle, distance, strength, inner, knockout);
+    var inner = _readBool();
+    var knockout = _readBool();
+    filter.addDropShadowFilter(
+        blurX, blurY, color, angle, distance, strength, inner, knockout);
   }
 
   void _readBlurFilter(CFilter filter) {
@@ -497,12 +492,12 @@ class GAFAssetConfigConverter {
   }
 
   void _readGlowFilter(CFilter filter) {
-    int color = _readUnsignedInt();
+    var color = _readUnsignedInt();
     num blurX = _readFloat();
     num blurY = _readFloat();
     num strength = _readFloat();
-    bool inner = _readBool();
-    bool knockout = _readBool();
+    var inner = _readBool();
+    var knockout = _readBool();
     filter.addGlowFilter(blurX, blurY, color, strength, inner, knockout);
   }
 
@@ -519,7 +514,7 @@ class GAFAssetConfigConverter {
   }
 
   void _readAnimationMasks(int tagID, GAFTimelineConfig timelineConfig) {
-    for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
+    for (var i = 0, length = _readUnsignedInt(); i < length; i++) {
       var objectID = _readUnsignedInt();
       var regionID = _readUnsignedInt();
       var type = tagID == TAG_DEFINE_ANIMATION_MASKS ? 0 : _readUnsignedShort();
@@ -530,10 +525,11 @@ class GAFAssetConfigConverter {
   }
 
   void _readAnimationObjects(int tagID, GAFTimelineConfig timelineConfig) {
-    for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
+    for (var i = 0, length = _readUnsignedInt(); i < length; i++) {
       var objectID = _readUnsignedInt();
       var regionID = _readUnsignedInt();
-      var type = tagID == TAG_DEFINE_ANIMATION_OBJECTS ? 0 : _readUnsignedShort();
+      var type =
+          tagID == TAG_DEFINE_ANIMATION_OBJECTS ? 0 : _readUnsignedShort();
       var typeString = _getAnimationObjectTypeString(type);
       var value = CAnimationObject(objectID, regionID, typeString, false);
       timelineConfig.animationObjects.add(value);
@@ -541,7 +537,7 @@ class GAFAssetConfigConverter {
   }
 
   void _readAnimationSequences(GAFTimelineConfig timelineConfig) {
-    for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
+    for (var i = 0, length = _readUnsignedInt(); i < length; i++) {
       var sequenceID = _readUTF();
       var startFrameNo = _readShort();
       var endFrameNo = _readShort();
@@ -551,7 +547,7 @@ class GAFAssetConfigConverter {
   }
 
   void _readNamedParts(GAFTimelineConfig timelineConfig) {
-    for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
+    for (var i = 0, length = _readUnsignedInt(); i < length; i++) {
       var partID = _readUnsignedInt();
       var name = _readUTF();
       timelineConfig.namedParts[partID] = name;
@@ -559,7 +555,7 @@ class GAFAssetConfigConverter {
   }
 
   void _readSounds(GAFAssetConfig config) {
-    for (int i = 0, length = _readShort(); i < length; i++) {
+    for (var i = 0, length = _readShort(); i < length; i++) {
       var sound = CSound();
       sound.id = _readShort();
       sound.linkage = _readUTF();
@@ -574,9 +570,7 @@ class GAFAssetConfigConverter {
   }
 
   void _readTextFields(GAFTimelineConfig timelineConfig) {
-
-    for (int i = 0, length = _readUnsignedInt(); i < length; i++) {
-
+    for (var i = 0, length = _readUnsignedInt(); i < length; i++) {
       var textFieldID = _readUnsignedInt();
       var pivotX = _readFloat();
       var pivotY = _readFloat();
@@ -607,9 +601,9 @@ class GAFAssetConfigConverter {
       var letterSpacing = _readFloat();
       var rightMargin = _readUnsignedInt();
       var size = _readUnsignedInt();
-      List<int> tabStops = List<int>();
+      var tabStops = <int>[];
 
-      for (int j = 0, l = _readUnsignedInt(); j < l; j++) {
+      for (var j = 0, l = _readUnsignedInt(); j < l; j++) {
         tabStops.add(_readUnsignedInt());
       }
 
@@ -619,16 +613,27 @@ class GAFAssetConfigConverter {
       var align = TextFormatAlign.CENTER;
 
       switch (alignFlag) {
-        case 0: align = TextFormatAlign.LEFT; break;
-        case 1: align = TextFormatAlign.RIGHT; break;
-        case 2: align = TextFormatAlign.CENTER; break;
-        case 3: align = TextFormatAlign.JUSTIFY; break;
-        case 4: align = TextFormatAlign.START; break;
-        case 5: align = TextFormatAlign.END; break;
+        case 0:
+          align = TextFormatAlign.LEFT;
+          break;
+        case 1:
+          align = TextFormatAlign.RIGHT;
+          break;
+        case 2:
+          align = TextFormatAlign.CENTER;
+          break;
+        case 3:
+          align = TextFormatAlign.JUSTIFY;
+          break;
+        case 4:
+          align = TextFormatAlign.START;
+          break;
+        case 5:
+          align = TextFormatAlign.END;
+          break;
       }
 
-      var textFormat = TextFormat(
-          font, size, color,
+      var textFormat = TextFormat(font, size, color,
           bold: bold,
           italic: italic,
           underline: underline,
@@ -652,8 +657,7 @@ class GAFAssetConfigConverter {
       timelineConfig.textFields.add(textField);
 
       // make analyzer happy
-      "$blockIndent, $bullet, $kerning, $letterSpacing, $target, $url";
+      '$blockIndent, $bullet, $kerning, $letterSpacing, $target, $url';
     }
   }
-
 }

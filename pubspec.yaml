@@ -1,15 +1,15 @@
 name: stagexl_gaf
-version: 0.2.1
+version: 0.2.2
 author: Bernhard Pichler <support@stagexl.org>
 description: The GAF runtime for the StageXL library.
 homepage: https://github.com/bp74/StageXL_GAF
 
 environment:
-  sdk: '>=2.4.0 <3.0.0'
+  sdk: '>=2.9.0 <3.0.0'
 
 dependencies:
   archive: '>=2.0.0 <3.0.0'
-  stagexl: '>=1.4.1 <2.0.0'
+  stagexl: '>=1.4.6 <2.0.0'
 
 dev_dependencies:
   pedantic: any

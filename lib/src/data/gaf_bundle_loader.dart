@@ -1,7 +1,6 @@
 part of stagexl_gaf;
 
 abstract class GAFBundleLoader {
-
   final List<GAFBundleTextureLoader> textureLoaders = [];
   final List<GAFBundleSoundLoader> soundLoaders = [];
 
@@ -10,26 +9,26 @@ abstract class GAFBundleLoader {
   Future<Sound> loadSound(CSound config);
 
   Future<RenderTexture> getTexture(CTextureAtlasSource config) {
-    for (var textureLoader in this.textureLoaders) {
+    for (var textureLoader in textureLoaders) {
       if (textureLoader.config.id != config.id) continue;
       if (textureLoader.config.source != config.source) continue;
       return textureLoader.future;
     }
-    var textureFuture = this.loadTexture(config);
+    var textureFuture = loadTexture(config);
     var textureLoader = GAFBundleTextureLoader(config, textureFuture);
-    this.textureLoaders.add(textureLoader);
+    textureLoaders.add(textureLoader);
     return textureLoader.future;
   }
 
   Future<Sound> getSound(CSound config) {
-    for (var soundLoader in this.soundLoaders) {
+    for (var soundLoader in soundLoaders) {
       if (soundLoader.config.id != config.id) continue;
       if (soundLoader.config.source != config.source) continue;
       return soundLoader.future;
     }
-    var soundFuture = this.loadSound(config);
+    var soundFuture = loadSound(config);
     var soundLoader = GAFBundleSoundLoader(config, soundFuture);
-    this.soundLoaders.add(soundLoader);
+    soundLoaders.add(soundLoader);
     return soundLoader.future;
   }
 }
@@ -50,19 +49,18 @@ class GAFBundleSoundLoader {
 //-----------------------------------------------------------------------------
 
 class GAFBundleGafLoader extends GAFBundleLoader {
-
   final List<String> gafUrls;
   GAFBundleGafLoader(this.gafUrls);
 
   @override
   Future<List<GAFAssetConfig>> loadAssetConfigs() async {
-    var assetConfigs = List<GAFAssetConfig>();
+    var assetConfigs = <GAFAssetConfig>[];
     for (var gafUrl in gafUrls) {
-      var i1 = gafUrl.lastIndexOf("/") + 1;
-      var i2 = gafUrl.indexOf(".", i1);
+      var i1 = gafUrl.lastIndexOf('/') + 1;
+      var i2 = gafUrl.indexOf('.', i1);
       var assetPath = gafUrl.substring(0, i1);
       var assetID = gafUrl.substring(i1, i2);
-      var request = HttpRequest.request(gafUrl, responseType: "arraybuffer");
+      var request = HttpRequest.request(gafUrl, responseType: 'arraybuffer');
       var binary = (await request).response as ByteBuffer;
       var converter = GAFAssetConfigConverter(assetID, assetPath);
       var assetConfig = converter.convert(binary);
@@ -85,19 +83,18 @@ class GAFBundleGafLoader extends GAFBundleLoader {
 //-----------------------------------------------------------------------------
 
 class GAFBundleZipLoader extends GAFBundleLoader {
-
   final Archive archive;
   GAFBundleZipLoader(this.archive);
 
   @override
   Future<List<GAFAssetConfig>> loadAssetConfigs() async {
-    var assetConfigs = List<GAFAssetConfig>();
-    var files = archive.files.where((f) => f.name.endsWith(".gaf"));
-    for (ArchiveFile file in files) {
+    var assetConfigs = <GAFAssetConfig>[];
+    var files = archive.files.where((f) => f.name.endsWith('.gaf'));
+    for (var file in files) {
       var fileName = file.name;
       var fileContent = file.content as TypedData;
-      var i1 = fileName.lastIndexOf("/") + 1;
-      var i2 = fileName.indexOf(".", i1);
+      var i1 = fileName.lastIndexOf('/') + 1;
+      var i2 = fileName.indexOf('.', i1);
       var assetPath = fileName.substring(0, i1);
       var assetID = fileName.substring(i1, i2);
       var converter = GAFAssetConfigConverter(assetID, assetPath);
@@ -111,7 +108,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
   Future<RenderTexture> loadTexture(CTextureAtlasSource config) {
     var file = archive.files.firstWhere((f) => f.name == config.source);
     var fileBase64 = base64.encoder.convert(file.content);
-    var imageDataUrl = "data:image/png;base64," + fileBase64;
+    var imageDataUrl = 'data:image/png;base64,' + fileBase64;
     return BitmapData.load(imageDataUrl).then((bd) => bd.renderTexture);
   }
 
@@ -119,7 +116,7 @@ class GAFBundleZipLoader extends GAFBundleLoader {
   Future<Sound> loadSound(CSound config) {
     var file = archive.files.firstWhere((f) => f.name == config.source);
     var fileBase64 = base64.encoder.convert(file.content);
-    var soundDataUrl = "data:audio/mp3;base64," + fileBase64;
+    var soundDataUrl = 'data:audio/mp3;base64,' + fileBase64;
     return Sound.loadDataUrl(soundDataUrl);
   }
 }

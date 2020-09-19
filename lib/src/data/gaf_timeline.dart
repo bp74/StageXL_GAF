@@ -7,7 +7,6 @@ part of stagexl_gaf;
 /// object to be used in starling display list.
 
 class GAFTimeline {
-
   final GAFAsset gafAsset;
   final GAFTimelineConfig config;
 
@@ -34,14 +33,13 @@ class GAFTimeline {
 
   /// Timeline identifier (name given at animation's upload or assigned by developer)
 
-  int get id => this.config.id;
+  int get id => config.id;
 
   /// Timeline linkage in a *.fla file library
 
-  String get linkage => this.config.linkage;
+  String get linkage => config.linkage;
 
   /// Asset identifier (name given at animation's upload or assigned by developer)
 
-  String get assetID => this.config.assetID;
-
+  String get assetID => config.assetID;
 }

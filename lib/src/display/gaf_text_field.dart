@@ -1,25 +1,25 @@
 part of stagexl_gaf;
 
 class GAFTextField extends TextField implements GAFDisplayObject {
-
   final CTextField config;
+  @override
   final Matrix pivotMatrix = Matrix.fromIdentity();
 
-  GAFTextField(this.config, [num displayScale = 1, num contentScale = 1]) : super() {
-
+  GAFTextField(this.config, [num displayScale = 1, num contentScale = 1])
+      : super() {
     var pivotPoint = config.pivotPoint;
 
-    this.text = config.text;
-    this.width = config.width;
-    this.height = config.height;
-    this.multiline = config.multiline;
-    this.wordWrap = config.wordWrap;
-    this.maxChars = config.maxChars;
-    this.type = config.editable ? TextFieldType.INPUT : TextFieldType.DYNAMIC;
-    this.displayAsPassword = config.displayAsPassword;
+    text = config.text;
+    width = config.width;
+    height = config.height;
+    multiline = config.multiline;
+    wordWrap = config.wordWrap;
+    maxChars = config.maxChars;
+    type = config.editable ? TextFieldType.INPUT : TextFieldType.DYNAMIC;
+    displayAsPassword = config.displayAsPassword;
 
-    this.defaultTextFormat = config.textFormat;
-    this.pivotMatrix.translate(0 - pivotPoint.x, 0 - pivotPoint.y);
-    this.pivotMatrix.scale(displayScale, displayScale);
+    defaultTextFormat = config.textFormat;
+    pivotMatrix.translate(0 - pivotPoint.x, 0 - pivotPoint.y);
+    pivotMatrix.scale(displayScale, displayScale);
   }
 }

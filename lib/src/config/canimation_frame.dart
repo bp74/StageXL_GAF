@@ -1,26 +1,25 @@
 part of stagexl_gaf;
 
 class CAnimationFrame {
-
   final List<CAnimationFrameInstance> instances;
   final List<CFrameAction> actions;
   final int frameNumber;
 
   CAnimationFrame(this.frameNumber)
-      : instances = List<CAnimationFrameInstance>(),
-        actions = List<CFrameAction>();
+      : instances = <CAnimationFrameInstance>[],
+        actions = <CFrameAction>[];
 
   //---------------------------------------------------------------------------
 
   CAnimationFrame clone(int frameNumber) {
-    CAnimationFrame result = CAnimationFrame(frameNumber);
+    var result = CAnimationFrame(frameNumber);
     result.instances.addAll(instances);
     return result;
   }
 
   void updateInstance(CAnimationFrameInstance instance) {
-    int index = -1;
-    for (int i = 0; i < instances.length; i++) {
+    var index = -1;
+    for (var i = 0; i < instances.length; i++) {
       if (instances[i].id == instance.id) {
         index = i;
         break;
@@ -38,5 +37,4 @@ class CAnimationFrame {
   void sortInstances() {
     instances.sort((i1, i2) => i1.zIndex - i2.zIndex);
   }
-
 }

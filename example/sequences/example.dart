@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_gaf/stagexl_gaf.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -36,22 +35,21 @@ Future main() async {
 
   // change sequence on click
 
-  var currentSequence = "none";
+  var currentSequence = 'none';
 
   void setSequence(String sequenceName) {
     robot.setSequence(sequenceName, true);
-    (robot.getChildByName("sequence") as GAFTextField).text = sequenceName;
+    (robot.getChildByName('sequence') as GAFTextField).text = sequenceName;
     currentSequence = sequenceName;
   }
 
-  setSequence("stand");
+  setSequence('stand');
 
   robot.onMouseClick.listen((me) {
-    if (currentSequence == "stand") {
-      setSequence("walk");
+    if (currentSequence == 'stand') {
+      setSequence('walk');
     } else {
-      setSequence("stand");
+      setSequence('stand');
     }
   });
-
 }

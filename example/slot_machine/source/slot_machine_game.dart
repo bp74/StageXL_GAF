@@ -1,29 +1,30 @@
 part of slot_machine;
 
 class SlotMachineGame extends Sprite implements Animatable {
-
   final SlotMachine machine;
 
   SlotMachineGame(this.machine) {
+    addChild(machine);
+    machine.play();
 
-    this.addChild(this.machine);
-    this.machine.play();
-
-    var arm = this.machine.arm;
+    var arm = machine.arm;
     arm.mouseCursor = MouseCursor.POINTER;
-    arm.onMouseClick.listen((e) => this.machine.pullArm());
+    arm.onMouseClick.listen((e) => machine.pullArm());
 
-    var switchMachineBtn = this.machine.switchMachineBtn;
+    var switchMachineBtn = machine.switchMachineBtn;
     switchMachineBtn.mouseCursor = MouseCursor.POINTER;
-    switchMachineBtn.onMouseOver.listen((e) => switchMachineBtn.setSequence("Over"));
-    switchMachineBtn.onMouseDown.listen((e) => switchMachineBtn.setSequence("Down"));
-    switchMachineBtn.onMouseUp.listen((e) => switchMachineBtn.setSequence("Up"));
-    switchMachineBtn.onMouseClick.listen((e) => this.machine.switchType());
+    switchMachineBtn.onMouseOver
+        .listen((e) => switchMachineBtn.setSequence('Over'));
+    switchMachineBtn.onMouseDown
+        .listen((e) => switchMachineBtn.setSequence('Down'));
+    switchMachineBtn.onMouseUp
+        .listen((e) => switchMachineBtn.setSequence('Up'));
+    switchMachineBtn.onMouseClick.listen((e) => machine.switchType());
   }
 
+  @override
   bool advanceTime(num time) {
     machine.advanceTime(time);
     return true;
   }
-
 }

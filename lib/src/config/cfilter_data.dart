@@ -7,7 +7,6 @@ abstract class CFilterData {
 //-----------------------------------------------------------------------------
 
 class CColorMatrixFilterData implements CFilterData {
-
   final Float32List colorMatrix = Float32List(16);
   final Float32List colorOffset = Float32List(4);
 
@@ -18,6 +17,7 @@ class CColorMatrixFilterData implements CFilterData {
     colorMatrix[15] = 1.0; // A scale
   }
 
+  @override
   CFilterData clone() {
     var filterData = CColorMatrixFilterData();
     filterData.colorMatrix.setAll(0, colorMatrix);
@@ -29,7 +29,6 @@ class CColorMatrixFilterData implements CFilterData {
 //-----------------------------------------------------------------------------
 
 class CBlurFilterData implements CFilterData {
-
   num blurX = 0.0;
   num blurY = 0.0;
   num angle = 0.0;
@@ -40,17 +39,18 @@ class CBlurFilterData implements CFilterData {
   bool inner = false;
   bool knockout = false;
 
+  @override
   CFilterData clone() {
-    CBlurFilterData filterData = CBlurFilterData();
-    filterData.blurX = this.blurX;
-    filterData.blurY = this.blurY;
-    filterData.angle = this.angle;
-    filterData.distance = this.distance;
-    filterData.strength = this.strength;
-    filterData.resolution = this.resolution;
-    filterData.color = this.color;
-    filterData.inner = this.inner;
-    filterData.knockout = this.knockout;
+    var filterData = CBlurFilterData();
+    filterData.blurX = blurX;
+    filterData.blurY = blurY;
+    filterData.angle = angle;
+    filterData.distance = distance;
+    filterData.strength = strength;
+    filterData.resolution = resolution;
+    filterData.color = color;
+    filterData.inner = inner;
+    filterData.knockout = knockout;
     return filterData;
   }
 }

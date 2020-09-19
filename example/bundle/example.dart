@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_gaf/stagexl_gaf.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -28,7 +27,7 @@ Future main() async {
 
   // get skeleton from bundle and start animation
 
-  var skeletonAsset = await gafBundle.getAsset("skeleton", 1, 1);
+  var skeletonAsset = await gafBundle.getAsset('skeleton', 1, 1);
   var skeletonTimeline = skeletonAsset.getGAFTimelineByLinkage('rootTimeline');
   var skeleton = GAFMovieClip(skeletonTimeline);
 
@@ -41,7 +40,7 @@ Future main() async {
 
   // get ufo-monster from bundle and start animation
 
-  var monsterAsset = await gafBundle.getAsset("ufo-monster", 1, 1);
+  var monsterAsset = await gafBundle.getAsset('ufo-monster', 1, 1);
   var monsterTimeline = monsterAsset.getGAFTimelineByLinkage('rootTimeline');
   var monster = GAFMovieClip(monsterTimeline);
 

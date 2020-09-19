@@ -29,15 +29,15 @@ Future main() async {
 
   // initialize the rockets
 
-  for (int i = 1; i <= 4; i++) {
-    GAFMovieClip animation = miniGame.getChildByName("Rocket_with_guide$i");
-    GAFMovieClip rocket = animation.getChildByName("Rocket$i");
-    rocket.setSequence("idle");
+  for (var i = 1; i <= 4; i++) {
+    GAFMovieClip animation = miniGame.getChildByName('Rocket_with_guide$i');
+    GAFMovieClip rocket = animation.getChildByName('Rocket$i');
+    rocket.setSequence('idle');
     rocket.onMouseDown.listen((me) {
-      rocket.setSequence("explode");
+      rocket.setSequence('explode');
       //rocket.mouseEnabled = false;
       rocket.onSequenceEnd.first.then((se) {
-        rocket.setSequence("idle");
+        rocket.setSequence('idle');
         //rocket.mouseEnabled = true;
       });
     });

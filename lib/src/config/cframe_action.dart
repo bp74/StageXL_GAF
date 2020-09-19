@@ -1,7 +1,6 @@
 part of stagexl_gaf;
 
 class CFrameAction {
-
   static const int STOP = 0;
   static const int PLAY = 1;
   static const int GOTO_AND_STOP = 2;
@@ -10,8 +9,7 @@ class CFrameAction {
 
   final int type;
   final String scope;
-  final List<String> params = List<String>();
+  final List<String> params = <String>[];
 
   CFrameAction(this.type, this.scope);
-
 }

@@ -1,17 +1,16 @@
 part of stagexl_gaf;
 
 class GAFAssetConfig {
-
   static final int MAX_VERSION = 5;
 
   final String id;
   final CStage stageConfig = CStage();
 
-  final List<num> displayScaleValues = List<num>();
-  final List<num> contentScaleValues = List<num>();
-  final List<GAFTimelineConfig> timelines = List<GAFTimelineConfig>();
-  final List<CTextureAtlas> textureAtlases = List<CTextureAtlas>();
-  final List<CSound> sounds = List<CSound>();
+  final List<num> displayScaleValues = <num>[];
+  final List<num> contentScaleValues = <num>[];
+  final List<GAFTimelineConfig> timelines = <GAFTimelineConfig>[];
+  final List<CTextureAtlas> textureAtlases = <CTextureAtlas>[];
+  final List<CSound> sounds = <CSound>[];
 
   int compression = 0;
   int versionMajor = 0;
@@ -21,5 +20,4 @@ class GAFAssetConfig {
   num defaultContentScale = 1.0;
 
   GAFAssetConfig(this.id);
-
 }

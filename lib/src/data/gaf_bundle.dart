@@ -1,7 +1,6 @@
 part of stagexl_gaf;
 
 class GAFBundle {
-
   final GAFBundleLoader bundleLoader;
   final List<GAFAssetConfig> assetConfigs;
 
@@ -37,35 +36,34 @@ class GAFBundle {
 
   Future<GAFAsset> getAsset(String assetID,
       [num displayScale, num contentScale]) async {
-
     var assetConfig = _getAssetConfig(assetID);
-    if (assetConfig == null) throw ArgumentError("assetID");
+    if (assetConfig == null) throw ArgumentError('assetID');
 
     displayScale = displayScale ?? assetConfig.defaultDisplayScale;
     var displayScaleValues = assetConfig.displayScaleValues;
     var displayScaleValid = displayScaleValues.contains(displayScale);
-    if (displayScaleValid == false) throw ArgumentError("displayScale");
+    if (displayScaleValid == false) throw ArgumentError('displayScale');
 
     contentScale = contentScale ?? assetConfig.defaultContentScale;
     var contentScaleValues = assetConfig.contentScaleValues;
     var contentScaleValid = contentScaleValues.contains(contentScale);
-    if (contentScaleValid == false) throw ArgumentError("contentScale");
+    if (contentScaleValid == false) throw ArgumentError('contentScale');
 
     var gafAsset = GAFAsset._(assetConfig, displayScale, contentScale);
 
     // load gaf timelines
-    for (GAFTimelineConfig timelineConfig in assetConfig.timelines) {
+    for (var timelineConfig in assetConfig.timelines) {
       var gafTimeline = GAFTimeline(gafAsset, timelineConfig);
       gafAsset.timelines.add(gafTimeline);
     }
 
     // load gaf texture atlases
-    for (CTextureAtlas config in assetConfig.textureAtlases) {
-      for (CTextureAtlasContent content in config.contents) {
+    for (var config in assetConfig.textureAtlases) {
+      for (var content in config.contents) {
         if (content.displayScale != displayScale) continue;
         if (content.contentScale != contentScale) continue;
-        for (CTextureAtlasSource source in content.sources) {
-          if (source.source == "no_atlas") continue;
+        for (var source in content.sources) {
+          if (source.source == 'no_atlas') continue;
           var renderTexture = await bundleLoader.getTexture(source);
           var ta = GAFTextureAtlas(renderTexture, config, content, source);
           gafAsset.textureAtlases.add(ta);
@@ -74,7 +72,7 @@ class GAFBundle {
     }
 
     // load gaf sounds
-    for (CSound config in assetConfig.sounds) {
+    for (var config in assetConfig.sounds) {
       var sound = await bundleLoader.getSound(config);
       var gafSound = GAFSound(config, sound);
       gafAsset.sounds.add(gafSound);
@@ -86,11 +84,9 @@ class GAFBundle {
   //---------------------------------------------------------------------------
 
   GAFAssetConfig _getAssetConfig(String assetID) {
-    for (var assetConfig in this.assetConfigs) {
+    for (var assetConfig in assetConfigs) {
       if (assetConfig.id == assetID) return assetConfig;
     }
     return null;
   }
-
 }
-

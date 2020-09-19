@@ -4,7 +4,6 @@ import 'package:stagexl/stagexl.dart';
 import 'package:stagexl_gaf/stagexl_gaf.dart';
 
 Future main() async {
-
   // configure StageXL default options
 
   StageXL.stageOptions.renderEngine = RenderEngine.WebGL;
@@ -35,9 +34,9 @@ Future main() async {
 
   // prepare gun swap
 
-  GAFBitmapData gun1 = gafAsset.getBitmapDataByLinkage("gun1");
-  GAFBitmapData gun2 = gafAsset.getBitmapDataByLinkage("gun2");
-  GAFBitmap gunSlot = robot.getChildByName("GUN");
+  var gun1 = gafAsset.getBitmapDataByLinkage('gun1');
+  var gun2 = gafAsset.getBitmapDataByLinkage('gun2');
+  GAFBitmap gunSlot = robot.getChildByName('GUN');
   gunSlot.bitmapData = gun1;
 
   robot.onMouseClick.listen((MouseEvent e) {
@@ -48,5 +47,4 @@ Future main() async {
       gunSlot.bitmapData = gun1;
     }
   });
-
 }
